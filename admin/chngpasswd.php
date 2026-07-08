@@ -96,26 +96,20 @@ if ($request == 'GET') {
     echo "          <td valign=top>\n";
     echo "            <br />\n";
 
-    $get_user = addslashes($get_user);
-
-    $query = "select empfullname from " . $db_prefix . "employees where empfullname = '" . $get_user . "'";
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
+    $result = tc_select("empfullname", "employees", "empfullname = ?", $get_user);
     while ($row = mysqli_fetch_array($result)) {
-        $username = stripslashes("" . $row['empfullname'] . "");
+        $username = "" . $row['empfullname'] . "";
     }
-    ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
     if (!isset($username)) {
         echo "username is not defined for this user.\n";
         exit;
     }
 
     if (!empty($get_office)) {
-        $query = "select * from " . $db_prefix . "offices where officename = '" . $get_office . "'";
-        $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
+        $result = tc_select("*", "offices", "officename = ?", $get_office);
         while ($row = mysqli_fetch_array($result)) {
             $getoffice = "" . $row['officename'] . "";
         }
-        ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
     }
     if (!isset($getoffice)) {
         echo "Office is not defined for this user. Go back and associate this user with an office.\n";
@@ -154,12 +148,10 @@ if ($request == 'GET') {
     // begin post validation //
 
     if (!empty($get_office)) {
-        $query = "select * from " . $db_prefix . "offices where officename = '" . $get_office . "'";
-        $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
+        $result = tc_select("*", "offices", "officename = ?", $get_office);
         while ($row = mysqli_fetch_array($result)) {
             $getoffice = "" . $row['officename'] . "";
         }
-        ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
     }
     if (!isset($getoffice)) {
         echo "Office is not defined for this user. Go back and associate this user with an office.\n";
@@ -220,24 +212,18 @@ if ($request == 'GET') {
     echo "          <td valign=top>\n";
     echo "            <br />\n";
 
-    $post_username = addslashes($post_username);
-
     // begin post validation //
 
     if (!empty($post_username)) {
-        $query = "select * from " . $db_prefix . "employees where empfullname = '" . $post_username . "'";
-        $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
+        $result = tc_select("*", "employees", "empfullname = ?", $post_username);
         while ($row = mysqli_fetch_array($result)) {
             $username = "" . $row['empfullname'] . "";
         }
-        ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
         if (!isset($username)) {
             echo "username is not defined for this user.\n";
             exit;
         }
     }
-
-    $post_username = stripslashes($post_username);
 
     if (preg_match("/^[\s\\/;'\"-]*$/i", $new_password)) {
         $evil_password = '1';
@@ -284,14 +270,8 @@ if ($request == 'GET') {
     } else {
 
         $new_password = crypt($new_password, 'xy');
-        $confirm_password = crypt($confirm_password, 'xy');
 
-        $post_username = addslashes($post_username);
-
-        $query = "update " . $db_prefix . "employees set employee_passwd = ('" . $new_password . "') where empfullname = ('" . $post_username . "')";
-        $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-
-        $post_username = stripslashes($post_username);
+        tc_update_strings("employees", array("employee_passwd" => $new_password), "empfullname = ?", $post_username);
 
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
         echo "              <tr><td class=table_rows width=20 align=center><img src='../images/icons/accept.png' /></td>
