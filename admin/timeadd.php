@@ -100,15 +100,13 @@ if ($request == 'GET') {
 
     $get_user = addslashes($get_user);
 
-    $query = "select * from " . $db_prefix . "employees where empfullname = '" . $get_user . "' order by empfullname";
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
+    $result = tc_select("*", "employees", "empfullname = ? order by empfullname", $get_user);
 
     while ($row = mysqli_fetch_array($result)) {
 
         $username = stripslashes("" . $row['empfullname'] . "");
         $displayname = stripslashes("" . $row['displayname'] . "");
     }
-    ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
 
     $get_user = stripslashes($_GET['username']);
 
@@ -195,8 +193,7 @@ if ($request == 'GET') {
     // begin post validation //
 
     if (!empty($get_user)) {
-        $query = "select * from " . $db_prefix . "employees where empfullname = '" . $get_user . "'";
-        $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
+        $result = tc_select("*", "employees", "empfullname = ?", $get_user);
         while ($row = mysqli_fetch_array($result)) {
             $tmp_get_user = "" . $row['empfullname'] . "";
         }
@@ -207,8 +204,7 @@ if ($request == 'GET') {
     }
 
     if (!empty($post_username)) {
-        $query = "select * from " . $db_prefix . "employees where empfullname = '" . $post_username . "'";
-        $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
+        $result = tc_select("*", "employees", "empfullname = ?", $post_username);
         while ($row = mysqli_fetch_array($result)) {
             $tmp_username = "" . $row['empfullname'] . "";
         }
@@ -219,8 +215,7 @@ if ($request == 'GET') {
     }
 
     if (!empty($post_displayname)) {
-        $query = "select * from " . $db_prefix . "employees where empfullname = '" . $post_username . "' and displayname = '" . $post_displayname . "'";
-        $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
+        $result = tc_select("*", "employees", "empfullname = ? and displayname = ?", array($post_username, $post_displayname));
         while ($row = mysqli_fetch_array($result)) {
             $tmp_post_displayname = "" . $row['displayname'] . "";
         }
@@ -233,14 +228,12 @@ if ($request == 'GET') {
     if (!empty($post_statusname)) {
         if ($post_statusname != '1') {
 
-            $query = "select * from " . $db_prefix . "punchlist where punchitems = '" . $post_statusname . "'";
-            $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
+            $result = tc_select("*", "punchlist", "punchitems = ?", $post_statusname);
 
             while ($row = mysqli_fetch_array($result)) {
                 $punchitems = "" . $row['punchitems'] . "";
                 $color = "" . $row['color'] . "";
             }
-            ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
             if (!isset($punchitems)) {
                 echo "Something is fishy here.\n";
                 exit;
@@ -547,8 +540,7 @@ if ($request == 'GET') {
 
         // check for duplicate time for $post_username
 
-        $query = "select * from " . $db_prefix . "info where fullname = '" . $post_username . "'";
-        $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
+        $result = tc_select("*", "info", "fullname = ?", $post_username);
 
         $post_username = stripslashes($post_username);
         $post_displayname = stripslashes($post_displayname);
@@ -626,24 +618,20 @@ if ($request == 'GET') {
                 exit;
             }
         }
-        ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
 
         // check to see if this would be the most recent time for $post_username. if so, run the update query for the employees table.
 
         $post_username = addslashes($post_username);
         $post_displayname = addslashes($post_displayname);
 
-        $query = "select * from " . $db_prefix . "employees where empfullname = '" . $post_username . "'";
-        $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
+        $result = tc_select("*", "employees", "empfullname = ?", $post_username);
 
         while ($row = mysqli_fetch_array($result)) {
             $employees_table_timestamp = "" . $row['tstamp'] . "";
         }
-        ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
 
         if ($timestamp > $employees_table_timestamp) {
-            $update_query = "update " . $db_prefix . "employees set tstamp = '" . $timestamp . "' where empfullname = '" . $post_username . "'";
-            $update_result = mysqli_query($GLOBALS["___mysqli_ston"], $update_query);
+            tc_update_strings("employees", array("tstamp" => $timestamp), "empfullname = ?", $post_username);
         }
 
         // determine who the authenticated user is for audit log
@@ -672,20 +660,34 @@ if ($request == 'GET') {
 
         // add the time to the info table for $post_username
 
-        $query = "insert into " . $db_prefix . "info (fullname, `inout`, timestamp, notes) values ('" . $post_username . "', '" . $post_statusname . "', '" . $timestamp . "',
-          '" . $post_notes . "')";
-        $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
+        tc_insert_strings("info", array(
+            "fullname" => $post_username,
+            "inout" => $post_statusname,
+            "timestamp" => $timestamp,
+            "notes" => $post_notes
+        ));
 
         // add the results to the audit table
 
         if (strtolower($ip_logging) == "yes") {
-            $query2 = "insert into " . $db_prefix . "audit (modified_by_ip, modified_by_user, modified_when, modified_from, modified_to, modified_why, user_modified) values
-           ('" . $connecting_ip . "', '" . $user . "', '" . $time_tz_stamp . "', '0', '" . $timestamp . "', '" . $post_why . "', '" . $post_username . "')";
-            $result2 = mysqli_query($GLOBALS["___mysqli_ston"], $query2);
+            tc_insert_strings("audit", array(
+                "modified_by_ip" => $connecting_ip,
+                "modified_by_user" => $user,
+                "modified_when" => $time_tz_stamp,
+                "modified_from" => '0',
+                "modified_to" => $timestamp,
+                "modified_why" => $post_why,
+                "user_modified" => $post_username
+            ));
         } else {
-            $query2 = "insert into " . $db_prefix . "audit (modified_by_user, modified_when, modified_from, modified_to, modified_why, user_modified) values
-           ('" . $user . "', '" . $time_tz_stamp . "', '0', '" . $timestamp . "', '" . $post_why . "', '" . $post_username . "')";
-            $result2 = mysqli_query($GLOBALS["___mysqli_ston"], $query2);
+            tc_insert_strings("audit", array(
+                "modified_by_user" => $user,
+                "modified_when" => $time_tz_stamp,
+                "modified_from" => '0',
+                "modified_to" => $timestamp,
+                "modified_why" => $post_why,
+                "user_modified" => $post_username
+            ));
         }
 
         $post_username = stripslashes($post_username);
