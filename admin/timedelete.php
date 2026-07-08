@@ -550,9 +550,6 @@ if ($request == 'GET') {
 
             // end post validation //
 
-            if (get_magic_quotes_gpc()) {
-                $post_username = stripslashes($post_username);
-            }
             $post_username = addslashes($post_username);
 
             $query = "select * from " . $db_prefix . "info where (fullname = '" . $post_username . "') and ((timestamp < '" . $calc . "') and (timestamp >= '" . $timestamp . "'))

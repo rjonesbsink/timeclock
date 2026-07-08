@@ -41,9 +41,6 @@ if ($request == 'GET') {
     $get_user = $_GET['username'];
     @$get_office = $_GET['officename'];
 
-    if (get_magic_quotes_gpc()) {
-        $get_user = stripslashes($get_user);
-    }
 
     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
     echo "  <tr valign=top>\n";
