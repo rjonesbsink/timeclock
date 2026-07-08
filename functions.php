@@ -235,14 +235,13 @@ function secsToHours($secs, $round_time) {
 
 function disabled_acct($get_user) {
 
-    $query = "select empfullname, disabled from employees where empfullname = '" . addslashes($get_user) . "'";
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
+    $result = tc_select("empfullname, disabled", "employees", "empfullname = ?", $get_user);
 
     while ($row = mysqli_fetch_array($result)) {
 
         if ("" . $row["disabled"] . "" == 1) {
             echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
-            echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>The account for $get_user is
+            echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>The account for " . htmlspecialchars($get_user) . " is
                 disabled</td></tr>\n";
             echo "  <tr class=right_main_text>\n";
             echo "    <td align=center valign=top scope=row>\n";

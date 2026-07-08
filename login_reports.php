@@ -12,9 +12,7 @@ if (isset($_POST['login_userid']) && (isset($_POST['login_password']))) {
     $login_userid = $_POST['login_userid'];
     $login_password = crypt($_POST['login_password'], 'xy');
 
-    $query = "select empfullname, employee_passwd, reports from " . $db_prefix . "employees
-              where empfullname = '" . $login_userid . "'";
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
+    $result = tc_select("empfullname, employee_passwd, reports", "employees", "empfullname = ?", $login_userid);
 
     while ($row = mysqli_fetch_array($result)) {
 

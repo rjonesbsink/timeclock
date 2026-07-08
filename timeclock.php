@@ -26,27 +26,23 @@ if (!isset($_GET['printer_friendly'])) {
 
 // code to allow sorting by Name, In/Out, Date, Notes //
 
+// Note: $sortcolumn and $sortdirection are used as raw SQL identifiers below
+// (order by `$sortcolumn` $sortdirection), so they must be validated against
+// a whitelist rather than escaped -- placeholders can't bind identifiers.
+$valid_sortcolumns = array('empfullname', 'displayname', 'fullname', 'inout', 'tstamp', 'office', 'groups', 'notes');
+
 if ($show_display_name == "yes") {
-    if (!isset($_GET['sortcolumn'])) {
-        $sortcolumn = "displayname";
-    } else {
-        $sortcolumn = $_GET['sortcolumn'];
-    }
-
+    $sortcolumn = "displayname";
 } else {
-
-    if (!isset($_GET['sortcolumn'])) {
-        $sortcolumn = "fullname";
-    } else {
-        $sortcolumn = $_GET['sortcolumn'];
-    }
-
+    $sortcolumn = "fullname";
+}
+if (isset($_GET['sortcolumn']) && in_array($_GET['sortcolumn'], $valid_sortcolumns, true)) {
+    $sortcolumn = $_GET['sortcolumn'];
 }
 
-if (!isset($_GET['sortdirection'])) {
-    $sortdirection = "asc";
-} else {
-    $sortdirection = $_GET['sortdirection'];
+$sortdirection = "asc";
+if (isset($_GET['sortdirection']) && $_GET['sortdirection'] === "desc") {
+    $sortdirection = "desc";
 }
 
 if ($sortdirection == "asc") {
