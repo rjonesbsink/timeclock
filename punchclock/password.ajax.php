@@ -14,9 +14,7 @@ require_once 'lib.common.php';
 turn_off_magic_quotes();
 
 // Connect to db.
-$db = ($GLOBALS["___mysqli_ston"] = mysqli_connect($db_hostname,  $db_username,  $db_password))
-or die("Could not connect to the database.");
-mysqli_select_db($GLOBALS["___mysqli_ston"], $db_name);
+require "$TIMECLOCK_PATH/lib/db.php";
 
 // Parse arguments
 $change_password = isset($_GET['change_password']) ? true : false;

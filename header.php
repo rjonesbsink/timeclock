@@ -30,12 +30,7 @@ if ($restrict_ips == "yes") {
 
 // connect to db anc check for correct db version //
 
-@ $db = ($GLOBALS["___mysqli_ston"] = mysqli_connect($db_hostname,  $db_username,  $db_password));
-if (!$db) {
-    echo "Error: Could not connect to the database. Please try again later.";
-    exit;
-}
-mysqli_select_db($GLOBALS["___mysqli_ston"], $db_name);
+require 'lib/db.php';
 
 $table = "dbversion";
 $result = mysqli_query($GLOBALS["___mysqli_ston"], "SHOW TABLES LIKE '" . $db_prefix . $table . "'");
