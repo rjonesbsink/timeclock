@@ -1315,8 +1315,7 @@ if ($request == 'GET') {
     // begin post validation //
 
     if ($post_office_name != 'all') {
-        $query = "select * from offices where officename = '" . $post_office_name . "'";
-        $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
+        $result = tc_select("*", "offices", "officename = ?", $post_office_name);
         while ($row = mysqli_fetch_array($result)) {
             $officename = "" . $row['officename'] . "";
         }
@@ -1327,8 +1326,7 @@ if ($request == 'GET') {
     }
 
     if ($post_group_name != 'all') {
-        $query2 = "select * from groups where groupname = '" . $post_group_name . "'";
-        $result2 = mysqli_query($GLOBALS["___mysqli_ston"], $query2);
+        $result2 = tc_select("*", "groups", "groupname = ?", $post_group_name);
         while ($row2 = mysqli_fetch_array($result2)) {
             $groupname = "" . $row2['groupname'] . "";
         }
