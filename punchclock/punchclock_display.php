@@ -1,12 +1,11 @@
 <?php
+
 /**
  * Punchclock display rows of employees.
  */
 
-if (!isset($_SESSION['application'])) {
-    header('Location:punchclock.php');
-    exit;
-}
+require_once '../lib/auth.php';
+require_application_context('punchclock.php');
 
 // Hardwire sortcolumn and sortdirection.
 $sortcolumn = $show_display_name == 'yes' ? 'displayname' : 'empfullname';
@@ -41,9 +40,7 @@ or trigger_error("punchclock_display: Cannot select employees. " . mysqli_error(
 
 $row_count = 0;
 while ($row = mysqli_fetch_array($result)) {
-
     if ($row_count == 0) {
-
         // Table header
         print <<<End_Of_HTML
 
@@ -145,4 +142,3 @@ End_Of_HTML;
 }
 
 ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
-?>

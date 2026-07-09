@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 $self = $_SERVER['PHP_SELF'];
@@ -10,18 +11,8 @@ include 'header.php';
 include 'topmain.php';
 echo "<title>$title - Status Summary</title>\n";
 
-if (!isset($_SESSION['valid_user'])) {
-
-    echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
-    echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Administration</td></tr>\n";
-    echo "  <tr class=right_main_text>\n";
-    echo "    <td align=center valign=top scope=row>\n";
-    echo "      <table width=200 border=0 cellpadding=5 cellspacing=0>\n";
-    echo "        <tr class=right_main_text><td align=center>You are not presently logged in, or do not have permission to view this page.</td></tr>\n";
-    echo "        <tr class=right_main_text><td align=center>Click <a class=admin_headings href='../login.php'><u>here</u></a> to login.</td></tr>\n";
-    echo "      </table><br /></td></tr></table>\n";
-    exit;
-}
+require_once '../lib/auth.php';
+require_valid_user();
 
 echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
 echo "  <tr valign=top>\n";
@@ -83,7 +74,6 @@ $row_count = 0;
 $result = tc_select("*", "punchlist");
 
 while ($row = mysqli_fetch_array($result)) {
-
     $punchitem = "" . $row['punchitems'] . "";
     $punchnext = "" . $row['punchnext'] . "";
     $color = "" . $row['color'] . "";
@@ -107,7 +97,6 @@ while ($row = mysqli_fetch_array($result)) {
     echo "                <td nowrap class=table_rows width=4% align=center>$in_or_out_tmp</td>\n";
 
     if ((strpos($user_agent, "MSIE 6")) || (strpos($user_agent, "MSIE 5")) || (strpos($user_agent, "MSIE 4")) || (strpos($user_agent, "MSIE 3"))) {
-
         echo "                <td class=table_rows width=3% align=center><a style='color:#27408b;text-decoration:underline;' title=\"Edit Status: $punchitem\"
                     href=\"statusedit.php?statusname=$punchitem\">Edit</a></td>\n";
         echo "                <td class=table_rows width=3% align=center><a style='color:#27408b;text-decoration:underline;' title=\"Delete Status: $punchitem\"
@@ -121,4 +110,3 @@ while ($row = mysqli_fetch_array($result)) {
 }
 echo "          </table></td></tr>\n";
 include '../footer.php';
-?>

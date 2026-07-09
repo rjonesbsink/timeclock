@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Enter punch-in/out time footer.
  */

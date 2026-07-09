@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Punchclock footer.
  * Wrapper around Timeclock footer.

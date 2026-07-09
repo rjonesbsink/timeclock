@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Punchclock password change form.
  *
@@ -9,6 +10,7 @@ $current_page = "password.php";
 
 require_once 'config.inc.php';
 require_once 'lib.common.php';
+require_once '../lib/csrf.php';
 turn_off_magic_quotes();
 
 session_start();
@@ -49,13 +51,11 @@ if (isset($_SESSION['password_return_url'])) {
 
 // Process form submission.
 if ($old_password) {
-
-    // Validate password
-    if (is_valid_password($empfullname, $old_password)) {
-
+    if (!verify_csrf_token()) {
+        print error_msg("Your session has expired. Please try again.");
+    } elseif (is_valid_password($empfullname, $old_password)) {
         // Check if new password is same as confirm password entry
         if ($new_password === $confirm_password) {
-
             // Save password.
             if (save_employee_password($empfullname, $new_password)) {
                 # Uncomment next if do not want to return to login screen to enter a password before going on.
@@ -154,6 +154,7 @@ End_Of_HTML;
             </tr>
         </table>
         <input type="hidden" name="empfullname" value="<?php echo $h_empfullname; ?>"/>
+        <?php echo csrf_field(); ?>
     </form>
 </div>
 

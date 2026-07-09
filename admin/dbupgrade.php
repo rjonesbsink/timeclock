@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 include_once '../config.inc.php';
@@ -17,22 +18,26 @@ const EXTRA_DEFAULT_NULL = "DEFAULT NULL";
 const EXTRA_NOT_NULL = "NOT NULL";
 const FOOTER_PHP = '../footer.php';
 
-function msg_changed($msg) {
+function msg_changed($msg)
+{
     echo "<tr><td width=10 class=table_rows style='padding-left:25px;color:#0000FF;font-weight:bold;'>Changed</td><td class=table_rows align=left>:&nbsp;$msg</td></tr>\n";
 }
 
-function msg_added($msg) {
+function msg_added($msg)
+{
     echo "<tr><td width=10 class=table_rows style='padding-left:25px;color:#FF9900;font-weight:bold;'>Added</td><td class=table_rows align=left>:&nbsp;$msg</td></tr>\n";
 }
 
-function msg_converted($msg) {
+function msg_converted($msg)
+{
     echo "<tr><td width=10 class=table_rows style='padding-left:25px;color:#FF9900;font-weight:bold;'>Converted</td><td class=table_rows align=left>:&nbsp;$msg</td></tr>\n";
 }
 
 // Ensure that the corresponding table exists, creates it if missing.
 // Note: need not create all columns since we will add any missing columns
 // with ensure_field.
-function ensure_table($table, $columns, $engine = "ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin") {
+function ensure_table($table, $columns, $engine = "ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin")
+{
     global $db_name;
     global $db_prefix;
     $rows = mysqli_num_rows(tc_query("SHOW TABLES LIKE '$db_prefix$table'"));
@@ -47,7 +52,8 @@ function ensure_table($table, $columns, $engine = "ENGINE=MyISAM DEFAULT CHARSET
 
 // Ensure field is present and has correct type. Does not check other
 // attributes (NULL, default, ...)
-function ensure_field($table, $field, $type, $extra) {
+function ensure_field($table, $field, $type, $extra)
+{
     global $db_prefix;
     $result = tc_query("SHOW FIELDS FROM $db_prefix$table LIKE '$field'");
 
@@ -71,7 +77,8 @@ function ensure_field($table, $field, $type, $extra) {
 
 // Ensure a simple non-primary/non-unique index is present on the named
 // field. If a primary/unique index exists, we won't create another.
-function ensure_index($table, $field) {
+function ensure_index($table, $field)
+{
     global $db_prefix;
     $rows = mysqli_num_rows(tc_query("SHOW INDEX FROM $db_prefix$table WHERE column_name = ?", $field));
 
@@ -87,18 +94,9 @@ function ensure_index($table, $field) {
 $self = $_SERVER['PHP_SELF'];
 $request = $_SERVER['REQUEST_METHOD'];
 
-if (!isset($_SESSION['valid_user'])) {
-
-    echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
-    echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Administration</td></tr>\n";
-    echo "  <tr class=right_main_text>\n";
-    echo "    <td align=center valign=top scope=row>\n";
-    echo "      <table width=200 border=0 cellpadding=5 cellspacing=0>\n";
-    echo "        <tr class=right_main_text><td align=center>You are not presently logged in, or do not have permission to view this page.</td></tr>\n";
-    echo "        <tr class=right_main_text><td align=center>Click <a class=admin_headings href='../login.php'><u>here</u></a> to login.</td></tr>\n";
-    echo "      </table><br /></td></tr></table>\n";
-    exit;
-}
+require_once '../lib/auth.php';
+require_valid_user();
+require_once '../lib/csrf.php';
 
 $changes_made = 0;
 $gmt_offset = date('Z');
@@ -107,6 +105,7 @@ echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
 echo "  <tr valign=top>\n";
 echo "    <td class=left_main width=180 align=left scope=col>\n";
 echo "      <form name='form' action='$self' method='post'>\n";
+echo csrf_field() . "\n";
 echo "      <table class=hide width=100% border=0 cellpadding=1 cellspacing=0>\n";
 echo "        <tr><td class=left_rows height=11></td></tr>\n";
 echo "        <tr><td class=left_rows_headings height=18 valign=middle>Users</td></tr>\n";
@@ -155,7 +154,8 @@ $count = "0";
 $result = tc_query("show grants for current_user()");
 while ($row = mysqli_fetch_array($result)) {
     $abc = stripslashes("" . $row["0"] . "");
-    if (((preg_match("/\bgrant\b/i", $abc)) && (preg_match("/\bselect\b/i", $abc)) &&
+    if (
+        ((preg_match("/\bgrant\b/i", $abc)) && (preg_match("/\bselect\b/i", $abc)) &&
          (preg_match("/\binsert\b/i", $abc)) && (preg_match("/\bupdate\b/i", $abc)) &&
          (preg_match("/\bdelete\b/i", $abc)) && (preg_match("/\bcreate\b/i", $abc)) &&
          (preg_match("/\balter\b/i", $abc)) && (preg_match("/\bon `\Q$db_name`.*\E to '\Q$db_username\E'@/i", $abc))) ||
@@ -167,12 +167,11 @@ while ($row = mysqli_fetch_array($result)) {
 }
 
 if (!empty($count)) {
-
     if ($request == 'GET') {
-
         $user_admin = tc_select_value("empfullname", "employees", "empfullname = 'admin'");
 
         echo "            <form name='form' action='$self' method='post'>\n";
+        echo csrf_field() . "\n";
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
         echo "              <tr><th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/database_go.png' />&nbsp;&nbsp;&nbsp;Upgrade
                       Database </th></tr>\n";
@@ -207,8 +206,8 @@ if (!empty($count)) {
                       border='0'></td></tr></table></form></td></tr>\n";
         include_once FOOTER_PHP;
         exit;
-
     } else {
+        require_csrf_token();
 
         @$recreate_admin = $_POST['recreate_admin'];
 
@@ -227,13 +226,13 @@ if (!empty($count)) {
         // TABLE: audit //
         $changes_made += ensure_table("audit", "modified_when bigint(14)");
 
-        $changes_made += ensure_field("audit", "modified_when",    TYPE_BIGINT14,   "");
-        $changes_made += ensure_field("audit", "modified_from",    TYPE_BIGINT14,   EXTRA_NOT_NULL);
-        $changes_made += ensure_field("audit", "modified_to",      TYPE_BIGINT14,   EXTRA_NOT_NULL);
-        $changes_made += ensure_field("audit", "modified_by_ip",   "varchar(39)",  EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
-        $changes_made += ensure_field("audit", "modified_by_user", TYPE_VARCHAR50,  EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
-        $changes_made += ensure_field("audit", "modified_why",     "varchar(250)", EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
-        $changes_made += ensure_field("audit", "user_modified",    TYPE_VARCHAR50,  EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
+        $changes_made += ensure_field("audit", "modified_when", TYPE_BIGINT14, "");
+        $changes_made += ensure_field("audit", "modified_from", TYPE_BIGINT14, EXTRA_NOT_NULL);
+        $changes_made += ensure_field("audit", "modified_to", TYPE_BIGINT14, EXTRA_NOT_NULL);
+        $changes_made += ensure_field("audit", "modified_by_ip", "varchar(39)", EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
+        $changes_made += ensure_field("audit", "modified_by_user", TYPE_VARCHAR50, EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
+        $changes_made += ensure_field("audit", "modified_why", "varchar(250)", EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
+        $changes_made += ensure_field("audit", "user_modified", TYPE_VARCHAR50, EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
 
         $changes_made += ensure_index("audit", "modified_when");
 
@@ -259,26 +258,26 @@ if (!empty($count)) {
             }
         }
 
-        $changes_made += ensure_field("employees", "empfullname",      TYPE_VARCHAR50, EXTRA_PRIMARY_KEY_COLLATE);
-        $changes_made += ensure_field("employees", "tstamp",           TYPE_BIGINT14,  EXTRA_DEFAULT_NULL);
-        $changes_made += ensure_field("employees", "employee_passwd",  "varchar(255)", EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
-        $changes_made += ensure_field("employees", "displayname",      TYPE_VARCHAR50, EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
-        $changes_made += ensure_field("employees", "email",            "varchar(75)", EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
-        $changes_made += ensure_field("employees", "barcode",          "varchar(75)", "COLLATE utf8_bin UNIQUE");
-        $changes_made += ensure_field("employees", "groups",           TYPE_VARCHAR50, EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
-        $changes_made += ensure_field("employees", "office",           TYPE_VARCHAR50, EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
-        $changes_made += ensure_field("employees", "admin",            TYPE_TINYINT1,  EXTRA_NOT_NULL_DEFAULT_ZERO);
-        $changes_made += ensure_field("employees", "reports",          TYPE_TINYINT1,  EXTRA_NOT_NULL_DEFAULT_ZERO);
-        $changes_made += ensure_field("employees", "time_admin",       TYPE_TINYINT1,  EXTRA_NOT_NULL_DEFAULT_ZERO);
-        $changes_made += ensure_field("employees", "disabled",         TYPE_TINYINT1,  EXTRA_NOT_NULL_DEFAULT_ZERO);
+        $changes_made += ensure_field("employees", "empfullname", TYPE_VARCHAR50, EXTRA_PRIMARY_KEY_COLLATE);
+        $changes_made += ensure_field("employees", "tstamp", TYPE_BIGINT14, EXTRA_DEFAULT_NULL);
+        $changes_made += ensure_field("employees", "employee_passwd", "varchar(255)", EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
+        $changes_made += ensure_field("employees", "displayname", TYPE_VARCHAR50, EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
+        $changes_made += ensure_field("employees", "email", "varchar(75)", EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
+        $changes_made += ensure_field("employees", "barcode", "varchar(75)", "COLLATE utf8_bin UNIQUE");
+        $changes_made += ensure_field("employees", "groups", TYPE_VARCHAR50, EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
+        $changes_made += ensure_field("employees", "office", TYPE_VARCHAR50, EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
+        $changes_made += ensure_field("employees", "admin", TYPE_TINYINT1, EXTRA_NOT_NULL_DEFAULT_ZERO);
+        $changes_made += ensure_field("employees", "reports", TYPE_TINYINT1, EXTRA_NOT_NULL_DEFAULT_ZERO);
+        $changes_made += ensure_field("employees", "time_admin", TYPE_TINYINT1, EXTRA_NOT_NULL_DEFAULT_ZERO);
+        $changes_made += ensure_field("employees", "disabled", TYPE_TINYINT1, EXTRA_NOT_NULL_DEFAULT_ZERO);
 
 
         // TABLE: groups //
         $changes_made += ensure_table("groups", "groupid int(10) AUTO_INCREMENT PRIMARY KEY");
 
-        $changes_made += ensure_field("groups", "groupid",   TYPE_INT10,     "AUTO_INCREMENT PRIMARY KEY");
+        $changes_made += ensure_field("groups", "groupid", TYPE_INT10, "AUTO_INCREMENT PRIMARY KEY");
         $changes_made += ensure_field("groups", "groupname", TYPE_VARCHAR50, EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
-        $changes_made += ensure_field("groups", "officeid",  TYPE_INT10,     EXTRA_NOT_NULL_DEFAULT_ZERO);
+        $changes_made += ensure_field("groups", "officeid", TYPE_INT10, EXTRA_NOT_NULL_DEFAULT_ZERO);
 
 
         // TABLE: info //
@@ -303,11 +302,11 @@ if (!empty($count)) {
             }
         }
 
-        $changes_made += ensure_field("info", "fullname",  TYPE_VARCHAR50,  EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
-        $changes_made += ensure_field("info", "inout",     TYPE_VARCHAR50,  EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
-        $changes_made += ensure_field("info", "timestamp", TYPE_BIGINT14,   EXTRA_DEFAULT_NULL);
-        $changes_made += ensure_field("info", "notes",     "varchar(250)", "COLLATE utf8_bin DEFAULT NULL");
-        $changes_made += ensure_field("info", "ipaddress", "varchar(39)",  EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
+        $changes_made += ensure_field("info", "fullname", TYPE_VARCHAR50, EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
+        $changes_made += ensure_field("info", "inout", TYPE_VARCHAR50, EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
+        $changes_made += ensure_field("info", "timestamp", TYPE_BIGINT14, EXTRA_DEFAULT_NULL);
+        $changes_made += ensure_field("info", "notes", "varchar(250)", "COLLATE utf8_bin DEFAULT NULL");
+        $changes_made += ensure_field("info", "ipaddress", "varchar(39)", EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
 
         $changes_made += ensure_index("info", "fullname");
         $changes_made += ensure_index("info", "timestamp");
@@ -316,15 +315,15 @@ if (!empty($count)) {
         // TABLE: metars //
         $changes_made += ensure_table("metars", "station varchar(4) PRIMARY KEY COLLATE utf8_bin");
 
-        $changes_made += ensure_field("metars", "station",   "varchar(4)",    EXTRA_PRIMARY_KEY_COLLATE);
-        $changes_made += ensure_field("metars", "metar",     "varchar(255)",  EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
-        $changes_made += ensure_field("metars", "timestamp", "timestamp",     EXTRA_NOT_NULL);
+        $changes_made += ensure_field("metars", "station", "varchar(4)", EXTRA_PRIMARY_KEY_COLLATE);
+        $changes_made += ensure_field("metars", "metar", "varchar(255)", EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
+        $changes_made += ensure_field("metars", "timestamp", "timestamp", EXTRA_NOT_NULL);
 
 
         // TABLE: offices //
         $changes_made += ensure_table("offices", "officeid int(10) AUTO_INCREMENT PRIMARY KEY");
 
-        $changes_made += ensure_field("offices", "officeid",   TYPE_INT10,     "AUTO_INCREMENT PRIMARY KEY");
+        $changes_made += ensure_field("offices", "officeid", TYPE_INT10, "AUTO_INCREMENT PRIMARY KEY");
         $changes_made += ensure_field("offices", "officename", TYPE_VARCHAR50, EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
 
 
@@ -332,9 +331,9 @@ if (!empty($count)) {
         $changes_made += ensure_table("punchlist", "punchitems varchar(50) PRIMARY KEY COLLATE utf8_bin");
 
         $changes_made += ensure_field("punchlist", "punchitems", TYPE_VARCHAR50, EXTRA_PRIMARY_KEY_COLLATE);
-        $changes_made += ensure_field("punchlist", "punchnext",  TYPE_VARCHAR50, "varchar(50) COLLATE utf8_bin NOT NULL DEFAULT ''");
-        $changes_made += ensure_field("punchlist", "color",      "varchar(7)",  EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
-        $changes_made += ensure_field("punchlist", "in_or_out",  TYPE_TINYINT1,  EXTRA_DEFAULT_NULL);
+        $changes_made += ensure_field("punchlist", "punchnext", TYPE_VARCHAR50, "varchar(50) COLLATE utf8_bin NOT NULL DEFAULT ''");
+        $changes_made += ensure_field("punchlist", "color", "varchar(7)", EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
+        $changes_made += ensure_field("punchlist", "in_or_out", TYPE_TINYINT1, EXTRA_DEFAULT_NULL);
 
 
         // TABLE: dbversion //
@@ -347,8 +346,7 @@ if (!empty($count)) {
             tc_insert_strings("dbversion", array("dbversion" => $dbversion));
             $changes_made += 1;
             msg_changed("the database is now at version $dbversion.");
-        }
-        elseif ($current_dbversion != $dbversion) {
+        } elseif ($current_dbversion != $dbversion) {
             tc_update_strings("dbversion", array("dbversion" => $dbversion));
             msg_changed("the database has been upgraded from version <b>$current_dbversion</b> to version <b>$dbversion</b>.");
             $changes_made += 1;
@@ -386,7 +384,6 @@ if (!empty($count)) {
         exit;
     }
 } else {
-
     echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
     echo "              <tr><th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/database_go.png' />&nbsp;&nbsp;&nbsp;Upgrade
                       Database </th></tr>\n";
@@ -402,4 +399,3 @@ if (!empty($count)) {
     include_once FOOTER_PHP;
     exit;
 }
-?>

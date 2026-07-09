@@ -1,4 +1,5 @@
 <?php
+
 echo "            <table width=100% border=0 cellpadding=0 cellspacing=0>\n";
 echo "              <tr><th colspan=3 class=table_heading_no_color nowrap align=left>System Settings</th></tr>\n";
 echo "              <tr><td colspan=3 class=table_rows width=10% align=left style='padding-left:4px;'>Listed below are the 
@@ -281,10 +282,10 @@ echo "              <tr><td bgcolor='$row_color' class=table_rows width=10% alig
 $row_count++;
 $row_color = ($row_count % 2) ? $color2 : $color1;
 echo "              <tr><td bgcolor='$row_color' class=table_rows width=10% align=left style='padding-left:4px;' valign=top>weather_units:</td>
-                  <td bgcolor='$row_color' class=table_rows width=10% align=left valign=top>".($weather_units == "c" ? "Celsius" : "Fahrenheit")."</td>
+                  <td bgcolor='$row_color' class=table_rows width=10% align=left valign=top>" . ($weather_units == "c" ? "Celsius" : "Fahrenheit") . "</td>
                   <td bgcolor='$row_color' class=table_rows width=80% align=left style='padding-left:10px;' valign=top>Display weather in US or metric measurements. Options are Fahrenheit or
                   Celsius. Default is Celsius\".
-                  </td></tr>\n";                                                   
+                  </td></tr>\n";
 $row_count++;
 $row_color = ($row_count % 2) ? $color2 : $color1;
 echo "              <tr><td bgcolor='$row_color' class=table_rows width=10% align=left style='padding-left:4px;' valign=top>metar:</td>
@@ -398,4 +399,3 @@ echo "              <tr><td bgcolor='$row_color' class=table_rows width=10% alig
 $row_count++;
 $row_color = ($row_count % 2) ? $color2 : $color1;
 echo "            </table>\n";
-?>

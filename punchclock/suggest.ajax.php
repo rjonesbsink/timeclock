@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Supply suggestions for employee names.
  *
@@ -6,9 +7,8 @@
  */
 
 session_start();
-if (!isset($_SESSION['application'])) {
-    die("Invalid invocation.");
-}
+require_once '../lib/auth.php';
+require_application_context();
 
 require_once 'config.inc.php';
 
@@ -32,4 +32,3 @@ if (!$result) {
 while ($row = mysqli_fetch_assoc($result)) {
     print $row['displayname'] . "\n";
 }
-?>

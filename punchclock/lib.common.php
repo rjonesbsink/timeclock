@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Punchclock functions.
  */
@@ -9,12 +10,13 @@ require_once "$TIMECLOCK_PATH/functions.php";
 const WHERE_EMPFULLNAME = "empfullname = ?";
 
 ////////////////////////////////////////
-function mysqli_result($res,$row=0,$col=0){
-    $numrows = mysqli_num_rows($res); 
-    if ($numrows && $row <= ($numrows-1) && $row >=0){
-        mysqli_data_seek($res,$row);
+function mysqli_result($res, $row = 0, $col = 0)
+{
+    $numrows = mysqli_num_rows($res);
+    if ($numrows && $row <= ($numrows - 1) && $row >= 0) {
+        mysqli_data_seek($res, $row);
         $resrow = (is_numeric($col)) ? mysqli_fetch_row($res) : mysqli_fetch_assoc($res);
-        if (isset($resrow[$col])){
+        if (isset($resrow[$col])) {
             return $resrow[$col];
         }
     }
@@ -22,19 +24,22 @@ function mysqli_result($res,$row=0,$col=0){
 }
 
 ////////////////////////////////////////
-function make_id($empfullname) {
+function make_id($empfullname)
+{
     // Make an DOM ID string from the employee id
     // Add emp_ prefix and change spaces into underlines.
     return 'emp_' . str_replace(' ', '_', $empfullname);
 }
 
-function unmake_id($id) {
+function unmake_id($id)
+{
     return str_replace('_', ' ', preg_replace('/^emp_/', '', $id));
 }
 
 
 ////////////////////////////////////////
-function lookup_employee($empfullname) {
+function lookup_employee($empfullname)
+{
     // Return valid empfullname or null
     $name = null;
     $result = tc_select("empfullname", "employees", WHERE_EMPFULLNAME, $empfullname);
@@ -44,40 +49,43 @@ function lookup_employee($empfullname) {
         or trigger_error('lookup_employee: no result: ' . mysqli_error($GLOBALS["___mysqli_ston"]), E_USER_WARNING);
     }
     if ($result && mysqli_num_rows($result) == 1) {
-        $name = mysqli_result($result,  0,  0);
+        $name = mysqli_result($result, 0, 0);
     }
 
     return $name;
 }
 
 ////////////////////////////////////////
-function get_employee_name($empfullname) {
+function get_employee_name($empfullname)
+{
     $result = tc_select("displayname", "employees", WHERE_EMPFULLNAME, $empfullname);
     if (!$result) {
         trigger_error('get_employee_name: no result: ' . mysqli_error($GLOBALS["___mysqli_ston"]), E_USER_WARNING);
 
         return false;
     }
-    $name = mysqli_result($result,  0,  0);
+    $name = mysqli_result($result, 0, 0);
 
     return $name;
 }
 
 ////////////////////////////////////////
-function get_employee_password($empfullname) {
+function get_employee_password($empfullname)
+{
     $result = tc_select("employee_passwd", "employees", WHERE_EMPFULLNAME, $empfullname);
     if (!$result) {
         trigger_error('get_employee_password: no result: ' . mysqli_error($GLOBALS["___mysqli_ston"]), E_USER_WARNING);
 
         return false;
     }
-    $password = mysqli_result($result,  0,  0);
+    $password = mysqli_result($result, 0, 0);
 
     return $password;
 }
 
 ////////////////////////////////////////
-function is_valid_password($empfullname, $password) {
+function is_valid_password($empfullname, $password)
+{
     global $use_passwd;
     $employee_passwd = get_employee_password($empfullname);
     if (!$use_passwd) {
@@ -93,7 +101,8 @@ function is_valid_password($empfullname, $password) {
 }
 
 ////////////////////////////////////////
-function save_employee_password($empfullname, $new_password) {
+function save_employee_password($empfullname, $new_password)
+{
     $password = tc_hash_password($new_password);
     tc_update_strings("employees", array("employee_passwd" => $password), WHERE_EMPFULLNAME, $empfullname);
 
@@ -101,7 +110,8 @@ function save_employee_password($empfullname, $new_password) {
 }
 
 ////////////////////////////////////////
-function get_employee_status($empfullname) {
+function get_employee_status($empfullname)
+{
     // Get employee's current punch-in/out status and time.
     // Return array of in/out(1/0), punch code, timestamp, and notes.
     global $db_prefix;
@@ -126,7 +136,8 @@ End_Of_SQL;
 }
 
 ////////////////////////////////////////
-function compute_work_hours($start_time, $end_time, $week_hours) {
+function compute_work_hours($start_time, $end_time, $week_hours)
+{
     // Compute work and overtime hours between two times.
     $hours = compute_hours($start_time, $end_time);
     $overtime = compute_overtime_hours($hours, $week_hours);
@@ -135,14 +146,16 @@ function compute_work_hours($start_time, $end_time, $week_hours) {
     return array($hours, $overtime);
 }
 
-function compute_hours($start_time, $end_time) {
+function compute_hours($start_time, $end_time)
+{
     // Compute number of hours between start and end time.
     $start_time -= $start_time % 60; // round down to full minute
     $end_time -= $end_time % 60; // round down to full minute
     return (($end_time - $start_time) / 60) / 60;
 }
 
-function compute_overtime_hours($hours, $week_hours) {
+function compute_overtime_hours($hours, $week_hours)
+{
     // Compute the amount of overtime for $hours. The $week_hours is the current
     // sum of hours worked in the week (before including $hours in its total).
     global $overtime_week_limit;
@@ -155,7 +168,8 @@ function compute_overtime_hours($hours, $week_hours) {
     return 0;
 }
 
-function compute_day_hours($date, $start_time, $end_time) {
+function compute_day_hours($date, $start_time, $end_time)
+{
     // Compute number of hours that fall within the given date.
     global $one_day;
     $start_date = date('Ymd', $start_time);
@@ -177,14 +191,16 @@ function compute_day_hours($date, $start_time, $end_time) {
     return 0;
 }
 
-function hrs_min($hours) {
+function hrs_min($hours)
+{
     // Return string of hours:minutes from given decimal hours.
     // Round minutes slightly to accommodate numbers like 25.99999998
     return sprintf("%02d:%02d", floor($hours), floor((($hours - floor($hours)) * 60) + .1));
 }
 
 ////////////////////////////////////////
-function work_week_begin($local_timestamp = null) {
+function work_week_begin($local_timestamp = null)
+{
     // Return local timestamp of the beginning of the work week.
     global $begin_week_day, $one_day;
     if ($local_timestamp == null) {
@@ -201,7 +217,8 @@ function work_week_begin($local_timestamp = null) {
 }
 
 ////////////////////////////////////////
-function utm_timestamp($local_timestamp = null) {
+function utm_timestamp($local_timestamp = null)
+{
     // UTM timestamp for time, default is current local time.
     if ($local_timestamp == null) {
         return time() - server_timezone_offset();
@@ -210,7 +227,8 @@ function utm_timestamp($local_timestamp = null) {
     return $local_timestamp - timezone_offset();
 }
 
-function local_timestamp($utm_timestamp = null) {
+function local_timestamp($utm_timestamp = null)
+{
     // Local timestamp for time, default is current time.
     if ($utm_timestamp == null) {
         $utm_timestamp = time() - server_timezone_offset();
@@ -219,7 +237,8 @@ function local_timestamp($utm_timestamp = null) {
     return $utm_timestamp + timezone_offset();
 }
 
-function day_timestamp($local_timestamp = null) {
+function day_timestamp($local_timestamp = null)
+{
     // Local timestamp for the beginning of the day, default is current local time.
     if ($local_timestamp == null) {
         $local_timestamp = time() - server_timezone_offset() + timezone_offset();
@@ -231,7 +250,8 @@ function day_timestamp($local_timestamp = null) {
     return mktime(0, 0, 0, $month, $day, $year);
 }
 
-function make_timestamp($date_str) {
+function make_timestamp($date_str)
+{
     // Make local timestamp from date string of mm/dd/yyyy or dd/mm/yyyy.
     global $calendar_style;
     $arr = preg_split('/\W/', $date_str);
@@ -240,7 +260,8 @@ function make_timestamp($date_str) {
     return $ts;
 }
 
-function server_timezone_offset() {
+function server_timezone_offset()
+{
     // Get time zone offset of this server.
     global $use_server_tz;
 
@@ -253,7 +274,8 @@ function server_timezone_offset() {
     return $tzo;
 }
 
-function timezone_offset() {
+function timezone_offset()
+{
     // Get time zone offset (from timeclock header.php)
     global $use_client_tz, $use_server_tz;
 
@@ -273,7 +295,8 @@ function timezone_offset() {
 }
 
 ////////////////////////////////////////
-function exit_next($url) {
+function exit_next($url)
+{
     // Go to next page
     header("Location: $url");
     exit;
@@ -286,7 +309,8 @@ End_Of_HTML;
 }
 
 ////////////////////////////////////////
-function session_stop() {
+function session_stop()
+{
     // Counterpart to php session_start(). Adapted from php.net.
     if (isset($_COOKIE[session_name()])) {
         setcookie(session_name(), '', time() - 42000, '/');
@@ -297,7 +321,8 @@ function session_stop() {
 }
 
 ////////////////////////////////////////
-function bool($str = null) {
+function bool($str = null)
+{
     // true/false or yes/no
     if ($str && preg_match('/^\s*(no|false|0+)\s*$/i', $str)) {
         return false;
@@ -310,12 +335,14 @@ function bool($str = null) {
 }
 
 ////////////////////////////////////////
-function turn_off_magic_quotes() {
+function turn_off_magic_quotes()
+{
     // No-op: "magic quotes" was removed from PHP itself in PHP 5.4.
 }
 
 ////////////////////////////////////////
-function msg($msg) {
+function msg($msg)
+{
     return <<< EOF
 <div class="message">
 $msg
@@ -324,12 +351,11 @@ EOF;
 }
 
 ////////////////////////////////////////
-function error_msg($msg) {
+function error_msg($msg)
+{
     return <<< EOF
 <div class="error">
 $msg
 </div>
 EOF;
 }
-
-?>

@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 include '../config.inc.php';
@@ -11,23 +12,12 @@ $request = $_SERVER['REQUEST_METHOD'];
 
 const MSG_SOMETHING_FISHY = "Something is fishy here.\n";
 
-if (!isset($_SESSION['valid_user'])) {
-
-    echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
-    echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Administration</td></tr>\n";
-    echo "  <tr class=right_main_text>\n";
-    echo "    <td align=center valign=top scope=row>\n";
-    echo "      <table width=200 border=0 cellpadding=5 cellspacing=0>\n";
-    echo "        <tr class=right_main_text><td align=center>You are not presently logged in, or do not have permission to view this page.</td></tr>\n";
-    echo "        <tr class=right_main_text><td align=center>Click <a class=admin_headings href='../login.php'><u>here</u></a> to login.</td></tr>\n";
-    echo "      </table><br /></td></tr></table>\n";
-    exit;
-}
+require_once '../lib/auth.php';
+require_valid_user();
+require_once '../lib/csrf.php';
 
 if ($request == 'GET') {
-
     if (!isset($_GET['username'])) {
-
         echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
         echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Error!</td></tr>\n";
         echo "  <tr class=right_main_text>\n";
@@ -40,8 +30,8 @@ if ($request == 'GET') {
         exit;
     }
 
-    $get_user = $_GET['username'];
-    @$get_office = $_GET['officename'];
+    $get_user = htmlentities($_GET['username']);
+    @$get_office = htmlentities($_GET['officename'] ?? '');
 
     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
     echo "  <tr valign=top>\n";
@@ -96,7 +86,6 @@ if ($request == 'GET') {
     $result = tc_select("*", "employees", "empfullname = ? ORDER BY empfullname", $get_user);
 
     while ($row = mysqli_fetch_array($result)) {
-
         $username = "" . $row['empfullname'] . "";
         $displayname = "" . $row['displayname'] . "";
         $user_email = "" . $row['email'] . "";
@@ -129,6 +118,7 @@ if ($request == 'GET') {
     echo "            <br />\n";
     echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
     echo "            <form name='form' action='$self' method='post'>\n";
+    echo csrf_field() . "\n";
     echo "              <tr>\n";
     echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/user_delete.png' />&nbsp;&nbsp;&nbsp;Delete
                     User</th></tr>\n";
@@ -189,6 +179,7 @@ if ($request == 'GET') {
     include '../footer.php';
     exit;
 } elseif ($request == 'POST') {
+    require_csrf_token();
 
     $post_username = $_POST['post_username'];
     $display_name = $_POST['display_name'];
@@ -203,35 +194,40 @@ if ($request == 'GET') {
 
     // begin post validation //
 
-    if (!empty($post_username)
+    if (
+        !empty($post_username)
          and is_null(tc_select_value("empfullname", "employees", "empfullname = ?", $post_username))
     ) {
         echo MSG_SOMETHING_FISHY;
         exit;
     }
 
-    if (!empty($display_name)
+    if (
+        !empty($display_name)
          and is_null(tc_select_value("displayname", "employees", "empfullname = ? AND displayname = ?", array($post_username, $display_name)))
     ) {
         echo MSG_SOMETHING_FISHY;
         exit;
     }
 
-    if (!empty($email_addy)
+    if (
+        !empty($email_addy)
          and is_null(tc_select_value("email", "employees", "empfullname = ? AND email = ?", array($post_username, $email_addy)))
     ) {
         echo MSG_SOMETHING_FISHY;
         exit;
     }
 
-    if (!empty($office_name)
+    if (
+        !empty($office_name)
          and is_null(tc_select_value("office", "employees", "empfullname = ? AND office = ?", array($post_username, $office_name)))
     ) {
         echo MSG_SOMETHING_FISHY;
         exit;
     }
 
-    if (!empty($group_name)
+    if (
+        !empty($group_name)
          and is_null(tc_select_value("groups", "employees", "empfullname = ? AND groups = ?", array($post_username, $group_name)))
     ) {
         echo MSG_SOMETHING_FISHY;
@@ -262,6 +258,12 @@ if ($request == 'GET') {
     if ($delete_data == "1") {
         tc_delete("info", "fullname = ?", $post_username);
     }
+
+    $post_username = htmlentities($post_username);
+    $display_name = htmlentities($display_name);
+    $email_addy = htmlentities($email_addy);
+    $office_name = htmlentities($office_name);
+    $group_name = htmlentities($group_name);
 
     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
     echo "  <tr valign=top>\n";
@@ -366,4 +368,3 @@ if ($request == 'GET') {
     include '../footer.php';
     exit;
 }
-?>

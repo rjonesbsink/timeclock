@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 $self = $_SERVER['PHP_SELF'];
@@ -18,18 +19,9 @@ $filename = CONFIG_INC_PHP;
 $row_count = '0';
 $row_color = ($row_count % 2) ? $color2 : $color1;
 
-if (!isset($_SESSION['valid_user'])) {
-
-    echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
-    echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Administration</td></tr>\n";
-    echo "  <tr class=right_main_text>\n";
-    echo "    <td align=center valign=top scope=row>\n";
-    echo "      <table width=200 border=0 cellpadding=5 cellspacing=0>\n";
-    echo "        <tr class=right_main_text><td align=center>You are not presently logged in, or do not have permission to view this page.</td></tr>\n";
-    echo "        <tr class=right_main_text><td align=center>Click <a class=admin_headings href='../login.php'><u>here</u></a> to login.</td></tr>\n";
-    echo "      </table><br /></td></tr></table>\n";
-    exit;
-}
+require_once '../lib/auth.php';
+require_valid_user();
+require_once '../lib/csrf.php';
 
 if (!file_exists($filename)) {
     echo "            <table align=center width=100% border=0 cellpadding=0 cellspacing=0>\n";
@@ -62,11 +54,11 @@ if (!is_readable($filename)) {
 }
 
 if ($request == 'GET') {
-
     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
     echo "  <tr valign=top>\n";
     echo "    <td class=left_main width=180 align=left scope=col>\n";
     echo "      <form name='form' action='$self' method='post'>\n";
+    echo csrf_field() . "\n";
     echo "      <table class=hide width=100% border=0 cellpadding=1 cellspacing=0>\n";
     echo "        <tr><td class=left_rows height=11></td></tr>\n";
     echo "        <tr><td class=left_rows_headings height=18 valign=middle>Users</td></tr>\n";
@@ -141,9 +133,7 @@ if ($request == 'GET') {
             echo "            </table></td></tr>\n";
             include_once FOOTER_PHP;
             exit;
-
         } else {
-
             echo "            <table width=100% border=0 cellpadding=0 cellspacing=0>\n";
             echo "              <tr><td height=25 class=table_rows_red>The PHP Timeclock config file, config.inc.php, <b><i>is not writable</i></b> by your webserver
                       user!</td></tr>\n";
@@ -156,11 +146,11 @@ if ($request == 'GET') {
     }
 
     // begin double-checking of some of the settings in config.inc.php //
-    
-    if (!in_array(@$weather_units, array('c','f'))){
-    	$weather_units = 'c';
-    }        
-    
+
+    if (!in_array(@$weather_units, array('c','f'))) {
+        $weather_units = 'c';
+    }
+
     if ($refresh != "none") {
         $tmp_refresh = intval($refresh);
         if (!empty($tmp_refresh)) {
@@ -297,7 +287,8 @@ if ($request == 'GET') {
                       <td class=table_rows_red height=25>One of the <b>allowed_networks</b> is longer than the allowed 21 characters.</td></tr>\n";
             echo "            </table>\n";
             echo "            <br />\n";
-        } elseif ((!preg_match('/' . "^([0-9]?[0-9])+:+([0-9]+[0-9])+([a|p]+m)$" . '/i', $report_start_time, $start_time_regs)) &&
+        } elseif (
+            (!preg_match('/' . "^([0-9]?[0-9])+:+([0-9]+[0-9])+([a|p]+m)$" . '/i', $report_start_time, $start_time_regs)) &&
                   (!preg_match('/' . "^([0-9]?[0-9])+:+([0-9]+[0-9])+( [a|p]+m)$" . '/i', $report_start_time, $start_time_regs)) &&
                   (!preg_match('/' . "^([0-9]?[0-9])+:+([0-9]+[0-9])$" . '/i', $report_start_time, $start_time_regs))
         ) {
@@ -306,7 +297,8 @@ if ($request == 'GET') {
                         <td class=table_rows_red height=25><b>report_start_time</b> is not a valid time.</td></tr>\n";
             echo "            </table>\n";
             echo "            <br />\n";
-        } elseif ((!preg_match('/' . "^([0-9]?[0-9])+:+([0-9]+[0-9])+([a|p]+m)$" . '/i', $report_end_time, $end_time_regs)) &&
+        } elseif (
+            (!preg_match('/' . "^([0-9]?[0-9])+:+([0-9]+[0-9])+([a|p]+m)$" . '/i', $report_end_time, $end_time_regs)) &&
                   (!preg_match('/' . "^([0-9]?[0-9])+:+([0-9]+[0-9])+( [a|p]+m)$" . '/i', $report_end_time, $end_time_regs)) &&
                   (!preg_match('/' . "^([0-9]?[0-9])+:+([0-9]+[0-9])$" . '/i', $report_end_time, $end_time_regs))
         ) {
@@ -597,7 +589,8 @@ if ($request == 'GET') {
                       <input type=\"radio\" name=\"tmp_datefmt\" value=\"11\" />&nbsp;m/d/yy</td><td nowrap bgcolor='$row_color' class=table_rows width=80% 
                       align=left valign=top><input type=\"radio\" name=\"tmp_datefmt\" value=\"12\" />&nbsp;m-d-yy</td></tr>";
     }
-    if (($tmp_datefmt != "d.m.yyyy") && ($tmp_datefmt != "d/m/yyyy") && ($tmp_datefmt != "d-m-yyyy") && ($tmp_datefmt != "d.m.yy") &&
+    if (
+        ($tmp_datefmt != "d.m.yyyy") && ($tmp_datefmt != "d/m/yyyy") && ($tmp_datefmt != "d-m-yyyy") && ($tmp_datefmt != "d.m.yy") &&
         ($tmp_datefmt != "d/m/yy") && ($tmp_datefmt != "d-m-yy") && ($tmp_datefmt != "m.d.yyyy") && ($tmp_datefmt != "m/d/yyyy") &&
         ($tmp_datefmt != "m-d-yyyy") && ($tmp_datefmt != "m.d.yy") && ($tmp_datefmt != "m/d/yy") && ($tmp_datefmt != "m-d-yy")
     ) {
@@ -665,7 +658,8 @@ if ($request == 'GET') {
         echo "              <tr><td colspan=3 bgcolor='$row_color' class=table_rows width=10% align=left valign=top><input type=\"radio\" name=\"timefmt\"
                       value=\"6\" />12 hour format with lowercase am/pm indicator, no space between the minutes and meridiems</td></tr>\n";
     }
-    if (($timefmt != "G:i") && ($timefmt != "H:i") && ($timefmt != "g:i A") && ($timefmt != "g:i a") && ($timefmt != "g:iA") &&
+    if (
+        ($timefmt != "G:i") && ($timefmt != "H:i") && ($timefmt != "g:i A") && ($timefmt != "g:i a") && ($timefmt != "g:iA") &&
         ($timefmt != "g:ia")
     ) {
         echo "              <tr><td colspan=3 valign=bottom height=30 bgcolor='$row_color' class=table_rows_red width=10% align=left valign=top><b>A valid Time
@@ -968,7 +962,6 @@ if ($request == 'GET') {
     $row_color = ($row_count % 2) ? $color2 : $color1;
     echo "              <tr><td bgcolor='$row_color' class=table_rows width=10% align=left style='padding-left:4px;' valign=top>display_group:</td>\n";
     if (($display_office == "all") || ($display_office == "All")) {
-
         echo "                     <td bgcolor='$row_color' class=table_rows width=10% align=left valign=top>
                              <select name='group_name'>
                           <option value = 'all'>all</option>\n";
@@ -1049,12 +1042,12 @@ if ($request == 'GET') {
                  </td></tr>\n";
     $row_count++;
     $row_color = ($row_count % 2) ? $color2 : $color1;
-    echo "              <tr><td bgcolor='$row_color' class=table_rows width=10% align=left style='padding-left:4px;' valign=top>weather_units:</td>\n";    
+    echo "              <tr><td bgcolor='$row_color' class=table_rows width=10% align=left style='padding-left:4px;' valign=top>weather_units:</td>\n";
     echo "                  <td bgcolor='$row_color' class=table_rows width=10% align=left valign=top>";
-    echo	"							<select name=\"weather_units\">\n";
+    echo    "							<select name=\"weather_units\">\n";
     echo "						 		<option value=\"c\" " . ($weather_units == "c" ? "selected" : "") . ">Celsius</option>\n";
-    echo "						 		<option value=\"f\" " . ($weather_units == "f" ? "selected" : "") . ">Fahrenheit</option>\n";    
-    echo "							</select>";    
+    echo "						 		<option value=\"f\" " . ($weather_units == "f" ? "selected" : "") . ">Fahrenheit</option>\n";
+    echo "							</select>";
     echo "                  <td bgcolor='$row_color' class=table_rows width=80% align=left style='padding-left:10px;' valign=top>Display weather in US or metric measurements.
     Options are Fahrenheit or Celsius. Default is Celsius\".
              		</td></tr>\n";
@@ -1208,8 +1201,8 @@ if ($request == 'GET') {
                       border='0'></td></tr></table></form></td></tr>\n";
     include_once FOOTER_PHP;
     exit;
-
 } elseif ($request == 'POST') {
+    require_csrf_token();
 
     include_once 'header_post_sysedit.php';
     include_once 'topmain.php';
@@ -1258,6 +1251,7 @@ if ($request == 'GET') {
     echo "        <tr class=right_main_text>\n";
     echo "          <td valign=top>\n";
     echo "            <form name='form' action='$self' method='post'>\n";
+    echo csrf_field() . "\n";
 
     $post_db_hostname = $_POST['db_hostname'];
     $post_db_name = $_POST['db_name'];
@@ -1277,8 +1271,8 @@ if ($request == 'GET') {
     $post_group_name = $_POST['group_name'];
     $post_display_current_users = $_POST['display_current_users'];
     $post_display_weather = $_POST['display_weather'];
-    $post_weather_units = $_POST['weather_units'];    
-    
+    $post_weather_units = $_POST['weather_units'];
+
     $post_show_display_name = $_POST['show_display_name'];
     $post_display_office_name = $_POST['display_office_name'];
     $post_display_group_name = $_POST['display_group_name'];
@@ -1417,7 +1411,8 @@ if ($request == 'GET') {
                   <td class=table_rows_red height=25><b>export_csv</b> does not equal \"yes\" or \"no\".</td></tr>\n";
         echo "            </table>\n";
         $evil_post = "1";
-    } elseif (($post_tmp_datefmt != '1') && ($post_tmp_datefmt != '2') && ($post_tmp_datefmt != '3') && ($post_tmp_datefmt != '4') &&
+    } elseif (
+        ($post_tmp_datefmt != '1') && ($post_tmp_datefmt != '2') && ($post_tmp_datefmt != '3') && ($post_tmp_datefmt != '4') &&
               ($post_tmp_datefmt != '5') && ($post_tmp_datefmt != '6') && ($post_tmp_datefmt != '7') && ($post_tmp_datefmt != '8') && ($post_tmp_datefmt != '9') &&
               ($post_tmp_datefmt != '10') && ($post_tmp_datefmt != '11') && ($post_tmp_datefmt != '12')
     ) {
@@ -1426,7 +1421,8 @@ if ($request == 'GET') {
                   <td class=table_rows_red height=25><b>Date Format</b> is not a valid date format.</td></tr>\n";
         echo "            </table>\n";
         $evil_post = "1";
-    } elseif (($post_timefmt != '1') && ($post_timefmt != '2') && ($post_timefmt != '3') && ($post_timefmt != '4') &&
+    } elseif (
+        ($post_timefmt != '1') && ($post_timefmt != '2') && ($post_timefmt != '3') && ($post_timefmt != '4') &&
               ($post_timefmt != '5') && ($post_timefmt != '6')
     ) {
         echo "            <table align=center class=table_border width=100% border=0 cellpadding=0 cellspacing=3>\n";
@@ -1434,7 +1430,8 @@ if ($request == 'GET') {
                   <td class=table_rows_red height=25><b>Time Format</b> is not a valid time format.</td></tr>\n";
         echo "            </table>\n";
         $evil_post = "1";
-    } elseif ((!empty($post_round_time)) && ($post_round_time != '1') && ($post_round_time != '2') && ($post_round_time != '3') && ($post_round_time != '4')
+    } elseif (
+        (!empty($post_round_time)) && ($post_round_time != '1') && ($post_round_time != '2') && ($post_round_time != '3') && ($post_round_time != '4')
               && ($post_round_time != '5')
     ) {
         echo "            <table align=center class=table_border width=100% border=0 cellpadding=0 cellspacing=3>\n";
@@ -1520,7 +1517,7 @@ if ($request == 'GET') {
                   <td class=table_rows_red height=25><b>display_weather</b> does not equal \"yes\" or \"no\".</td></tr>\n";
         echo "            </table>\n";
         $evil_post = "1";
-    } elseif (!in_array($post_weather_units, array('c','f'))){
+    } elseif (!in_array($post_weather_units, array('c','f'))) {
         echo "            <table align=center class=table_border width=100% border=0 cellpadding=0 cellspacing=3>\n";
         echo "              <tr><td width=20 align=center height=25 class=table_rows><img src='../images/icons/cancel.png' /></td>
                   <td class=table_rows_red height=25><b>weather_units</b> does not equal \"Celsius\" or \"Fahrenheit\".</td></tr>\n";
@@ -1596,21 +1593,23 @@ if ($request == 'GET') {
             if ((strlen($post_allowed_networks[$x]) > 21)) {
                 $evil_allowed_networks_length = "1";
                 $evil_post = "1";
-            } elseif ((!preg_match('/' . "^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$" . '/i', $post_allowed_networks[$x], $net_regs)) &&
+            } elseif (
+                (!preg_match('/' . "^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$" . '/i', $post_allowed_networks[$x], $net_regs)) &&
                       (!preg_match('/' . "^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\/([0-9]?[0-9]?[0-9])$" . '/i', $post_allowed_networks[$x], $net_regs)) &&
                       (!preg_match('/' . "^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.\[([0-9]?[0-9]?[0-9])\-([0-9]?[0-9]?[0-9])\]$" . '/i', $post_allowed_networks[$x], $net_regs)) &&
                       (!empty($post_allowed_networks[$x]))
             ) {
                 $evil_allowed_networks = "1";
                 $evil_post = "1";
-            } elseif ((preg_match('/' . "^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$" . '/i', $post_allowed_networks[$x], $net_regs)) ||
+            } elseif (
+                (preg_match('/' . "^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$" . '/i', $post_allowed_networks[$x], $net_regs)) ||
                       (preg_match('/' . "^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\/([0-9]?[0-9]?[0-9])$" . '/i', $post_allowed_networks[$x], $net_regs)) ||
                       (preg_match('/' . "^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.\[([0-9]?[0-9]?[0-9])\-([0-9]?[0-9]?[0-9])\]$" . '/i', $post_allowed_networks[$x], $net_regs)) ||
                       (!empty($post_allowed_networks[$x]))
             ) {
-
                 if (strstr($post_allowed_networks[$x], '/')) {
-                    if ((($net_regs[1] < '0') || ($net_regs[1] > '255')) || (($net_regs[2] < '0') || ($net_regs[2] > '255')) || (($net_regs[3] < '0') ||
+                    if (
+                        (($net_regs[1] < '0') || ($net_regs[1] > '255')) || (($net_regs[2] < '0') || ($net_regs[2] > '255')) || (($net_regs[3] < '0') ||
                                                                                                                                  ($net_regs[3] > '255')) || (($net_regs[4] < '0') || ($net_regs[4] > '255')) || ((isset($net_regs[5])) && (($net_regs[5] < '0') ||
                                                                                                                                                                                                                                            ($net_regs[5] > '32')))
                     ) {
@@ -1618,7 +1617,8 @@ if ($request == 'GET') {
                         $evil_post = "1";
                     }
                 } else {
-                    if ((($net_regs[1] < '0') || ($net_regs[1] > '255')) || (($net_regs[2] < '0') || ($net_regs[2] > '255')) || (($net_regs[3] < '0') ||
+                    if (
+                        (($net_regs[1] < '0') || ($net_regs[1] > '255')) || (($net_regs[2] < '0') || ($net_regs[2] > '255')) || (($net_regs[3] < '0') ||
                                                                                                                                  ($net_regs[3] > '255')) || (($net_regs[4] < '0') || ($net_regs[4] > '255')) || ((isset($net_regs[5])) && (($net_regs[5] < '0') ||
                                                                                                                                                                                                                                            ($net_regs[5] > '255')))
                     ) {
@@ -1648,7 +1648,8 @@ if ($request == 'GET') {
             echo "              <tr><td width=20 align=center height=25 class=table_rows><img src='../images/icons/cancel.png' /></td>
                       <td height=25 class=table_rows_red>one of the <b>allowed_networks</b> is more than the allowed 21 characters.</td></tr>\n";
             echo "            </table>\n";
-        } elseif ((!preg_match('/' . "^([0-9]?[0-9])+:+([0-9]+[0-9])+([a|p]+m)$" . '/i', $post_report_start_time, $start_time_regs)) &&
+        } elseif (
+            (!preg_match('/' . "^([0-9]?[0-9])+:+([0-9]+[0-9])+([a|p]+m)$" . '/i', $post_report_start_time, $start_time_regs)) &&
                   (!preg_match('/' . "^([0-9]?[0-9])+:+([0-9]+[0-9])+( [a|p]+m)$" . '/i', $post_report_start_time, $start_time_regs)) &&
                   (!preg_match('/' . "^([0-9]?[0-9])+:+([0-9]+[0-9])$" . '/i', $post_report_start_time, $start_time_regs))
         ) {
@@ -1658,7 +1659,8 @@ if ($request == 'GET') {
             echo "            </table>\n";
             echo "            <br />\n";
             $evil_post = "1";
-        } elseif ((!preg_match('/' . "^([0-9]?[0-9])+:+([0-9]+[0-9])+([a|p]+m)$" . '/i', $post_report_end_time, $end_time_regs)) &&
+        } elseif (
+            (!preg_match('/' . "^([0-9]?[0-9])+:+([0-9]+[0-9])+([a|p]+m)$" . '/i', $post_report_end_time, $end_time_regs)) &&
                   (!preg_match('/' . "^([0-9]?[0-9])+:+([0-9]+[0-9])+( [a|p]+m)$" . '/i', $post_report_end_time, $end_time_regs)) &&
                   (!preg_match('/' . "^([0-9]?[0-9])+:+([0-9]+[0-9])$" . '/i', $post_report_end_time, $end_time_regs))
         ) {
@@ -1694,7 +1696,6 @@ if ($request == 'GET') {
     // end post validation //
 
     if (isset($evil_post)) {
-
         echo "            <br />\n";
         echo "            <table width=100% border=0 cellpadding=0 cellspacing=0>\n";
         echo "              <tr><th colspan=3 class=table_heading_no_color nowrap align=left>Edit System Settings</th></tr>\n";
@@ -1951,7 +1952,8 @@ if ($request == 'GET') {
                       <input type=\"radio\" name=\"tmp_datefmt\" value=\"11\" />&nbsp;m/d/yy</td><td nowrap bgcolor='$row_color' class=table_rows width=80% 
                       align=left valign=top><input type=\"radio\" name=\"tmp_datefmt\" value=\"12\" />&nbsp;m-d-yy</td></tr>";
         }
-        if (($post_tmp_datefmt != "1") && ($post_tmp_datefmt != "2") && ($post_tmp_datefmt != "3") && ($post_tmp_datefmt != "4") &&
+        if (
+            ($post_tmp_datefmt != "1") && ($post_tmp_datefmt != "2") && ($post_tmp_datefmt != "3") && ($post_tmp_datefmt != "4") &&
             ($post_tmp_datefmt != "5") && ($post_tmp_datefmt != "6") && ($post_tmp_datefmt != "7") && ($post_tmp_datefmt != "8") &&
             ($post_tmp_datefmt != "9") && ($post_tmp_datefmt != "10") && ($post_tmp_datefmt != "11") && ($post_tmp_datefmt != "12")
         ) {
@@ -2019,7 +2021,8 @@ if ($request == 'GET') {
             echo "              <tr><td colspan=3 bgcolor='$row_color' class=table_rows width=10% align=left valign=top><input type=\"radio\" name=\"timefmt\"
                       value=\"6\" />12 hour format with lowercase am/pm indicator, no space between the minutes and meridiems</td></tr>\n";
         }
-        if (($post_timefmt != "1") && ($post_timefmt != "2") && ($post_timefmt != "3") && ($post_timefmt != "4") && ($post_timefmt != "5") &&
+        if (
+            ($post_timefmt != "1") && ($post_timefmt != "2") && ($post_timefmt != "3") && ($post_timefmt != "4") && ($post_timefmt != "5") &&
             ($post_timefmt != "6")
         ) {
             echo "              <tr><td colspan=3 valign=bottom height=30 bgcolor='$row_color' class=table_rows_red width=10% align=left valign=top><b>A valid Time
@@ -2088,7 +2091,8 @@ if ($request == 'GET') {
         }
         $row_count++;
         $row_color = ($row_count % 2) ? $color2 : $color1;
-        if ((!empty($post_round_time)) && ($post_round_time != '1') && ($post_round_time != '2') && ($post_round_time != '3') && ($post_round_time != '4') &&
+        if (
+            (!empty($post_round_time)) && ($post_round_time != '1') && ($post_round_time != '2') && ($post_round_time != '3') && ($post_round_time != '4') &&
             ($post_round_time != '5')
         ) {
             echo "              <tr><td colspan=3 valign=bottom height=30 bgcolor='$row_color' class=table_rows_red width=10% align=left valign=top
@@ -2396,15 +2400,15 @@ if ($request == 'GET') {
         echo "                  <td bgcolor='$row_color' class=table_rows width=80% align=left style='padding-left:10px;' valign=top>To display local weather
                       info on the left side of the application just below the submit button, set this to \"yes\". Default is \"<b>no</b>\".
                  </td></tr>\n";
-    	  $row_count++;
-    	  $row_color = ($row_count % 2) ? $color2 : $color1;
-   	  echo "              <tr><td bgcolor='$row_color' class=table_rows width=10% align=left style='padding-left:4px;' valign=top>weather_units:</td>\n";    
-   	  echo "                  <td bgcolor='$row_color' class=table_rows width=10% align=left valign=top>";
-    	  echo	"							<select name=\"weather_units\">\n";
-   	  echo "						 		<option value=\"c\" " . ($weather_units == "c" ? "selected" : "") . ">Celsius</option>\n";
-    	  echo "						 		<option value=\"f\" " . ($weather_units == "f" ? "selected" : "") . ">Fahrenheit</option>\n";    
-    	  echo "							</select>";    
-   	  echo "                  <td bgcolor='$row_color' class=table_rows width=80% align=left style='padding-left:10px;' valign=top>Display weather in US or metric measurements.
+          $row_count++;
+          $row_color = ($row_count % 2) ? $color2 : $color1;
+        echo "              <tr><td bgcolor='$row_color' class=table_rows width=10% align=left style='padding-left:4px;' valign=top>weather_units:</td>\n";
+        echo "                  <td bgcolor='$row_color' class=table_rows width=10% align=left valign=top>";
+          echo  "							<select name=\"weather_units\">\n";
+        echo "						 		<option value=\"c\" " . ($weather_units == "c" ? "selected" : "") . ">Celsius</option>\n";
+          echo "						 		<option value=\"f\" " . ($weather_units == "f" ? "selected" : "") . ">Fahrenheit</option>\n";
+          echo "							</select>";
+        echo "                  <td bgcolor='$row_color' class=table_rows width=80% align=left style='padding-left:10px;' valign=top>Display weather in US or metric measurements.
     Options are Fahrenheit or Celsius. Default is Celsius\".
              		</td></tr>\n";
         $row_count++;
@@ -2547,9 +2551,7 @@ if ($request == 'GET') {
                       border='0'></td></tr></table></form></td></tr>\n";
         include_once FOOTER_PHP;
         exit;
-
     } else {
-
         if (!empty($post_use_passwd)) {
             $post_use_passwd = "yes";
         } else {
@@ -3200,4 +3202,3 @@ $dbversion = "' . $post_dbversion . '";
         exit;
     }
 }
-?>

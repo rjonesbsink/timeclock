@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Setup timeclock database and authorizations.
  *
@@ -7,9 +8,8 @@
  * to return to the browser so it can set its local timezone).
  */
 
-if (!isset($_SESSION['application'])) {
-    die("Invalid invocation.");
-}
+require_once '../lib/auth.php';
+require_application_context();
 
 require_once "$TIMECLOCK_PATH/functions.php";
 
@@ -74,4 +74,3 @@ if ($use_client_tz == "yes") {
 } else {
     $tzo = "1";
 }
-?>

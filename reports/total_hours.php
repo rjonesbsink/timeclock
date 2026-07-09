@@ -9,41 +9,29 @@ $current_page = "total_hours.php";
 const ADMIN_TOPMAIN_PHP = '../admin/topmain.php';
 
 include_once '../config.inc.php';
+require_once '../lib/auth.php';
 
 if (!isset($tzo)) {
     settype($tzo, "integer");
     if (isset($_COOKIE['tzoffset'])) {
         $tzo = $_COOKIE['tzoffset'];
         $tzo = $tzo * 60;
-     } else {
-         $tzo = 0;
-     }
+    } else {
+        $tzo = 0;
+    }
 }
 
-if ($use_reports_password == "yes") {
-
-    if (!isset($_SESSION['valid_reports_user'])) {
-
-        include_once '../admin/header.php';
-        include_once ADMIN_TOPMAIN_PHP;
-        echo "<title>$title</title>\n";
-
-        echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
-        echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Reports</td></tr>\n";
-        echo "  <tr class=right_main_text>\n";
-        echo "    <td align=center valign=top scope=row>\n";
-        echo "      <table width=200 border=0 cellpadding=5 cellspacing=0>\n";
-        echo "        <tr class=right_main_text><td align=center>You are not presently logged in, or do not have permission to view this page.</td></tr>\n";
-        echo "        <tr class=right_main_text><td align=center>Click <a class=admin_headings href='../login_reports.php'><u>here</u></a> to login.</td></tr>\n";
-        echo "      </table><br /></td></tr></table>\n";
-        exit;
-    }
+if (reports_login_required()) {
+    include_once '../admin/header.php';
+    include_once ADMIN_TOPMAIN_PHP;
+    echo "<title>$title</title>\n";
+    print_login_required_message('../login_reports.php', true);
+    exit;
 }
 
 echo "<title>$title - Hours Worked Report</title>\n";
 
 if ($request == 'GET') {
-
     include_once 'header_get_reports.php';
 
     if ($use_reports_password == "yes") {
@@ -68,7 +56,6 @@ if ($request == 'GET') {
     echo "              <input type='hidden' name='date_format' value='$js_datefmt'>\n";
 
     if ($username_dropdown_only == "yes") {
-
         $query = "select empfullname from " . $db_prefix . "employees order by empfullname asc";
         $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
 
@@ -229,9 +216,7 @@ if ($request == 'GET') {
                       border='0'></td></tr></table></form></td></tr>\n";
     include_once '../footer.php';
     exit;
-
 } else {
-
     include_once 'header_post_reports.php';
 
     @$office_name = $_POST['office_name'];
@@ -284,7 +269,8 @@ if ($request == 'GET') {
         }
     }
 
-    if ((!empty($tmp_round_time)) && ($tmp_round_time != '1') && ($tmp_round_time != '2') && ($tmp_round_time != '3') && ($tmp_round_time != '4') &&
+    if (
+        (!empty($tmp_round_time)) && ($tmp_round_time != '1') && ($tmp_round_time != '2') && ($tmp_round_time != '3') && ($tmp_round_time != '4') &&
         ($tmp_round_time != '5')
     ) {
         $evil_post = '1';
@@ -420,9 +406,7 @@ if ($request == 'GET') {
             echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
                     A valid From Date is required.</td></tr>\n";
             echo "            </table>\n";
-
         } else {
-
             if ($calendar_style == "amer") {
                 if (isset($date_regs)) {
                     $from_month = $date_regs[1];
@@ -514,9 +498,7 @@ if ($request == 'GET') {
             echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
                     A valid To Date is required.</td></tr>\n";
             echo "            </table>\n";
-
         } else {
-
             if ($calendar_style == "amer") {
                 if (isset($date_regs)) {
                     $to_month = $date_regs[1];
@@ -581,7 +563,6 @@ if ($request == 'GET') {
         echo "              <tr><td height=15></td></tr>\n";
         echo "              <input type='hidden' name='date_format' value='$js_datefmt'>\n";
         if ($username_dropdown_only == "yes") {
-
             $query = "select empfullname from " . $db_prefix . "employees order by empfullname asc";
             $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
 
@@ -598,7 +579,6 @@ if ($request == 'GET') {
             echo "                  </select>&nbsp;*</td></tr>\n";
             ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
         } else {
-
             echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Choose Office:</td><td colspan=2 width=80%
                       style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
                       <select name='office_name' onchange='group_names();'>\n";
@@ -616,12 +596,12 @@ if ($request == 'GET') {
         }
         echo "              <tr><td class=table_rows style='padding-left:32px;' width=20% nowrap>From Date: ($tmp_datefmt)</td><td
                       style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;' width=80% >
-                      <input type='text' size='10' maxlength='10' name='from_date' value='$from_date' style='color:#27408b'>&nbsp;*&nbsp;&nbsp;
+                      <input type='text' size='10' maxlength='10' name='from_date' value='" . htmlentities($from_date) . "' style='color:#27408b'>&nbsp;*&nbsp;&nbsp;
                       <a href=\"#\" onclick=\"form.from_date.value='';cal.select(document.forms['form'].from_date,'from_date_anchor','$js_datefmt');
                       return false;\" name=\"from_date_anchor\" id=\"from_date_anchor\" style='font-size:11px;color:#27408b;'>Pick Date</a></td><tr>\n";
         echo "              <tr><td class=table_rows style='padding-left:32px;' width=20% nowrap>To Date: ($tmp_datefmt)</td><td
                       style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;' width=80% >
-                      <input type='text' size='10' maxlength='10' name='to_date' value='$to_date' style='color:#27408b'>&nbsp;*&nbsp;&nbsp;
+                      <input type='text' size='10' maxlength='10' name='to_date' value='" . htmlentities($to_date) . "' style='color:#27408b'>&nbsp;*&nbsp;&nbsp;
                       <a href=\"#\" onclick=\"form.to_date.value='';cal.select(document.forms['form'].to_date,'to_date_anchor','$js_datefmt');
                       return false;\" name=\"to_date_anchor\" id=\"to_date_anchor\" style='font-size:11px;color:#27408b;'>Pick Date</a></td><tr>\n";
         echo "              <tr><td class=table_rows align=right colspan=3 style='color:red;font-family:Tahoma;font-size:10px;'>*&nbsp;required&nbsp;</td></tr>\n";
@@ -857,22 +837,21 @@ if ($request == 'GET') {
     $result = tc_select("empfullname, displayname", "employees", "$where order by $order_col asc", $emp_params);
 
     while ($row = mysqli_fetch_array($result)) {
-
         $employees_empfullname[] = "" . $row['empfullname'] . "";
         $employees_displayname[] = "" . $row['displayname'] . "";
         $employees_cnt++;
     }
 
     for ($x = 0; $x < $employees_cnt; $x++) {
-
         if (($employees_empfullname[$x] == $fullname) || ($fullname == "All")) {
-
             if (strtolower($user_or_display) == "display") {
+                $h_display_name = htmlentities($employees_displayname[$x]);
                 echo "  <tr><td width=100% colspan=2 style=\"font-size:11px;color:#000000;border-style:solid;border-color:#888888;
-          border-width:0px 0px 1px 0px;\"><b>$employees_displayname[$x]</b></td></tr>\n";
+          border-width:0px 0px 1px 0px;\"><b>$h_display_name</b></td></tr>\n";
             } else {
+                $h_display_name = htmlentities($employees_empfullname[$x]);
                 echo "  <tr><td width=100% colspan=2 style=\"font-size:11px;color:#000000;border-style:solid;border-color:#888888;
-          border-width:0px 0px 1px 0px;\"><b>$employees_empfullname[$x]</b></td></tr>\n";
+          border-width:0px 0px 1px 0px;\"><b>$h_display_name</b></td></tr>\n";
             }
             echo "  <tr><td width=75% nowrap align=left style='color:#27408b;'><b><u>Date</u></b></td>\n";
             echo "      <td width=25% nowrap align=left style='color:#27408b;'><b><u>Hours Worked</u></b></td></tr>\n";
@@ -890,23 +869,21 @@ if ($request == 'GET') {
             );
 
             while ($row = mysqli_fetch_array($result)) {
-
                 $info_fullname[] = stripslashes("" . $row['fullname'] . "");
-                $info_inout[] = "" . $row['inout'] . "";
-                $info_timestamp[] = "" . $row['timestamp'] . "" + $tzo;
-                $info_notes[] = "" . $row['notes'] . "";
-                $info_ipaddress[] = "" . $row['ipaddress'] . "";
+                $info_inout[] = htmlentities("" . $row['inout'] . "");
+                $info_timestamp[] = ("" . $row['timestamp'] . "") + $tzo;
+                $info_notes[] = htmlentities("" . $row['notes'] . "");
+                $info_ipaddress[] = htmlentities("" . $row['ipaddress'] . "");
                 $punchlist_in_or_out[] = "" . $row['in_or_out'] . "";
                 $punchlist_punchitems[] = "" . $row['punchitems'] . "";
-                $punchlist_color[] = "" . $row['color'] . "";
+                $punchlist_color[] = htmlentities("" . $row['color'] . "");
                 $info_cnt++;
             }
 
-            $employees_empfullname[$x] = stripslashes($employees_empfullname[$x]);
-            $employees_displayname[$x] = stripslashes($employees_displayname[$x]);
+            $employees_empfullname[$x] = htmlentities(stripslashes($employees_empfullname[$x]));
+            $employees_displayname[$x] = htmlentities(stripslashes($employees_displayname[$x]));
 
             for ($y = 0; $y < $info_cnt; $y++) {
-
                 //      $info_date[] = date($datefmt, $info_timestamp[$y]);
                 $x_info_date[] = date($datefmt, $info_timestamp[$y]);
                 $info_date[] = date('n/j/y', $info_timestamp[$y]);
@@ -1108,7 +1085,6 @@ if ($request == 'GET') {
                             }
                         }
                     } else {
-
                         //// print totals for previous day ////
 
                         //// if the previous has only a single In punch and no Out punches, configure the $secs ////
@@ -1187,7 +1163,6 @@ if ($request == 'GET') {
                                           Worked</u></b></td></tr>\n";
                                     }
                                 }
-
                             }
                             $secs = 0;
                             unset($in_time);
@@ -1374,7 +1349,6 @@ if ($request == 'GET') {
                         }
                     }
                 } else {
-
                     ///// this is for the start of the first entry for the first day /////
 
                     $tmp_info_date = $info_date[$y];
@@ -1645,4 +1619,3 @@ if ($request == 'GET') {
 }
 echo "            </table>\n";
 exit;
-?>

@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 include_once '../config.inc.php';
@@ -22,23 +23,12 @@ const MSIE4 = "MSIE 4";
 const MSIE5 = "MSIE 5";
 const MSIE6 = "MSIE 6";
 
-if (!isset($_SESSION['valid_user'])) {
-
-    echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
-    echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Administration</td></tr>\n";
-    echo "  <tr class=right_main_text>\n";
-    echo "    <td align=center valign=top scope=row>\n";
-    echo "      <table width=300 border=0 cellpadding=5 cellspacing=0>\n";
-    echo "        <tr class=right_main_text><td align=center>You are currently not logged in.</td></tr>\n";
-    echo "        <tr class=right_main_text><td align=center>Click <a class=admin_headings href='../login.php'><u>here</u></a> to login.</td></tr>\n";
-    echo "      </table><br /></td></tr></table>\n";
-    exit;
-}
+require_once '../lib/auth.php';
+require_valid_user();
+require_once '../lib/csrf.php';
 
 if ($request == 'GET') {
-
     if ((!isset($_GET['groupname'])) && (!isset($_GET['officename']))) {
-
         echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
         echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Error!</td></tr>\n";
         echo "  <tr class=right_main_text>\n";
@@ -53,6 +43,8 @@ if ($request == 'GET') {
 
     $get_group = $_GET['groupname'];
     $get_office = $_GET['officename'];
+    $h_get_group = htmlentities($get_group);
+    $h_get_office = htmlentities($get_office);
 
     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
     echo "  <tr valign=top>\n";
@@ -80,9 +72,9 @@ if ($request == 'GET') {
     echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/group.png' alt='Group Summary' />&nbsp;&nbsp;
                 <a class=admin_headings href='groupadmin.php'>Group Summary</a></td></tr>\n";
     echo "        <tr><td class=current_left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Edit Group' />
-                &nbsp;&nbsp;<a class=admin_headings href=\"groupedit.php?groupname=$get_group&officename=$get_office\">Edit Group</a></td></tr>\n";
+                &nbsp;&nbsp;<a class=admin_headings href=\"groupedit.php?groupname=$h_get_group&officename=$h_get_office\">Edit Group</a></td></tr>\n";
     echo "        <tr><td class=left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Delete Group' />
-                &nbsp;&nbsp;<a class=admin_headings href=\"groupdelete.php?groupname=$get_group&officename=$get_office\">Delete Group</a></td></tr>\n";
+                &nbsp;&nbsp;<a class=admin_headings href=\"groupdelete.php?groupname=$h_get_group&officename=$h_get_office\">Delete Group</a></td></tr>\n";
     echo "        <tr><td class=left_rows_border_top height=18 align=left valign=middle><img src='../images/icons/group_add.png' alt='Create New Group' />
                 &nbsp;&nbsp;<a class=admin_headings href='groupcreate.php'>Create New Group</a></td></tr>\n";
     echo "        <tr><td class=left_rows height=33></td></tr>\n";
@@ -109,7 +101,6 @@ if ($request == 'GET') {
     $result = tc_select("*", "groups, " . $db_prefix . "offices", "officename = ? and groupname = ?", array($get_office, $get_group));
 
     while ($row = mysqli_fetch_array($result)) {
-
         $officename = "" . $row['officename'] . "";
         $officeid = "" . $row['officeid'] . "";
         $groupname = "" . $row['groupname'] . "";
@@ -129,15 +120,16 @@ if ($request == 'GET') {
     @$user_cnt = mysqli_num_rows($result2);
 
     echo "            <form name='form' action='$self' method='post'>\n";
+    echo csrf_field() . "\n";
     echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
     echo "              <tr>\n";
     echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/group_edit.png' />&nbsp;&nbsp;&nbsp;Edit Group
-                -&nbsp;$get_group</th>\n";
+                -&nbsp;$h_get_group</th>\n";
     echo "              </tr>\n";
     echo "              <tr><td height=15></td></tr>\n";
     echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>New Group Name:</td><td colspan=2 width=80%
                       style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'><input type='text' 
-                      size='25' maxlength='50' name='post_groupname' value=\"$get_group\">&nbsp;*</td></tr>\n";
+                      size='25' maxlength='50' name='post_groupname' value=\"$h_get_group\">&nbsp;*</td></tr>\n";
 
     // query to populate dropdown with office names //
 
@@ -168,8 +160,8 @@ if ($request == 'GET') {
     echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
     echo "              <input type='hidden' name='orig_officeid' value=\"$officeid\">\n";
     echo "              <input type='hidden' name='post_groupid' value=\"$groupid\">\n";
-    echo "              <input type='hidden' name='get_group' value=\"$get_group\">\n";
-    echo "              <input type='hidden' name='get_office' value=\"$get_office\">\n";
+    echo "              <input type='hidden' name='get_group' value=\"$h_get_group\">\n";
+    echo "              <input type='hidden' name='get_office' value=\"$h_get_office\">\n";
     echo "              <tr><td width=30><input type='image' name='submit' value='Edit Group' src='../images/buttons/next_button.png'></td>
                   <td><a href='groupadmin.php'><img src='../images/buttons/cancel_button.png' border='0'></td></tr></table></form>\n";
 
@@ -186,10 +178,9 @@ if ($request == 'GET') {
     @$reports_count_rows = mysqli_num_rows($reports_count);
 
     if ($user_count_rows > '0') {
-
         echo "            <br /><br /><br /><hr /><br />\n";
         echo "            <table width=90% align=center height=40 border=0 cellpadding=0 cellspacing=0>\n";
-        echo "              <tr><th class=table_heading_no_color nowrap width=100% halign=left>Members of $get_group Group in $get_office Office</th></tr>\n";
+        echo "              <tr><th class=table_heading_no_color nowrap width=100% halign=left>Members of $h_get_group Group in $h_get_office Office</th></tr>\n";
         echo "              <tr><td height=40 class=table_rows nowrap halign=left><img src='../images/icons/user_green.png' />&nbsp;&nbsp;Total
                       Users: $user_count_rows&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src='../images/icons/user_orange.png' />&nbsp;&nbsp;
                       Sys Admin Users: $admin_count_rows&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src='../images/icons/user_red.png' />&nbsp;&nbsp;
@@ -219,7 +210,6 @@ if ($request == 'GET') {
         );
 
         while ($row = mysqli_fetch_array($result)) {
-
             $empfullname = stripslashes("" . $row['empfullname'] . "");
             $displayname = stripslashes("" . $row['displayname'] . "");
 
@@ -258,7 +248,6 @@ if ($request == 'GET') {
             }
 
             if ((strpos($user_agent, MSIE6)) || (strpos($user_agent, MSIE5)) || (strpos($user_agent, MSIE4)) || (strpos($user_agent, MSIE3))) {
-
                 echo "                <td class=table_rows width=3% align=center><a style='color:#27408b;text-decoration:underline;'
                     title=\"Edit User: $empfullname\"
                     href=\"useredit.php?username=$empfullname&officename=" . $row["office"] . "\">Edit</a></td>\n";
@@ -291,6 +280,7 @@ if ($request == 'GET') {
         exit;
     }
 } elseif ($request == 'POST') {
+    require_csrf_token();
 
     $post_officename = $_POST['post_officename'];
     @$post_officeid = $_POST['post_officeid'];
@@ -299,6 +289,8 @@ if ($request == 'GET') {
     @$post_groupid = $_POST['post_groupid'];
     $get_group = $_POST['get_group'];
     $get_office = $_POST['get_office'];
+    $h_get_group = htmlentities($get_group);
+    $h_get_office = htmlentities($get_office);
     $user_cnt = $_POST['user_cnt'];
     $post_groupname = stripslashes($post_groupname);
     $post_groupname = addslashes($post_groupname);
@@ -391,7 +383,6 @@ if ($request == 'GET') {
     echo "      <table class=hide width=100% border=0 cellpadding=1 cellspacing=0>\n";
 
     if (empty($string)) {
-
         $result = tc_select("*", "groups", "groupname = ? and officeid = ?", array($post_groupname, $post_officeid));
 
         while ($row = mysqli_fetch_array($result)) {
@@ -427,14 +418,11 @@ if ($request == 'GET') {
                 <a class=admin_headings href='groupadmin.php'>Group Summary</a></td></tr>\n";
 
     if (isset($evil_group)) {
-
         echo "        <tr><td class=current_left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Edit Group' />
-                &nbsp;&nbsp;<a class=admin_headings href=\"groupedit.php?groupname=$get_group&officename=$get_office\">Edit Group</a></td></tr>\n";
+                &nbsp;&nbsp;<a class=admin_headings href=\"groupedit.php?groupname=$h_get_group&officename=$h_get_office\">Edit Group</a></td></tr>\n";
         echo "        <tr><td class=left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Delete Group' />
-                &nbsp;&nbsp;<a class=admin_headings href=\"groupdelete.php?groupname=$get_group&officename=$get_office\">Delete Group</a></td></tr>\n";
-
+                &nbsp;&nbsp;<a class=admin_headings href=\"groupdelete.php?groupname=$h_get_group&officename=$h_get_office\">Delete Group</a></td></tr>\n";
     } else {
-
         echo "        <tr><td class=current_left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Edit Group' />
                 &nbsp;&nbsp;<a class=admin_headings href=\"groupedit.php?groupname=$post_groupname&officename=$post_officename\">Edit Group</a></td></tr>\n";
         echo "        <tr><td class=left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Delete Group' />
@@ -466,7 +454,6 @@ if ($request == 'GET') {
     echo "            <br />\n";
 
     if ((isset($evil_group)) || (isset($dupe))) {
-
         if (empty($post_groupname)) {
             echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
             echo "              <tr>\n";
@@ -499,10 +486,11 @@ if ($request == 'GET') {
 
         echo "            <br />\n";
         echo "            <form name='form' action='$self' method='post'>\n";
+        echo csrf_field() . "\n";
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
         echo "              <tr>\n";
         echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/group_edit.png' />&nbsp;&nbsp;&nbsp;Edit Group
-                -&nbsp;$get_group</th>\n";
+                -&nbsp;$h_get_group</th>\n";
         echo "              </tr>\n";
         echo "              <tr><td height=15></td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>New Group Name:</td><td colspan=2 width=80%
@@ -540,8 +528,8 @@ if ($request == 'GET') {
         echo "              <input type='hidden' name='orig_officeid' value=\"$orig_officeid\">\n";
         echo "              <input type='hidden' name='post_officeid' value=\"$post_officeid\">\n";
         echo "              <input type='hidden' name='post_groupid' value=\"$post_groupid\">\n";
-        echo "              <input type='hidden' name='get_group' value=\"$get_group\">\n";
-        echo "              <input type='hidden' name='get_office' value=\"$get_office\">\n";
+        echo "              <input type='hidden' name='get_group' value=\"$h_get_group\">\n";
+        echo "              <input type='hidden' name='get_office' value=\"$h_get_office\">\n";
         echo "              <input type='hidden' name='user_cnt' value=\"$user_cnt\">\n";
         echo "              <tr><td width=30><input type='image' name='submit' value='Edit Group' src='../images/buttons/next_button.png'></td>
                   <td><a href='groupadmin.php'><img src='../images/buttons/cancel_button.png' border='0'></td></tr></table></form>\n";
@@ -559,10 +547,9 @@ if ($request == 'GET') {
         @$reports_count_rows = mysqli_num_rows($reports_count);
 
         if ($user_count_rows > '0') {
-
             echo "            <br /><br /><br /><hr /><br />\n";
             echo "            <table width=90% align=center height=40 border=0 cellpadding=0 cellspacing=0>\n";
-            echo "              <tr><th class=table_heading_no_color nowrap width=100% halign=left>Members of $get_group Group in $get_office Office</th></tr>\n";
+            echo "              <tr><th class=table_heading_no_color nowrap width=100% halign=left>Members of $h_get_group Group in $h_get_office Office</th></tr>\n";
             echo "              <tr><td height=40 class=table_rows nowrap halign=left><img src='../images/icons/user_green.png' />&nbsp;&nbsp;Total
                       Users: $user_count_rows&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src='../images/icons/user_orange.png' />&nbsp;&nbsp;
                       Sys Admin Users: $admin_count_rows&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src='../images/icons/user_red.png' />&nbsp;&nbsp;
@@ -592,7 +579,6 @@ if ($request == 'GET') {
             );
 
             while ($row = mysqli_fetch_array($result)) {
-
                 $empfullname = stripslashes("" . $row['empfullname'] . "");
                 $displayname = stripslashes("" . $row['displayname'] . "");
 
@@ -631,7 +617,6 @@ if ($request == 'GET') {
                 }
 
                 if ((strpos($user_agent, MSIE6)) || (strpos($user_agent, MSIE5)) || (strpos($user_agent, MSIE4)) || (strpos($user_agent, MSIE3))) {
-
                     echo "                <td class=table_rows width=3% align=center><a style='color:#27408b;text-decoration:underline;'
                     title=\"Edit User: $empfullname\"
                     href=\"useredit.php?username=$empfullname&officename=" . $row["office"] . "\">Edit</a></td>\n";
@@ -663,9 +648,7 @@ if ($request == 'GET') {
             include_once FOOTER_PHP;
             exit;
         }
-
     } else {
-
         tc_update_strings(
             "employees",
             array("groups" => $post_groupname, "office" => $post_officename),
@@ -680,6 +663,9 @@ if ($request == 'GET') {
             array($get_group, $orig_officeid)
         );
 
+        $h_post_groupname = htmlentities($post_groupname);
+        $h_post_officename = htmlentities($post_officename);
+
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
         echo "              <tr>\n";
         echo "                <td class=table_rows width=20 align=center><img src='../images/icons/accept.png' /></td>
@@ -689,13 +675,13 @@ if ($request == 'GET') {
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
         echo "              <tr>\n";
         echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/group_edit.png' />&nbsp;&nbsp;&nbsp;Edit Group
-                -&nbsp;$get_group</th>\n";
+                -&nbsp;$h_get_group</th>\n";
         echo "              </tr>\n";
         echo "              <tr><td height=15></td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>New Group Name:</td><td align=left class=table_rows
-                      colspan=2 width=80% style='padding-left:20px;'>$post_groupname</td></tr>\n";
+                      colspan=2 width=80% style='padding-left:20px;'>$h_post_groupname</td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>New Parent Office:</td><td align=left class=table_rows
-                      colspan=2 width=80% style='padding-left:20px;'>$post_officename</td></tr>\n";
+                      colspan=2 width=80% style='padding-left:20px;'>$h_post_officename</td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>User Count:</td><td align=left class=table_rows
                       colspan=2 width=80% style='padding-left:20px;'>$user_cnt</td></tr>\n";
         echo "              <tr><td height=15></td></tr>\n";
@@ -718,10 +704,9 @@ if ($request == 'GET') {
         @$reports_count_rows = mysqli_num_rows($reports_count);
 
         if ($user_count_rows > '0') {
-
             echo "            <br /><br /><br /><hr /><br />\n";
             echo "            <table width=90% align=center height=40 border=0 cellpadding=0 cellspacing=0>\n";
-            echo "              <tr><th class=table_heading_no_color nowrap width=100% halign=left>Members of $post_groupname Group in $post_officename
+            echo "              <tr><th class=table_heading_no_color nowrap width=100% halign=left>Members of $h_post_groupname Group in $h_post_officename
                       Office</th></tr>\n";
             echo "              <tr><td height=40 class=table_rows nowrap halign=left><img src='../images/icons/user_green.png' />&nbsp;&nbsp;Total
                       Users: $user_count_rows&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src='../images/icons/user_orange.png' />&nbsp;&nbsp;
@@ -752,7 +737,6 @@ if ($request == 'GET') {
             );
 
             while ($row = mysqli_fetch_array($result)) {
-
                 $empfullname = stripslashes("" . $row['empfullname'] . "");
                 $displayname = stripslashes("" . $row['displayname'] . "");
 
@@ -791,7 +775,6 @@ if ($request == 'GET') {
                 }
 
                 if ((strpos($user_agent, MSIE6)) || (strpos($user_agent, MSIE5)) || (strpos($user_agent, MSIE4)) || (strpos($user_agent, MSIE3))) {
-
                     echo "                <td class=table_rows width=3% align=center><a style='color:#27408b;text-decoration:underline;'
                     title=\"Edit User: $empfullname\"
                     href=\"useredit.php?username=$empfullname&officename=" . $row["office"] . "\">Edit</a></td>\n";
@@ -825,4 +808,3 @@ if ($request == 'GET') {
         }
     }
 }
-?>

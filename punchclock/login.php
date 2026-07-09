@@ -1,40 +1,46 @@
 <?php
+
 /**
  * Login employee
  */
 
 $current_page = "login.php";
-
 require_once 'config.inc.php';
 require_once 'lib.common.php';
+require_once '../lib/csrf.php';
 turn_off_magic_quotes();
-
 // Check for logout
 if (isset($_REQUEST['logout'])) {
     session_stop();
-    unset($_GET['emp']); // safety
-    unset($_REQUEST['empfullname']); // safety
+    unset($_GET['emp']);
+// safety
+    unset($_REQUEST['empfullname']);
+// safety
     // Fall through and display login form.
 }
 
 session_start();
-$_SESSION['application'] = $current_page; // security
+$_SESSION['application'] = $current_page;
+// security
 
 $return_url = isset($_SESSION['login_return_url']) ? $_SESSION['login_return_url'] : '/';
 $msg = isset($_SESSION['login_msg']) ? $_SESSION['login_msg'] : '';
 $error_msg = isset($_SESSION['login_error_msg']) ? $_SESSION['login_error_msg'] : '';
-unset($_SESSION['login_msg']); // reinitialize
-unset($_SESSION['login_error_msg']); // reinitialize
+unset($_SESSION['login_msg']);
+// reinitialize
+unset($_SESSION['login_error_msg']);
+// reinitialize
 
-include 'setup_timeclock.php'; // authorize and initialize
+include 'setup_timeclock.php';
+// authorize and initialize
 
 // Parse arguments.
 $emp = isset($_REQUEST['emp']) ? $_REQUEST['emp'] : null;
 $empfullname = isset($_REQUEST['empfullname']) ? $_REQUEST['empfullname'] : null;
 $password = isset($_REQUEST['password']) ? $_REQUEST['password'] : null;
-
 if (!$empfullname) {
-    $empfullname = $emp; // from url or form entry
+    $empfullname = $emp;
+// from url or form entry
 }
 
 if ($empfullname) {
@@ -47,14 +53,12 @@ if ($empfullname) {
 ////////////////////////////////////////
 if (!$empfullname) {
     unset($_SESSION['authenticated']);
-
-    // Get employee name
+// Get employee name
 
     $PAGE_TITLE = "Login - $title";
     $PAGE_STYLE = <<<End_Of_HTML
 <link rel="stylesheet" type="text/css" media="screen" href="css/jquery.suggest.css" />
 End_Of_HTML;
-
     $PAGE_SCRIPT = <<<End_Of_HTML
 <script type="text/javascript" src="scripts/jquery.suggest.js"></script>
 <script type="text/javascript">
@@ -66,7 +70,6 @@ $(function(){
 //]]>
 </script>
 End_Of_HTML;
-
     include 'header.php';
     if ($msg) {
         print msg($msg);
@@ -98,7 +101,6 @@ End_Of_HTML;
 </div>
 
 End_Of_HTML;
-
     include 'footer.php';
     exit;
 }
@@ -106,17 +108,17 @@ End_Of_HTML;
 ////////////////////////////////////////
 if ($use_passwd == 'yes') {
     $authenticated = isset($_SESSION['authenticated']) ? ($_SESSION['authenticated'] == $empfullname) : false;
-
     if ((!$authenticated) && (isset($_SESSION['time_admin_valid_user']) || isset($_SESSION['valid_user']))) {
-        // Allow time administrators and system administrators to bypass the password screen.
+    // Allow time administrators and system administrators to bypass the password screen.
         $_SESSION['authenticated'] = $empfullname;
         $authenticated = true;
     }
 
     if (!$authenticated && $password) {
-
-        // Validate password
-        if (is_valid_password($empfullname, $password)) {
+// Validate password
+        if (!verify_csrf_token()) {
+            $error_msg .= "Your session has expired. Please try again.\n";
+        } elseif (is_valid_password($empfullname, $password)) {
             $_SESSION['authenticated'] = $empfullname;
             $authenticated = true;
         } else {
@@ -128,11 +130,10 @@ if ($use_passwd == 'yes') {
         $u_empfullname = rawurlencode($empfullname);
         $h_empfullname = htmlentities($empfullname);
         $h_name_header = $show_display_name == 'yes' ? htmlentities(get_employee_name($empfullname)) : $h_empfullname;
-
-        // Security: make sure no one is already authenticated before displaying password screen.
+        $csrf_field = csrf_field();
+// Security: make sure no one is already authenticated before displaying password screen.
         unset($_SESSION['authenticated']);
-
-        // Authenticate employee
+// Authenticate employee
         $PAGE_TITLE = "Login - $title";
         $PAGE_SCRIPT = <<<End_Of_HTML
 <script type="text/javascript">$(function(){ $('form input:first').focus(); });</script>
@@ -169,6 +170,7 @@ End_Of_HTML;
       <td><a href='?emp='><img src='$TIMECLOCK_URL/images/buttons/cancel_button.png' border='0' /></a></td></tr>
 </table>
 <input type="hidden" name="empfullname" value="$h_empfullname" />
+$csrf_field
 </form>
 </div>
 End_Of_HTML;
@@ -180,7 +182,9 @@ End_Of_HTML;
 ////////////////////////////////////////
 // Successful login
 $_SESSION['authenticated'] = $empfullname;
-$return_url = preg_replace('/\bemp(fullname)?=.*?&(.*)$/', '$2', $return_url); // remove possible emp= from url
-$return_url .= (preg_match('/[?]/', $return_url) ? '&' : '?') . "emp=" . rawurlencode($empfullname); // add emp= argument to url
+regenerate_csrf_token();
+$return_url = preg_replace('/\bemp(fullname)?=.*?&(.*)$/', '$2', $return_url);
+// remove possible emp= from url
+$return_url .= (preg_match('/[?]/', $return_url) ? '&' : '?') . "emp=" . rawurlencode($empfullname);
+// add emp= argument to url
 exit_next($return_url);
-?>

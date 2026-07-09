@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 include_once '../config.inc.php';
@@ -23,23 +24,12 @@ if (($timefmt == "G:i") || ($timefmt == "H:i")) {
     $timefmt_size = '8';
 }
 
-if ((!isset($_SESSION['valid_user'])) && (!isset($_SESSION['time_admin_valid_user']))) {
-
-    echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
-    echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Administration</td></tr>\n";
-    echo "  <tr class=right_main_text>\n";
-    echo "    <td align=center valign=top scope=row>\n";
-    echo "      <table width=200 border=0 cellpadding=5 cellspacing=0>\n";
-    echo "        <tr class=right_main_text><td align=center>You are not presently logged in, or do not have permission to view this page.</td></tr>\n";
-    echo "        <tr class=right_main_text><td align=center>Click <a class=admin_headings href='../login.php'><u>here</u></a> to login.</td></tr>\n";
-    echo "      </table><br /></td></tr></table>\n";
-    exit;
-}
+require_once '../lib/auth.php';
+require_time_admin();
+require_once '../lib/csrf.php';
 
 if ($request == 'GET') {
-
     if (!isset($_GET['username'])) {
-
         echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
         echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Error!</td></tr>\n";
         echo "  <tr class=right_main_text>\n";
@@ -108,7 +98,6 @@ if ($request == 'GET') {
     $result = tc_select("*", "employees", "empfullname = ? order by empfullname", $get_user);
 
     while ($row = mysqli_fetch_array($result)) {
-
         $username = stripslashes("" . $row['empfullname'] . "");
         $displayname = stripslashes("" . $row['displayname'] . "");
     }
@@ -121,6 +110,7 @@ if ($request == 'GET') {
     echo "          <td valign=top>\n";
     echo "            <br />\n";
     echo "            <form name='form' action='$self' method='post' onsubmit=\"return isDate()\">\n";
+    echo csrf_field() . "\n";
     echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
     echo "              <tr>\n";
     echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/clock_delete.png' />&nbsp;&nbsp;&nbsp;Delete Time
@@ -155,6 +145,7 @@ if ($request == 'GET') {
     include_once FOOTER_PHP;
     exit;
 } elseif ($request == 'POST') {
+    require_csrf_token();
 
     $get_user = stripslashes($_POST['get_user']);
     $post_username = stripslashes($_POST['post_username']);
@@ -323,6 +314,7 @@ if ($request == 'GET') {
     if (isset($evil_post)) {
         echo "            <br />\n";
         echo "            <form name='form' action='$self' method='post' onsubmit=\"return isDate()\">\n";
+        echo csrf_field() . "\n";
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
         echo "              <tr>\n";
         echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/clock_add.png' />&nbsp;&nbsp;&nbsp;Add Time
@@ -354,11 +346,8 @@ if ($request == 'GET') {
         exit;
 
         // end post validation //
-
     } else {
-
         if (isset($_POST['delete_time_checkbox'])) {
-
             echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
             echo "              <tr>\n";
             echo "              <td class=table_rows width=20 align=center><img src='../images/icons/accept.png' /></td><td class=table_rows_green>
@@ -366,6 +355,7 @@ if ($request == 'GET') {
             echo "            </table>\n";
             echo "            <br />\n";
             echo "            <form name='form' action='$self' method='post'>\n";
+            echo csrf_field() . "\n";
             echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
             echo "              <tr>\n";
             echo "                <th class=rightside_heading nowrap halign=left colspan=4><img src='../images/icons/clock_delete.png' />&nbsp;&nbsp;&nbsp;Deleted
@@ -389,13 +379,7 @@ if ($request == 'GET') {
 
             // determine who the authenticated user is for audit log
 
-            if (isset($_SESSION['valid_user'])) {
-                $user = $_SESSION['valid_user'];
-            } elseif (isset($_SESSION['time_admin_valid_user'])) {
-                $user = $_SESSION['time_admin_valid_user'];
-            } else {
-                $user = "";
-            }
+            $user = current_admin_username();
 
             // configure current time to insert for audit log
 
@@ -412,7 +396,6 @@ if ($request == 'GET') {
             $post_why = "";
 
             for ($x = 0; $x < $final_num_rows; $x++) {
-
                 // begin post validation //
 
                 $final_username[$x] = stripslashes($final_username[$x]);
@@ -454,7 +437,6 @@ if ($request == 'GET') {
                 $row_color = ($row_count % 2) ? $color1 : $color2;
 
                 if (@$delete_time_checkbox[$x] == '1') {
-
                     // begin post validation //
 
                     $tmp_time[$x] = date("$timefmt", $final_mysql_timestamp[$x] + $tzo);
@@ -464,8 +446,6 @@ if ($request == 'GET') {
                     }
 
                     // end post validation //
-
-                    //if (!get_magic_quotes_gpc()) {$final_username[$x] = addslashes($final_username[$x]);}
 
                     $result = tc_select("*", "employees", WHERE_EMPFULLNAME, $final_username[$x]);
 
@@ -477,7 +457,6 @@ if ($request == 'GET') {
                     $tmp_tmp_username[$x] = stripslashes($final_username[$x]);
 
                     if (($tmp_empfullname_1 == $tmp_tmp_username[$x]) && ($tmp_tstamp_1 == $final_mysql_timestamp[$x])) {
-
                         $result2 = tc_select("*", "info", "fullname = ? order by timestamp desc limit 1,1", $final_username[$x]);
 
                         while ($row2 = mysqli_fetch_array($result2)) {
@@ -539,7 +518,6 @@ if ($request == 'GET') {
             include_once FOOTER_PHP;
             exit;
         } elseif ((!isset($_POST['delete_time_checkbox'])) && (isset($_POST['tmp_var']))) {
-
             // begin post validation //
 
             if ($_POST['tmp_var'] != '1') {
@@ -574,7 +552,6 @@ if ($request == 'GET') {
             $mysql_timestamp = array();
 
             while ($row = mysqli_fetch_array($result)) {
-
                 $time_set = '1';
                 $username[] = "" . $row['fullname'] . "";
                 $inout[] = "" . $row['inout'] . "";
@@ -592,6 +569,7 @@ if ($request == 'GET') {
             echo "            </table>\n";
             echo "            <br />\n";
             echo "            <form name='form' action='$self' method='post'>\n";
+            echo csrf_field() . "\n";
             echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
             echo "              <tr>\n";
             echo "                <th class=rightside_heading nowrap halign=left colspan=4><img src='../images/icons/clock_delete.png' />&nbsp;&nbsp;&nbsp;Delete
@@ -603,7 +581,6 @@ if ($request == 'GET') {
             echo "                  <td style='padding-left:25px;' class=column_headings><u>Notes</u></td></tr>\n";
 
             for ($x = 0; $x < $num_rows; $x++) {
-
                 $row_color = ($row_count % 2) ? $color1 : $color2;
                 $time[$x] = date("$timefmt", $mysql_timestamp[$x] + $tzo);
                 $username[$x] = stripslashes($username[$x]);
@@ -641,9 +618,7 @@ if ($request == 'GET') {
                       border='0'></td></tr></table></form></td></tr>\n";
             include_once FOOTER_PHP;
             exit;
-
         } else {
-
             // configure timestamp to insert/update //
 
             if ($calendar_style == "euro") {
@@ -675,7 +650,6 @@ if ($request == 'GET') {
             $mysql_timestamp = array();
 
             while ($row = mysqli_fetch_array($result)) {
-
                 $time_set = '1';
                 $username[] = "" . $row['fullname'] . "";
                 $inout[] = "" . $row['inout'] . "";
@@ -690,6 +664,7 @@ if ($request == 'GET') {
 
         if (!isset($time_set)) {
             echo "            <form name='form' action='$self' method='post' onsubmit=\"return isDate()\">\n";
+            echo csrf_field() . "\n";
             echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
             echo "              <tr>\n";
             echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
@@ -728,6 +703,7 @@ if ($request == 'GET') {
         }
 
         echo "            <form name='form' action='$self' method='post'>\n";
+        echo csrf_field() . "\n";
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
         echo "              <tr>\n";
         echo "                <td class=table_rows width=20 align=center><img src='../images/icons/time.png' /></td><td class=table_rows style='color:#3366CC;'>
@@ -754,7 +730,6 @@ if ($request == 'GET') {
             echo "                  <td style='padding-left:25px;' class=column_headings><u>Notes</u></td></tr>\n";
 
             for ($x = 0; $x < $num_rows; $x++) {
-
                 $row_color = ($row_count % 2) ? $color1 : $color2;
                 $time[$x] = date("$timefmt", $mysql_timestamp[$x] + $tzo);
                 $username[$x] = stripslashes($username[$x]);
@@ -794,4 +769,3 @@ if ($request == 'GET') {
         }
     }
 }
-?>

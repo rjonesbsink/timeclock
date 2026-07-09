@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 $self = $_SERVER['PHP_SELF'];
@@ -16,23 +17,12 @@ if ($request !== 'POST') {
 }
 echo "<title>$title - Delete Office</title>\n";
 
-if (!isset($_SESSION['valid_user'])) {
-
-    echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
-    echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Administration</td></tr>\n";
-    echo "  <tr class=right_main_text>\n";
-    echo "    <td align=center valign=top scope=row>\n";
-    echo "      <table width=200 border=0 cellpadding=5 cellspacing=0>\n";
-    echo "        <tr class=right_main_text><td align=center>You are not presently logged in, or do not have permission to view this page.</td></tr>\n";
-    echo "        <tr class=right_main_text><td align=center>Click <a class=admin_headings href='../login.php'><u>here</u></a> to login.</td></tr>\n";
-    echo "      </table><br /></td></tr></table>\n";
-    exit;
-}
+require_once '../lib/auth.php';
+require_valid_user();
+require_once '../lib/csrf.php';
 
 if ($request == 'GET') {
-
     if (!isset($_GET['officename'])) {
-
         echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
         echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Error!</td></tr>\n";
         echo "  <tr class=right_main_text>\n";
@@ -45,7 +35,7 @@ if ($request == 'GET') {
         exit;
     }
 
-    $get_office = $_GET['officename'];
+    $get_office = htmlentities($_GET['officename']);
 
     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
     echo "  <tr valign=top>\n";
@@ -99,7 +89,6 @@ if ($request == 'GET') {
     $result = tc_select("*", "offices", "officename = ?", $get_office);
 
     while ($row = mysqli_fetch_array($result)) {
-
         $officename = "" . $row['officename'] . "";
         $officeid = "" . $row['officeid'] . "";
     }
@@ -129,6 +118,7 @@ if ($request == 'GET') {
         echo "            </table>\n";
         echo "            <br />\n";
         echo "            <form name='form' action='$self' method='post'>\n";
+        echo csrf_field() . "\n";
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
         echo "              <tr>\n";
         echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/brick_delete.png' />&nbsp;&nbsp;&nbsp;Delete Office
@@ -164,10 +154,9 @@ if ($request == 'GET') {
                       <img src='../images/buttons/cancel_button.png' border='0'></td></tr></table></form></td></tr>\n";
         include_once FOOTER_PHP;
         exit;
-
     } elseif ($user_cnt == '0') {
-
         echo "            <form name='form' action='$self' method='post'>\n";
+        echo csrf_field() . "\n";
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
         echo "              <tr>\n";
         echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/brick_delete.png' />&nbsp;&nbsp;&nbsp;Delete Office
@@ -195,6 +184,7 @@ if ($request == 'GET') {
     }
     exit;
 } elseif ($request == 'POST') {
+    require_csrf_token();
 
     include_once 'header_post.php';
     include_once 'topmain.php';
@@ -262,6 +252,8 @@ if ($request == 'GET') {
 
     // end post validation //
 
+    $post_officename = htmlentities($post_officename);
+
     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
     echo "  <tr valign=top>\n";
     echo "    <td class=left_main width=180 align=left scope=col>\n";
@@ -280,14 +272,11 @@ if ($request == 'GET') {
                 <a class=admin_headings href='officeadmin.php'>Office Summary</a></td></tr>\n";
 
     if ((empty($office_name)) || (empty($group_name)) || ($office_name == $post_officename)) {
-
         echo "        <tr><td class=left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Edit Office' />&nbsp;&nbsp;
                 <a class=admin_headings href=\"officeedit.php?officename=$post_officename\">Edit Office</a></td></tr>\n";
         echo "        <tr><td class=current_left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Delete Office' />
                 &nbsp;&nbsp;<a class=admin_headings href=\"officedelete.php?officename=$post_officename\">Delete Office</a></td></tr>\n";
-
     } else {
-
         echo "        <tr><td class=left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Edit Office' />&nbsp;&nbsp;
                 Edit Office</td></tr>\n";
         echo "        <tr><td class=current_left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Delete Office' />
@@ -332,6 +321,7 @@ if ($request == 'GET') {
         echo "            </table>\n";
         echo "            <br />\n";
         echo "            <form name='form' action='$self' method='post'>\n";
+        echo csrf_field() . "\n";
     } elseif ($office_name == $post_officename) {
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
         echo "              <tr>\n";
@@ -341,6 +331,7 @@ if ($request == 'GET') {
         echo "            </table>\n";
         echo "            <br />\n";
         echo "            <form name='form' action='$self' method='post'>\n";
+        echo csrf_field() . "\n";
     } else {
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
         echo "              <tr>\n";
@@ -357,7 +348,6 @@ if ($request == 'GET') {
     echo "              <tr><td height=15></td></tr>\n";
 
     if ((empty($office_name)) || (empty($group_name)) || ($office_name == $post_officename)) {
-
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Office Name:</td><td align=left class=table_rows
                       width=80% style='padding-left:20px;'><input type='hidden' name='post_officename'
                       value=\"$post_officename\">$post_officename</td></tr>\n";
@@ -390,9 +380,7 @@ if ($request == 'GET') {
                       <img src='../images/buttons/cancel_button.png' border='0'></td></tr></table></form></td></tr>\n";
         include_once FOOTER_PHP;
         exit;
-
     } else {
-
         if ($user_cnt > 0) {
             tc_update_strings(
                 "employees",
@@ -421,4 +409,3 @@ if ($request == 'GET') {
         exit;
     }
 }
-?>

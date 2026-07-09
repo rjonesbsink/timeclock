@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Generate select tag options.
  *
@@ -26,7 +27,8 @@
 const SELECTED_ATTR = ' selected="selected"';
 
 ////////////////////////////////////////
-function select_options($arg, $val = null) {
+function select_options($arg, $val = null)
+{
     // Return <option> tags for a <select>
     // $arg is a sql string or an array of values or an array of 2 value arrays
     // $val is selected value or an array of selected option values.
@@ -36,7 +38,7 @@ function select_options($arg, $val = null) {
     }
     $html = ''; // initialize return string
     $db = isset($GLOBALS['db']) ? $GLOBALS['db'] : null;
-    $result = mysqli_query( $db, $arg);
+    $result = mysqli_query($db, $arg);
     while ($row = mysqli_fetch_row($result)) {
         if (count($row) < 2) {
             $row[1] = $row[0];
@@ -50,7 +52,8 @@ function select_options($arg, $val = null) {
     return substr($html, 0, -1); // remove last LF
 }
 
-function _select_options_arr($arr, &$lookup) {
+function _select_options_arr($arr, &$lookup)
+{
     if (is_array($arr[0])) {
         return _select_options_arr2($arr, $lookup);
     }
@@ -64,7 +67,8 @@ function _select_options_arr($arr, &$lookup) {
     return substr($html, 0, -1); // remove last LF
 }
 
-function _select_options_arr2($arr, &$lookup) {
+function _select_options_arr2($arr, &$lookup)
+{
     $html = ''; // initialize return string
     for ($i = 0, $l = count($arr); $i < $l; $i++) {
         $selected = isset($lookup[$arr[$i][0]]) ? SELECTED_ATTR : '';
@@ -77,11 +81,10 @@ function _select_options_arr2($arr, &$lookup) {
 }
 
 ////////////////////////////////////////
-function make_lookup_array($val = null) {
+function make_lookup_array($val = null)
+{
     $val = $val == null ? array() : $val;
     $val = is_array($val) ? $val : array($val);
 
     return array_flip($val);
 }
-
-?>

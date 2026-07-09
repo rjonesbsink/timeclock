@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 $self = $_SERVER['PHP_SELF'];
@@ -10,18 +11,8 @@ include 'header.php';
 include 'topmain.php';
 echo "<title>$title - Add/Edit/Delete Time</title>\n";
 
-if ((!isset($_SESSION['valid_user'])) && (!isset($_SESSION['time_admin_valid_user']))) {
-
-    echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
-    echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Administration</td></tr>\n";
-    echo "  <tr class=right_main_text>\n";
-    echo "    <td align=center valign=top scope=row>\n";
-    echo "      <table width=200 border=0 cellpadding=5 cellspacing=0>\n";
-    echo "        <tr class=right_main_text><td align=center>You are not presently logged in, or do not have permission to view this page.</td></tr>\n";
-    echo "        <tr class=right_main_text><td align=center>Click <a class=admin_headings href='../login.php'><u>here</u></a> to login.</td></tr>\n";
-    echo "      </table><br /></td></tr></table>\n";
-    exit;
-}
+require_once '../lib/auth.php';
+require_time_admin();
 
 echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
 echo "  <tr valign=top>\n";
@@ -89,7 +80,6 @@ $query = "select empfullname, displayname, email, groups, office, admin, reports
 $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
 
 while ($row = mysqli_fetch_array($result)) {
-
     $empfullname = stripslashes("" . $row['empfullname'] . "");
     $displayname = stripslashes("" . $row['displayname'] . "");
 
@@ -111,7 +101,6 @@ while ($row = mysqli_fetch_array($result)) {
     }
 
     if ((strpos($user_agent, "MSIE 6")) || (strpos($user_agent, "MSIE 5")) || (strpos($user_agent, "MSIE 4")) || (strpos($user_agent, "MSIE 3"))) {
-
         echo "                <td class=table_rows width=3% align=center><a style='color:#27408b;text-decoration:underline;'
                     title=\"Add Time For: $empfullname\" href=\"timeadd.php?username=$empfullname\">Add</a></td>\n";
         echo "                <td class=table_rows width=3% align=center><a style='color:#27408b;text-decoration:underline;'
@@ -119,9 +108,7 @@ while ($row = mysqli_fetch_array($result)) {
         echo "                <td class=table_rows width=3% align=center><a style='color:#27408b;text-decoration:underline;'
                     title=\"Delete Time For: $empfullname\" href=\"timedelete.php?username=$empfullname\">
                     Delete</a></td></tr>\n";
-
     } else {
-
         echo "                <td class=table_rows width=3% align=center><a title=\"Add Time For: $empfullname\"
                     href=\"timeadd.php?username=$empfullname\">
                     <img border=0 src='../images/icons/clock_add.png' /></a></td>\n";
@@ -136,4 +123,3 @@ while ($row = mysqli_fetch_array($result)) {
 echo "          </table></td></tr>\n";
 include '../footer.php';
 exit;
-?>

@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 include_once '../config.inc.php';
@@ -12,23 +13,12 @@ $request = $_SERVER['REQUEST_METHOD'];
 const WHERE_EMPFULLNAME = "empfullname = ?";
 const FOOTER_PHP = '../footer.php';
 
-if (!isset($_SESSION['valid_user'])) {
-
-    echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
-    echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Administration</td></tr>\n";
-    echo "  <tr class=right_main_text>\n";
-    echo "    <td align=center valign=top scope=row>\n";
-    echo "      <table width=200 border=0 cellpadding=5 cellspacing=0>\n";
-    echo "        <tr class=right_main_text><td align=center>You are not presently logged in, or do not have permission to view this page.</td></tr>\n";
-    echo "        <tr class=right_main_text><td align=center>Click <a class=admin_headings href='../login.php'><u>here</u></a> to login.</td></tr>\n";
-    echo "      </table><br /></td></tr></table>\n";
-    exit;
-}
+require_once '../lib/auth.php';
+require_valid_user();
+require_once '../lib/csrf.php';
 
 if ($request == 'GET') {
-
     if (!isset($_GET['username'])) {
-
         echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
         echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Error!</td></tr>\n";
         echo "  <tr class=right_main_text>\n";
@@ -121,6 +111,7 @@ if ($request == 'GET') {
 
     echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
     echo "            <form name='form' action='$self' method='post'>\n";
+    echo csrf_field() . "\n";
     echo "              <tr><th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/lock_edit.png' />&nbsp;&nbsp;&nbsp;Change
                       Password</th></tr>\n";
     echo "              <tr><td height=15></td></tr>\n";
@@ -142,6 +133,7 @@ if ($request == 'GET') {
     include_once FOOTER_PHP;
     exit;
 } elseif ($request == 'POST') {
+    require_csrf_token();
 
     $post_username = stripslashes($_POST['post_username']);
     $new_password = $_POST['new_password'];
@@ -245,10 +237,10 @@ if ($request == 'GET') {
     // end post validation //
 
     if (isset($evil_password)) {
-
         echo "            <br />\n";
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
         echo "            <form name='form' action='$self' method='post'>\n";
+        echo csrf_field() . "\n";
         echo "              <tr><th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/lock_edit.png' />&nbsp;&nbsp;&nbsp;Change
                     Password</th></tr>\n";
         echo "              <tr><td height=15></td></tr>\n";
@@ -269,9 +261,7 @@ if ($request == 'GET') {
                       <img src='../images/buttons/cancel_button.png' border='0'></td></tr></table></form></td></tr>\n";
         include_once FOOTER_PHP;
         exit;
-
     } else {
-
         $new_password = tc_hash_password($new_password);
 
         tc_update_strings("employees", array("employee_passwd" => $new_password), WHERE_EMPFULLNAME, $post_username);
@@ -299,4 +289,3 @@ if ($request == 'GET') {
         exit;
     }
 }
-?>

@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 $self = $_SERVER['PHP_SELF'];
@@ -13,23 +14,12 @@ if ($request !== 'POST') {
 }
 echo "<title>$title - Edit User</title>\n";
 
-if (!isset($_SESSION['valid_user'])) {
-
-    echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
-    echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Administration</td></tr>\n";
-    echo "  <tr class=right_main_text>\n";
-    echo "    <td align=center valign=top scope=row>\n";
-    echo "      <table width=200 border=0 cellpadding=5 cellspacing=0>\n";
-    echo "        <tr class=right_main_text><td align=center>You are not presently logged in, or do not have permission to view this page.</td></tr>\n";
-    echo "        <tr class=right_main_text><td align=center>Click <a class=admin_headings href='../login.php'><u>here</u></a> to login.</td></tr>\n";
-    echo "      </table><br /></td></tr></table>\n";
-    exit;
-}
+require_once '../lib/auth.php';
+require_valid_user();
+require_once '../lib/csrf.php';
 
 if ($request == 'GET') {
-
     if (!isset($_GET['username'])) {
-
         echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
         echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Error!</td></tr>\n";
         echo "  <tr class=right_main_text>\n";
@@ -42,8 +32,8 @@ if ($request == 'GET') {
         exit;
     }
 
-    $get_user = $_GET['username'];
-    @$get_office = $_GET['officename'];
+    $get_user = htmlentities($_GET['username']);
+    @$get_office = htmlentities($_GET['officename'] ?? '');
 
     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
     echo "  <tr valign=top>\n";
@@ -102,12 +92,12 @@ if ($request == 'GET') {
         $row_count++;
         $row_color = ($row_count % 2) ? $color2 : $color1;
 
-        $username = "" . $row['empfullname'] . "";
-        $displayname = "" . $row['displayname'] . "";
-        $user_email = "" . $row['email'] . "";
-        $user_barcode = "" . $row['barcode'] . "";
-        $groups_tmp = "" . $row['groups'] . "";
-        $office = "" . $row['office'] . "";
+        $username = htmlentities("" . $row['empfullname'] . "");
+        $displayname = htmlentities("" . $row['displayname'] . "");
+        $user_email = htmlentities("" . $row['email'] . "");
+        $user_barcode = htmlentities("" . $row['barcode'] . "");
+        $groups_tmp = htmlentities("" . $row['groups'] . "");
+        $office = htmlentities("" . $row['office'] . "");
         $admin = "" . $row['admin'] . "";
         $reports = "" . $row['reports'] . "";
         $time_admin = "" . $row['time_admin'] . "";
@@ -134,6 +124,7 @@ if ($request == 'GET') {
     }
     echo "            <br />\n";
     echo "            <form name='form' action='$self' method='post'>\n";
+    echo csrf_field() . "\n";
     echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
     echo "              <tr>\n";
     echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/user_edit.png' />&nbsp;&nbsp;&nbsp;Edit User</th>\n";
@@ -224,6 +215,7 @@ if ($request == 'GET') {
     include_once FOOTER_PHP;
     exit;
 } elseif ($request == 'POST') {
+    require_csrf_token();
 
     include_once 'header_post.php';
     include_once 'topmain.php';
@@ -233,7 +225,7 @@ if ($request == 'GET') {
     $email_addy = $_POST['email_addy'];
     $user_barcode = value_or_null($_POST['barcode']);// UNIQUE constraint so no empty strings
     $office_name = $_POST['office_name'];
-    @$get_office = $_POST['get_office'];
+    @$get_office = htmlentities($_POST['get_office'] ?? '');
     @$group_name = $_POST['group_name'];
     @$admin_perms = $_POST['admin_perms'];
     $reports_perms = $_POST['reports_perms'];
@@ -258,18 +250,17 @@ if ($request == 'GET') {
             echo htmlspecialchars("$tmp_username, $post_username. Something is fishy here.\n");
             exit;
         }
-    }
-    else {
+    } else {
         $tmp_username = "";
     }
 
     $string = strstr($display_name, "\"");
-    if ((!preg_match('/' . "^([[:alnum:]]| |-|'|,)+$" . '/i', $display_name)) || (empty($display_name)) || (empty($email_addy)) || (empty($office_name)) || (empty($group_name)) ||
+    if (
+        (!preg_match('/' . "^([[:alnum:]]| |-|'|,)+$" . '/i', $display_name)) || (empty($display_name)) || (empty($email_addy)) || (empty($office_name)) || (empty($group_name)) ||
         (!preg_match('/' . "^([[:alnum:]]|_|\.|-)+@([[:alnum:]]|\.|-)+(\.)([a-z]{2,4})$" . '/i', $email_addy)) || (($admin_perms != '1') && (!empty($admin_perms))) ||
         (($reports_perms != '1') && (!empty($reports_perms))) || (($time_admin_perms != '1') && (!empty($time_admin_perms))) || (($post_disabled != '1') &&
                                                                                                                                  (!empty($post_disabled))) || (!empty($string))
     ) {
-
         echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
         echo "  <tr valign=top>\n";
         echo "    <td class=left_main width=180 align=left scope=col>\n";
@@ -392,14 +383,16 @@ if ($request == 'GET') {
             echo "            </table>\n";
         }
 
-        if (!empty($office_name)
+        if (
+            !empty($office_name)
             and is_null(tc_select_value("officename", "offices", "officename = ?", $office_name))
         ) {
             echo "Office is not defined.\n";
             exit;
         }
 
-        if (!empty($group_name)
+        if (
+            !empty($group_name)
             and is_null(tc_select_value("groupname", "groups", "groupname = ?", $group_name))
         ) {
             echo "Group is not defined.\n";
@@ -408,8 +401,14 @@ if ($request == 'GET') {
 
         // end post validation //
 
+        $h_post_username = htmlentities($post_username);
+        $h_display_name = htmlentities($display_name);
+        $h_email_addy = htmlentities($email_addy);
+        $h_user_barcode = htmlentities($user_barcode);
+
         echo "            <br />\n";
         echo "            <form name='form' action='$self' method='post'>\n";
+        echo csrf_field() . "\n";
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
         echo "              <tr>\n";
         echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/user_edit.png' />&nbsp;&nbsp;&nbsp;Edit User</th>\n";
@@ -417,16 +416,16 @@ if ($request == 'GET') {
         echo "              <tr><td height=15></td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Username:</td><td align=left class=table_rows
                       colspan=2 width=80% style='padding-left:20px;'><input type='hidden' name='post_username'
-                      value=\"$post_username\">$tmp_username</td></tr>\n";
+                      value=\"$h_post_username\">$tmp_username</td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Display Name:</td><td colspan=2 width=80%
                       style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
-                      <input type='text' size='25' maxlength='50' name='display_name' value=\"$display_name\">&nbsp;*</td></tr>\n";
+                      <input type='text' size='25' maxlength='50' name='display_name' value=\"$h_display_name\">&nbsp;*</td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Email Address:</td><td colspan=2 width=80%
                       style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
-                      <input type='text' size='25' maxlength='75' name='email_addy' value='$email_addy'>&nbsp;*</td></tr>\n";
+                      <input type='text' size='25' maxlength='75' name='email_addy' value='$h_email_addy'>&nbsp;*</td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Barcode:</td><td colspan=2 width=80%
                       style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
-                      <input type='text' size='25' maxlength='75' name='barcode' value='$user_barcode'></td></tr>\n";
+                      <input type='text' size='25' maxlength='75' name='barcode' value='$h_user_barcode'></td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Office:</td><td colspan=2 width=80%
                       style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
                       <select name='office_name' onchange='group_names();'>\n";
@@ -569,12 +568,12 @@ if ($request == 'GET') {
         $post_username
     );
     while ($row = mysqli_fetch_array($result4)) {
-        $username = "" . $row['empfullname'] . "";
-        $displayname = "" . $row['displayname'] . "";
-        $user_email = "" . $row['email'] . "";
-        $user_barcode = "" . $row['barcode'] . "";
-        $office = "" . $row['office'] . "";
-        $groups = "" . $row['groups'] . "";
+        $username = htmlentities("" . $row['empfullname'] . "");
+        $displayname = htmlentities("" . $row['displayname'] . "");
+        $user_email = htmlentities("" . $row['email'] . "");
+        $user_barcode = htmlentities("" . $row['barcode'] . "");
+        $office = htmlentities("" . $row['office'] . "");
+        $groups = htmlentities("" . $row['groups'] . "");
         $admin = "" . $row['admin'] . "";
         $reports = "" . $row['reports'] . "";
         $time_admin = "" . $row['time_admin'] . "";
@@ -631,4 +630,3 @@ class=table_rows
     include_once FOOTER_PHP;
     exit;
 }
-?>

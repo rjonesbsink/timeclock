@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 $self = $_SERVER['PHP_SELF'];
@@ -11,23 +12,12 @@ include 'header.php';
 include 'topmain.php';
 echo "<title>$title - Delete Status</title>\n";
 
-if (!isset($_SESSION['valid_user'])) {
-
-    echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
-    echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Administration</td></tr>\n";
-    echo "  <tr class=right_main_text>\n";
-    echo "    <td align=center valign=top scope=row>\n";
-    echo "      <table width=200 border=0 cellpadding=5 cellspacing=0>\n";
-    echo "        <tr class=right_main_text><td align=center>You are not presently logged in, or do not have permission to view this page.</td></tr>\n";
-    echo "        <tr class=right_main_text><td align=center>Click <a class=admin_headings href='../login.php'><u>here</u></a> to login.</td></tr>\n";
-    echo "      </table><br /></td></tr></table>\n";
-    exit;
-}
+require_once '../lib/auth.php';
+require_valid_user();
+require_once '../lib/csrf.php';
 
 if ($request == 'GET') {
-
     if (!isset($_GET['statusname'])) {
-
         echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
         echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Error!</td></tr>\n";
         echo "  <tr class=right_main_text>\n";
@@ -40,12 +30,11 @@ if ($request == 'GET') {
         exit;
     }
 
-    $get_status = $_GET['statusname'];
+    $get_status = htmlentities($_GET['statusname']);
 
     $result = tc_select("*", "punchlist", WHERE_PUNCHITEMS, $get_status);
 
     while ($row = mysqli_fetch_array($result)) {
-
         $punchitem = "" . $row['punchitems'] . "";
         $color = "" . $row['color'] . "";
         $in_or_out = "" . $row['in_or_out'] . "";
@@ -109,6 +98,7 @@ if ($request == 'GET') {
     echo "            <br />\n";
     echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
     echo "            <form name='form' action='$self' method='post'>\n";
+    echo csrf_field() . "\n";
     echo "              <tr>\n";
     echo "                <th class=rightside_heading nowrap halign=left colspan=3>
                     <img src='../images/icons/application_delete.png' />&nbsp;&nbsp;&nbsp;Delete Status</th>\n";
@@ -133,6 +123,7 @@ if ($request == 'GET') {
     include '../footer.php';
     exit;
 } elseif ($request == 'POST') {
+    require_csrf_token();
 
     $post_statusname = $_POST['post_statusname'];
     $post_color = $_POST['post_color'];
@@ -159,6 +150,8 @@ if ($request == 'GET') {
     }
 
     $result2 = tc_delete("punchlist", WHERE_PUNCHITEMS, $post_statusname);
+
+    $post_statusname = htmlentities($post_statusname);
 
     if ($post_in_out == '1') {
         $post_in_out = 'In';
@@ -224,6 +217,7 @@ if ($request == 'GET') {
     echo "            <br />\n";
     echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
     echo "            <form name='form' action='$self' method='post'>\n";
+    echo csrf_field() . "\n";
     echo "              <tr>\n";
     echo "                <th class=rightside_heading nowrap halign=left colspan=3>
                     <img src='../images/icons/application_delete.png' />&nbsp;&nbsp;&nbsp;Delete Status</th>\n";
@@ -246,4 +240,3 @@ if ($request == 'GET') {
     include '../footer.php';
     exit;
 }
-?>

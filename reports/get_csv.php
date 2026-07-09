@@ -10,10 +10,10 @@ const CSV_HEADER_CONTENT_DISPOSITION = "Content-Disposition: attachment; filenam
 const CSV_HEADER_PRAGMA = "Pragma: no-cache";
 const CSV_HEADER_EXPIRES = "Expires: 0";
 
-if (($_GET['rpt'] == 'timerpt') && (isset($_GET['display_ip'])) && (isset($_GET['csv'])) && (isset($_GET['office'])) && (isset($_GET['group'])) &&
+if (
+    ($_GET['rpt'] == 'timerpt') && (isset($_GET['display_ip'])) && (isset($_GET['csv'])) && (isset($_GET['office'])) && (isset($_GET['group'])) &&
     (isset($_GET['fullname'])) && (isset($_GET['from'])) && (isset($_GET['to'])) && (isset($_GET['tzo']))
 ) {
-
     $tmp_display_ip = $_GET['display_ip'];
     $tmp_csv = $_GET['csv'];
     $office_name = $_GET['office'];
@@ -49,7 +49,6 @@ if (($_GET['rpt'] == 'timerpt') && (isset($_GET['display_ip'])) && (isset($_GET[
     $result = tc_select("empfullname, displayname", "employees", "$where order by $order_col asc", $emp_params);
 
     while ($row = mysqli_fetch_array($result)) {
-
         $employees_empfullname[] = "" . $row['empfullname'] . "";
         $employees_displayname[] = "" . $row['displayname'] . "";
         $employees_cnt++;
@@ -63,9 +62,7 @@ if (($_GET['rpt'] == 'timerpt') && (isset($_GET['display_ip'])) && (isset($_GET[
     $string = "";
 
     for ($x = 0; $x < $employees_cnt; $x++) {
-
         if (($employees_empfullname[$x] == $fullname) || ($fullname == "All")) {
-
             $row_color = $color2; // Initial row color
 
             $result = tc_query(
@@ -81,7 +78,6 @@ if (($_GET['rpt'] == 'timerpt') && (isset($_GET['display_ip'])) && (isset($_GET[
             );
 
             while ($row = mysqli_fetch_array($result)) {
-
                 $display_stamp = "" . $row["timestamp"] . "";
                 $time = date($timefmt, $display_stamp);
                 $date = date($datefmt, $display_stamp);
@@ -124,12 +120,11 @@ if (($_GET['rpt'] == 'timerpt') && (isset($_GET['display_ip'])) && (isset($_GET[
     header(CSV_HEADER_PRAGMA);
     header(CSV_HEADER_EXPIRES);
     echo "$headings$string";
-
-} elseif (($_GET['rpt'] == 'hrs_wkd') && (isset($_GET['display_ip'])) && (isset($_GET['csv'])) && (isset($_GET['office'])) && (isset($_GET['group'])) &&
+} elseif (
+    ($_GET['rpt'] == 'hrs_wkd') && (isset($_GET['display_ip'])) && (isset($_GET['csv'])) && (isset($_GET['office'])) && (isset($_GET['group'])) &&
           (isset($_GET['fullname'])) && (isset($_GET['from'])) && (isset($_GET['to'])) && (isset($_GET['tzo'])) && (isset($_GET['paginate'])) &&
           (isset($_GET['round'])) && (isset($_GET['details'])) && (isset($_GET['rpt_run_on'])) && (isset($_GET['rpt_date'])) && (isset($_GET['from_date']))
 ) {
-
     $tmp_display_ip = $_GET['display_ip'];
     $tmp_csv = $_GET['csv'];
     $office_name = $_GET['office'];
@@ -185,7 +180,6 @@ if (($_GET['rpt'] == 'timerpt') && (isset($_GET['display_ip'])) && (isset($_GET[
     $result = tc_select("empfullname, displayname", "employees", "$where order by $order_col asc", $emp_params);
 
     while ($row = mysqli_fetch_array($result)) {
-
         $employees_empfullname[] = "" . $row['empfullname'] . "";
         $employees_displayname[] = "" . $row['displayname'] . "";
         $employees_cnt++;
@@ -203,9 +197,7 @@ if (($_GET['rpt'] == 'timerpt') && (isset($_GET['display_ip'])) && (isset($_GET[
     $string = "";
 
     for ($x = 0; $x < $employees_cnt; $x++) {
-
         if (($employees_empfullname[$x] == $fullname) || ($fullname == "All")) {
-
             $result = tc_query(
                 "select " . $db_prefix . "info.fullname, " . $db_prefix . "info.`inout`, " . $db_prefix . "info.timestamp, " . $db_prefix . "info.notes,
               " . $db_prefix . "info.ipaddress, " . $db_prefix . "punchlist.in_or_out, " . $db_prefix . "punchlist.punchitems, " . $db_prefix . "punchlist.color
@@ -218,10 +210,9 @@ if (($_GET['rpt'] == 'timerpt') && (isset($_GET['display_ip'])) && (isset($_GET[
             );
 
             while ($row = mysqli_fetch_array($result)) {
-
                 $info_fullname[] = stripslashes("" . $row['fullname'] . "");
                 $info_inout[] = "" . $row['inout'] . "";
-                $info_timestamp[] = "" . $row['timestamp'] . "" + $tzo;
+                $info_timestamp[] = ("" . $row['timestamp'] . "") + $tzo;
                 $info_notes[] = "" . $row['notes'] . "";
                 $info_ipaddress[] = "" . $row['ipaddress'] . "";
                 $punchlist_in_or_out[] = "" . $row['in_or_out'] . "";
@@ -234,7 +225,6 @@ if (($_GET['rpt'] == 'timerpt') && (isset($_GET['display_ip'])) && (isset($_GET[
             $employees_displayname[$x] = stripslashes($employees_displayname[$x]);
 
             for ($y = 0; $y < $info_cnt; $y++) {
-
                 $info_date[] = date($datefmt, $info_timestamp[$y]);
                 $info_start_time[] = strtotime($info_date[$y]);
                 $info_end_time[] = $info_start_time[$y] + 86399;
@@ -376,7 +366,6 @@ if (($_GET['rpt'] == 'timerpt') && (isset($_GET['display_ip'])) && (isset($_GET[
                             }
                         }
                     } else {
-
                         //// print totals for previous day ////
 
                         //// if the previous has only a single In punch and no Out punches, configure the $secs ////
@@ -766,9 +755,7 @@ if (($_GET['rpt'] == 'timerpt') && (isset($_GET['display_ip'])) && (isset($_GET[
     header(CSV_HEADER_PRAGMA);
     header(CSV_HEADER_EXPIRES);
     echo "$headings$string";
-
 } elseif (($_GET['rpt'] == 'auditlog') && (isset($_GET['csv'])) && (isset($_GET['from'])) && (isset($_GET['to'])) && (isset($_GET['tzo']))) {
-
     $tmp_csv = $_GET['csv'];
     $from_timestamp = $_GET['from'];
     $to_timestamp = $_GET['to'];
@@ -789,7 +776,6 @@ if (($_GET['rpt'] == 'timerpt') && (isset($_GET['display_ip'])) && (isset($_GET[
     $result = tc_select("*", "audit", "modified_when >= ? and modified_when <= ? order by modified_when asc", array($from_timestamp, $to_timestamp));
 
     while ($row = mysqli_fetch_array($result)) {
-
         $modified_when[] = "" . $row["modified_when"] . "";
         $modified_from[] = "" . $row["modified_from"] . "";
         $modified_to[] = "" . $row["modified_to"] . "";
@@ -803,7 +789,6 @@ if (($_GET['rpt'] == 'timerpt') && (isset($_GET['display_ip'])) && (isset($_GET[
     $string = "";
 
     for ($x = 0; $x < $cnt; $x++) {
-
         if (!empty($modified_when[$x])) {
             $modified_when_time = date($timefmt, $modified_when[$x]);
             $modified_when_date = date($datefmt, $modified_when[$x]);
@@ -844,4 +829,3 @@ if (($_GET['rpt'] == 'timerpt') && (isset($_GET['display_ip'])) && (isset($_GET[
     echo "$headings$string";
 }
 exit;
-?>

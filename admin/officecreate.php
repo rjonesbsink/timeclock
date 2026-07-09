@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 include_once '../config.inc.php';
@@ -11,21 +12,11 @@ $request = $_SERVER['REQUEST_METHOD'];
 const FOOTER_PHP = '../footer.php';
 const OFFICENAME_PATTERN = "^([[:alnum:]]| |-|_|\.)+$";
 
-if (!isset($_SESSION['valid_user'])) {
-
-    echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
-    echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Administration</td></tr>\n";
-    echo "  <tr class=right_main_text>\n";
-    echo "    <td align=center valign=top scope=row>\n";
-    echo "      <table width=200 border=0 cellpadding=5 cellspacing=0>\n";
-    echo "        <tr class=right_main_text><td align=center>You are not presently logged in, or do not have permission to view this page.</td></tr>\n";
-    echo "        <tr class=right_main_text><td align=center>Click <a class=admin_headings href='../login.php'><u>here</u></a> to login.</td></tr>\n";
-    echo "      </table><br /></td></tr></table>\n";
-    exit;
-}
+require_once '../lib/auth.php';
+require_valid_user();
+require_once '../lib/csrf.php';
 
 if ($request == 'GET') {
-
     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
     echo "  <tr valign=top>\n";
     echo "    <td class=left_main width=180 align=left scope=col>\n";
@@ -71,6 +62,7 @@ if ($request == 'GET') {
     echo "          <td valign=top>\n";
     echo "            <br />\n";
     echo "            <form name='form' action='$self' method='post'>\n";
+    echo csrf_field() . "\n";
     echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
     echo "              <tr>\n";
     echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/brick_add.png' />&nbsp;&nbsp;&nbsp;Create Office
@@ -97,6 +89,7 @@ if ($request == 'GET') {
     include_once FOOTER_PHP;
     exit;
 } elseif ($request == 'POST') {
+    require_csrf_token();
 
     $post_officename = $_POST['post_officename'];
     $create_groups = $_POST['create_groups'];
@@ -165,11 +158,11 @@ if ($request == 'GET') {
     $string = strstr($post_officename, "\'");
     $string2 = strstr($post_officename, "\"");
 
-    if ((@$tmp_officename == $post_officename) || (empty($post_officename)) || (!preg_match('/' . OFFICENAME_PATTERN . '/i', $post_officename)) ||
+    if (
+        (@$tmp_officename == $post_officename) || (empty($post_officename)) || (!preg_match('/' . OFFICENAME_PATTERN . '/i', $post_officename)) ||
         ((!preg_match('/' . "^([0-9])$" . '/i', $how_many)) && (isset($how_many))) || (@$how_many == '0') || (($create_groups != '1') && (!empty($create_groups))) ||
         (!empty($string)) || (!empty($string2))
     ) {
-
         if (empty($post_officename)) {
             echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
             echo "              <tr>\n";
@@ -235,6 +228,7 @@ if ($request == 'GET') {
         }
 
         echo "            <form name='form' action='$self' method='post'>\n";
+        echo csrf_field() . "\n";
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
         echo "              <tr>\n";
         echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/brick_add.png' />&nbsp;&nbsp;&nbsp;Create Office
@@ -243,7 +237,7 @@ if ($request == 'GET') {
         echo "              <tr><td height=15></td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Office Name:</td><td colspan=2 width=80%
                       style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
-                      <input type='text' size='25' maxlength='50' name='post_officename' value=\"$post_officename\">&nbsp;*</td></tr>\n";
+                      <input type='text' size='25' maxlength='50' name='post_officename' value=\"" . htmlentities($post_officename) . "\">&nbsp;*</td></tr>\n";
 
         if (!empty($string)) {
             $post_officename = addslashes($post_officename);
@@ -254,13 +248,11 @@ if ($request == 'GET') {
 
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Create Groups Within This Office?</td>\n";
         if ($create_groups == '1') {
-
             echo "                  <td class=table_rows align=left width=80% style='padding-left:20px;'><input type='radio' name='create_groups' value='1' checked
                       onFocus=\"javascript:form.how_many.disabled=false;form.how_many.style.background='#ffffff';\">Yes
                       <input type='radio' name='create_groups' value='0'
                       onFocus=\"javascript:form.how_many.disabled=true;form.how_many.style.background='#eeeeee';\">No</td></tr>\n";
         } else {
-
             echo "                  <td class=table_rows align=left width=80% style='padding-left:20px;'><input type='radio' name='create_groups' value='1'
                       onFocus=\"javascript:form.how_many.disabled=false;form.how_many.style.background='#ffffff';\">Yes
                       <input checked type='radio' name='create_groups' value='0'
@@ -290,9 +282,7 @@ if ($request == 'GET') {
     // end post validation //
 
     if (isset($input_group_name)) {
-
         for ($x = 0; $x < $how_many; $x++) {
-
             $z = $x + 1;
 
             // begin post validation //
@@ -303,7 +293,6 @@ if ($request == 'GET') {
             if (!preg_match('/' . OFFICENAME_PATTERN . '/i', $input_group_name[$z])) {
                 $evil_groupname = '1';
             }
-
         }
 
         @$groupname_array_cnt = count($input_group_name);
@@ -311,7 +300,6 @@ if ($request == 'GET') {
         @$unique_groupname_array_cnt = count($unique_groupname_array);
 
         if ((@$empty_groupname != '1') && (@$evil_groupname != '1') && (@$groupname_array_cnt == @$unique_groupname_array_cnt)) {
-
             $tmp_officeid = tc_insert_strings("offices", array("officename" => $post_officename));
 
             for ($x = 0; $x < $how_many; $x++) {
@@ -329,6 +317,7 @@ if ($request == 'GET') {
 
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
         echo "            <form name='form' action='$self' method='post'>\n";
+        echo csrf_field() . "\n";
         echo "              <tr>\n";
         echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/brick_add.png' />&nbsp;&nbsp;&nbsp;Create Office
                 </th>\n";
@@ -336,10 +325,10 @@ if ($request == 'GET') {
         echo "              <tr><td height=15></td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Office Name:</td><td class=table_rows colspan=2
                       width=80% style='padding-left:20px;'>
-                      <input type='hidden' name='post_officename' value='$post_officename'>$post_officename</td></tr>\n";
+                      <input type='hidden' name='post_officename' value='" . htmlentities($post_officename) . "'>" . htmlentities($post_officename) . "</td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Create Groups Within This Office?</td><td
                       class=table_rows colspan=2 width=80% style='padding-left:20px;'>
-                      <input type='hidden' name='create_groups' value='$create_groups'>$create_groups</td></tr>\n";
+                      <input type='hidden' name='create_groups' value='" . htmlentities($create_groups) . "'>" . htmlentities($create_groups) . "</td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>How Many?</td><td class=table_rows colspan=2
                       width=80% style='padding-left:20px;'>
                       <input type='hidden' name='how_many' value='$how_many'>$how_many</td></tr>\n";
@@ -368,7 +357,6 @@ if ($request == 'GET') {
         }
 
         if ((@$empty_groupname != '1') && (@$evil_groupname != '1') && (@$groupname_array_cnt == @$unique_groupname_array_cnt)) {
-
             echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
             echo "              <tr>\n";
             if ($how_many == '1') {
@@ -405,19 +393,14 @@ if ($request == 'GET') {
                       border='0'></td></tr></table></form></td></tr>\n";
             include_once FOOTER_PHP;
             exit;
-
         } else {
-
             echo "              <tr><td height=20 align=left>&nbsp;</td></tr>\n";
             echo "              <tr><td><a href='officecreate.php'><img src='../images/buttons/done_button.png' border='0'></td></tr></table></td></tr>\n";
             include_once FOOTER_PHP;
             exit;
         }
-
     } else {
-
         if (!isset($how_many)) {
-
             tc_insert_strings("offices", array("officename" => $post_officename));
 
             echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
@@ -429,6 +412,7 @@ if ($request == 'GET') {
         }
 
         echo "            <form name='form' action='$self' method='post'>\n";
+        echo csrf_field() . "\n";
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
         echo "              <tr>\n";
         echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/brick_add.png' />&nbsp;&nbsp;&nbsp;Create Office
@@ -436,7 +420,7 @@ if ($request == 'GET') {
         echo "              <tr><td height=15></td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Office Name:</td><td class=table_rows colspan=2
                       width=80% style='padding-left:20px;'>
-                      <input type='hidden' name='post_officename' value='$post_officename'>$post_officename</td></tr>\n";
+                      <input type='hidden' name='post_officename' value='" . htmlentities($post_officename) . "'>" . htmlentities($post_officename) . "</td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Create Groups Within This Office?</td><td
                       class=table_rows colspan=2 width=80% style='padding-left:20px;'>\n";
 
@@ -445,10 +429,9 @@ if ($request == 'GET') {
         } else {
             $tmp_create_groups = "No";
         }
-        echo "                      <input type='hidden' name='create_groups' value='$create_groups'>$tmp_create_groups</td></tr>\n";
+        echo "                      <input type='hidden' name='create_groups' value='" . htmlentities($create_groups) . "'>$tmp_create_groups</td></tr>\n";
 
         if (!isset($how_many)) {
-
             echo "              <tr><td height=15></td></tr>\n";
             echo "            </table>\n";
             echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
@@ -459,7 +442,6 @@ if ($request == 'GET') {
         }
 
         if (isset($how_many)) {
-
             echo "              <tr><td class=table_rows height=20 width=20% style='padding-left:32px;' nowrap>How Many?</td><td class=table_rows colspan=2
                       width=80% style='padding-left:20px;'>
                       <input type='hidden' name='how_many' value='$how_many'>$how_many</td></tr>\n";
@@ -468,11 +450,9 @@ if ($request == 'GET') {
             echo "            <table align=center valign=top width=60% border=0 cellpadding=0 cellspacing=3>\n";
 
             if ($how_many == '1') {
-
                 echo "              <tr><td height=40 class=table_rows colspan=2>You have chosen to create <b>$how_many</b> group within the
                       <b>$post_officename</b> office. Please input the group name below.</td></tr>\n";
             } elseif ($how_many > '1') {
-
                 echo "              <tr><td height=40 class=table_rows colspan=2>You have chosen to create <b>$how_many</b> groups within the
                       <b>$post_officename</b> office. Please input the group names below.</td></tr>\n";
             }
@@ -491,4 +471,3 @@ if ($request == 'GET') {
         exit;
     }
 }
-?>

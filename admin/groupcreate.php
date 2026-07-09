@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 include_once '../config.inc.php';
@@ -10,21 +11,11 @@ $self = $_SERVER['PHP_SELF'];
 $request = $_SERVER['REQUEST_METHOD'];
 const FOOTER_PHP = '../footer.php';
 
-if (!isset($_SESSION['valid_user'])) {
-
-    echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
-    echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Administration</td></tr>\n";
-    echo "  <tr class=right_main_text>\n";
-    echo "    <td align=center valign=top scope=row>\n";
-    echo "      <table width=200 border=0 cellpadding=5 cellspacing=0>\n";
-    echo "        <tr class=right_main_text><td align=center>You are not presently logged in, or do not have permission to view this page.</td></tr>\n";
-    echo "        <tr class=right_main_text><td align=center>Click <a class=admin_headings href='../login.php'><u>here</u></a> to login.</td></tr>\n";
-    echo "      </table><br /></td></tr></table>\n";
-    exit;
-}
+require_once '../lib/auth.php';
+require_valid_user();
+require_once '../lib/csrf.php';
 
 if ($request == 'GET') {
-
     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
     echo "  <tr valign=top>\n";
     echo "    <td class=left_main width=180 align=left scope=col>\n";
@@ -74,6 +65,7 @@ if ($request == 'GET') {
     echo "            <br />\n";
     echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
     echo "            <form name='form' action='$self' method='post'>\n";
+    echo csrf_field() . "\n";
     echo "              <tr>\n";
     echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/group_add.png' />&nbsp;&nbsp;&nbsp;Create Group
                 </th>\n";
@@ -109,6 +101,7 @@ if ($request == 'GET') {
     include_once FOOTER_PHP;
     exit;
 } elseif ($request == 'POST') {
+    require_csrf_token();
 
     $select_office_name = $_POST['select_office_name'];
     $post_groupname = $_POST['post_groupname'];
@@ -189,7 +182,6 @@ if ($request == 'GET') {
     $string2 = strstr($post_groupname, "\"");
 
     if ((!empty($string)) || (empty($post_groupname)) || (!preg_match('/' . "^([[:alnum:]]| |-|_|\.)+$" . '/i', $post_groupname)) || ($select_office_name == '1') || (@$tmp_groupname == $post_groupname) || (!empty($string2))) {
-
         if (!empty($string)) {
             echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
             echo "              <tr><td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
@@ -234,6 +226,7 @@ if ($request == 'GET') {
 
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
         echo "            <form name='form' action='$self' method='post'>\n";
+        echo csrf_field() . "\n";
         echo "              <tr>\n";
         echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/group_add.png' />&nbsp;&nbsp;&nbsp;Create Group
                 </th>\n";
@@ -241,7 +234,7 @@ if ($request == 'GET') {
         echo "              <tr><td height=15></td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Group Name:</td><td colspan=2 align=left width=80%
                       style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
-                      <input type='text' size='25' maxlength='50' name='post_groupname' value=\"$post_groupname\">&nbsp;*</td></tr>\n";
+                      <input type='text' size='25' maxlength='50' name='post_groupname' value=\"" . htmlentities($post_groupname) . "\">&nbsp;*</td></tr>\n";
 
         if (!empty($string)) {
             $post_groupname = addslashes($post_groupname);
@@ -279,9 +272,7 @@ if ($request == 'GET') {
                       border='0'></td></tr></table></form></td></tr>\n";
         include_once FOOTER_PHP;
         exit;
-
     } else {
-
         tc_insert_strings("groups", array("groupname" => $post_groupname, "officeid" => $officeid));
 
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
@@ -296,9 +287,9 @@ if ($request == 'GET') {
         echo "              </tr>\n";
         echo "              <tr><td height=15></td></tr>\n";
         echo "              <tr><td class=table_rows width=20% height=25 style='padding-left:32px;' nowrap>Group Name:</td><td class=table_rows width=80%
-                      style='padding-left:20px;' colspan=2>$post_groupname</td></tr>\n";
+                      style='padding-left:20px;' colspan=2>" . htmlentities($post_groupname) . "</td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Parent Office:</td><td class=table_rows width=80%
-                      style='padding-left:20px;' colspan=2>$select_office_name</td></tr>\n";
+                      style='padding-left:20px;' colspan=2>" . htmlentities($select_office_name) . "</td></tr>\n";
         echo "              <tr><td height=15></td></tr>\n";
         echo "            </table>\n";
         echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
@@ -308,4 +299,3 @@ if ($request == 'GET') {
         exit;
     }
 }
-?>

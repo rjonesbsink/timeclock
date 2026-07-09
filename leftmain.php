@@ -1,6 +1,7 @@
 <?php
 
 include 'config.inc.php';
+require_once 'lib/csrf.php';
 
 $self = $_SERVER['PHP_SELF'];
 $request = $_SERVER['REQUEST_METHOD'];
@@ -16,6 +17,11 @@ if ($show_display_name == "yes") {
 }
 
 if ($request == 'POST') {
+    if (!verify_csrf_token()) {
+        echo "Your session has expired. Please try again.\n";
+        exit;
+    }
+
     @$remember_me = $_POST['remember_me'];
     @$reset_cookie = $_POST['reset_cookie'];
     @$fullname = $_POST['left_fullname'];
@@ -36,7 +42,7 @@ if ($request == 'POST') {
     if (has_value($barcode)) {
         $tmp_name = tc_select_value($emp_name_field, "employees", "barcode = ?", $barcode);
         if (!has_value($tmp_name)) {
-            $errors[] = "Invalid barcode '$barcode'";
+            $errors[] = "Invalid barcode '" . htmlentities($barcode) . "'";
         } elseif (isset($emp_name) and $emp_name != $tmp_name) {
             $errors[] = "Username / Barcode mismatch";
         } else {
@@ -49,14 +55,14 @@ if ($request == 'POST') {
         if (has_value($displayname)) {
             $tmp_name = tc_select_value($emp_name_field, "employees", "displayname = ?", $displayname);
             if (!has_value($tmp_name)) {
-                $errors[] = "Invalid username '$displayname'";
+                $errors[] = "Invalid username '" . htmlentities($displayname) . "'";
             }
         }
     } else {
         if (has_value($fullname)) {
             $tmp_name = tc_select_value($emp_name_field, "employees", WHERE_EMPFULLNAME, $fullname);
             if (!has_value($tmp_name)) {
-                $errors[] = "Invalid username '$fullname'";
+                $errors[] = "Invalid username '" . htmlentities($fullname) . "'";
             }
         }
     }
@@ -100,12 +106,12 @@ if ($links == "none") {
         echo "        <tr><td class=left_rows height=18 align=left valign=middle><a class=admin_headings href='$links[$x]' target='_new'>$display_links[$x]</a></td>
                       </tr>\n";
     }
-
 }
 
 // display form to submit signin/signout information //
 
 echo "        <form name='timeclock' action='$self' autocomplete='off' method='post'>\n";
+echo csrf_field() . "\n";
 
 if ($links == "none") {
     echo "        <tr><td height=7></td></tr>\n";
@@ -166,7 +172,7 @@ if (yes_no_bool($manual_clockin)) {
 
     echo "              <select name='left_inout'>\n";
     echo "              <option value =''>...</option>\n";
-    echo html_options(tc_select("punchitems",  "punchlist"));
+    echo html_options(tc_select("punchitems", "punchlist"));
     echo "              </select></td></tr>\n";
 
     echo "        <tr><td height=7></td></tr>\n";
@@ -202,7 +208,6 @@ if (yes_no_bool($display_weather)) {
 echo "      </table></td>\n";
 
 if ($request == 'POST') {
-
     // signin/signout data passed over from timeclock.php //
 
     $inout = $_POST['left_inout'];
@@ -214,17 +219,16 @@ if ($request == 'POST') {
     if (!has_value($inout) and has_value($emp_name)) {
         $result = tc_query(<<<QUERY
    SELECT p.punchnext
-     FROM ${db_prefix}employees AS e
-LEFT JOIN ${db_prefix}info      AS i ON (e.empfullname = i.fullname AND e.tstamp = i.timestamp)
-LEFT JOIN ${db_prefix}punchlist AS p ON (i.inout = p.punchitems)
+     FROM {$db_prefix}employees AS e
+LEFT JOIN {$db_prefix}info      AS i ON (e.empfullname = i.fullname AND e.tstamp = i.timestamp)
+LEFT JOIN {$db_prefix}punchlist AS p ON (i.inout = p.punchitems)
     WHERE e.$emp_name_field = ?
 QUERY
         , $emp_name);
         while ($row = mysqli_fetch_array($result)) {
             $inout = $row[0];
         }
-    }
-    elseif (has_value($inout)) {
+    } elseif (has_value($inout)) {
         $inout = tc_select_value("punchitems", "punchlist", "punchitems = ?", $inout);
         if (!has_value($inout)) {
             echo "In/Out Status is not in the database.\n";
@@ -240,11 +244,9 @@ QUERY
 
     if (!has_value($emp_name) && !has_value($inout)) {
         $errors[] = "You have not chosen a username or a status. Please try again.";
-    }
-    elseif (!has_value($emp_name)) {
+    } elseif (!has_value($emp_name)) {
         $errors[] = "You have not chosen a username. Please try again.";
-    }
-    elseif (!has_value($inout)) {
+    } elseif (!has_value($inout)) {
         $errors[] = "You have not chosen a status. Please try again.";
     }
 
@@ -271,7 +273,6 @@ QUERY
     $tz_stamp = mktime($hour, $min, $sec, $month, $day, $year);
 
     if (has_value($barcode) or $use_passwd == "no") {
-
         if (!has_value($fullname)) {
             $fullname = tc_select_value("empfullname", "employees", "$emp_name_field = ?", $emp_name);
         }
@@ -287,9 +288,7 @@ QUERY
         echo "<head>\n";
         echo "<meta http-equiv='refresh' content=0;url=index.php>\n";
         echo "</head>\n";
-
     } else {
-
         $sel_result = tc_select(
             "empfullname, employee_passwd",
             "employees",
@@ -315,9 +314,7 @@ QUERY
             echo "<head>\n";
             echo "<meta http-equiv='refresh' content=0;url=index.php>\n";
             echo "</head>\n";
-
         } else {
-
             echo "    <td align=left class=right_main scope=col>\n";
             echo "      <table width=100% height=100% border=0 cellpadding=10 cellspacing=1>\n";
             echo "        <tr class=right_main_text>\n";
@@ -327,7 +324,5 @@ QUERY
             include 'footer.php';
             exit;
         }
-
     }
 }
-?>

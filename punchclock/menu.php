@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Home page.
  *
@@ -51,7 +52,7 @@ End_Of_HTML;
 
     $targetname = preg_replace('/\W/', '', $row["officename"]);
     # Uncomment the following to open punchclock in new window with minimum chrome.
-    #	print <<<End_Of_HTML
+    #   print <<<End_Of_HTML
     #
     #  <li><a href="punchclock.php?office=$u_officename" target="$targetname" onclick="window.open('','$targetname','resizable,scrollbars').focus();return true;">$h_officename Punchclock</a></li>
     #End_Of_HTML;
@@ -78,7 +79,6 @@ if ($row_count == 0) {
   <li><a href="punchclock.php">Punchclock</a></li>
 </ul>
 End_Of_HTML;
-
 }
 ?>
 

@@ -9,31 +9,19 @@ $current_page = "audit.php";
 const ADMIN_TOPMAIN_PHP = '../admin/topmain.php';
 
 include_once '../config.inc.php';
+require_once '../lib/auth.php';
 
-if ($use_reports_password == "yes") {
-
-    if (!isset($_SESSION['valid_reports_user'])) {
-
-        echo "<title>$title</title>\n";
-        include_once '../admin/header.php';
-        include_once ADMIN_TOPMAIN_PHP;
-
-        echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
-        echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Reports</td></tr>\n";
-        echo "  <tr class=right_main_text>\n";
-        echo "    <td align=center valign=top scope=row>\n";
-        echo "      <table width=200 border=0 cellpadding=5 cellspacing=0>\n";
-        echo "        <tr class=right_main_text><td align=center>You are not presently logged in, or do not have permission to view this page.</td></tr>\n";
-        echo "        <tr class=right_main_text><td align=center>Click <a class=admin_headings href='../login_reports.php'><u>here</u></a> to login.</td></tr>\n";
-        echo "      </table><br /></td></tr></table>\n";
-        exit;
-    }
+if (reports_login_required()) {
+    echo "<title>$title</title>\n";
+    include_once '../admin/header.php';
+    include_once ADMIN_TOPMAIN_PHP;
+    print_login_required_message('../login_reports.php', true);
+    exit;
 }
 
 echo "<title>$title - Audit Log</title>\n";
 
 if ($request == 'GET') {
-
     include_once '../admin/header_date.php';
 
     if ($use_reports_password == "yes") {
@@ -96,9 +84,7 @@ if ($request == 'GET') {
                       border='0'></td></tr></table></form></td></tr>\n";
     include_once '../footer.php';
     exit;
-
 } else {
-
     include_once '../admin/header_date.php';
 
     $from_date = $_POST['from_date'];
@@ -166,9 +152,7 @@ if ($request == 'GET') {
             echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
                     A valid From Date is required.</td></tr>\n";
             echo "            </table>\n";
-
         } else {
-
             if ($calendar_style == "amer") {
                 //if (isset($date_regs)) {$from_month = $date_regs[1]; $from_day = $date_regs[2]; $from_year = $date_regs[3];}
                 if (isset($date_regs)) {
@@ -261,9 +245,7 @@ if ($request == 'GET') {
             echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
                     A valid To Date is required.</td></tr>\n";
             echo "            </table>\n";
-
         } else {
-
             if ($calendar_style == "amer") {
                 if (isset($date_regs)) {
                     $to_month = $date_regs[1];
@@ -329,12 +311,12 @@ if ($request == 'GET') {
         echo "              <input type='hidden' name='date_format' value='$js_datefmt'>\n";
         echo "              <tr><td class=table_rows style='padding-left:32px;' width=20% nowrap>From Date: ($tmp_datefmt)</td><td
                       style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;' width=80% >
-                      <input type='text' size='10' maxlength='10' name='from_date' value='$from_date' style='color:#27408b'>&nbsp;*&nbsp;&nbsp;
+                      <input type='text' size='10' maxlength='10' name='from_date' value='" . htmlentities($from_date) . "' style='color:#27408b'>&nbsp;*&nbsp;&nbsp;
                       <a href=\"#\" onclick=\"form.from_date.value='';cal.select(document.forms['form'].from_date,'from_date_anchor','$js_datefmt');
                       return false;\" name=\"from_date_anchor\" id=\"from_date_anchor\" style='font-size:11px;color:#27408b;'>Pick Date</a></td><tr>\n";
         echo "              <tr><td class=table_rows style='padding-left:32px;' width=20% nowrap>To Date: ($tmp_datefmt)</td><td
                       style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;' width=80% >
-                      <input type='text' size='10' maxlength='10' name='to_date' value='$to_date' style='color:#27408b'>&nbsp;*&nbsp;&nbsp;
+                      <input type='text' size='10' maxlength='10' name='to_date' value='" . htmlentities($to_date) . "' style='color:#27408b'>&nbsp;*&nbsp;&nbsp;
                       <a href=\"#\" onclick=\"form.to_date.value='';cal.select(document.forms['form'].to_date,'to_date_anchor','$js_datefmt');
                       return false;\" name=\"to_date_anchor\" id=\"to_date_anchor\" style='font-size:11px;color:#27408b;'>Pick Date</a></td><tr>\n";
         echo "              <tr><td class=table_rows align=right colspan=3 style='color:red;font-family:Tahoma;font-size:10px;'>*&nbsp;required&nbsp;</td></tr>\n";
@@ -413,19 +395,17 @@ if ($request == 'GET') {
     $result = tc_select("*", "audit", "modified_when >= ? and modified_when <= ? order by modified_when asc", array($from_timestamp, $to_timestamp));
 
     while ($row = mysqli_fetch_array($result)) {
-
         $modified_when[] = "" . $row["modified_when"] . "";
         $modified_from[] = "" . $row["modified_from"] . "";
         $modified_to[] = "" . $row["modified_to"] . "";
-        $modified_by_ip[] = "" . $row["modified_by_ip"] . "";
-        $modified_by_user[] = stripslashes("" . $row["modified_by_user"] . "");
+        $modified_by_ip[] = htmlentities("" . $row["modified_by_ip"] . "");
+        $modified_by_user[] = htmlentities(stripslashes("" . $row["modified_by_user"] . ""));
         $modified_why[] = "" . $row["modified_why"] . "";
-        $user_modified[] = "" . $row["user_modified"] . "";
+        $user_modified[] = htmlentities("" . $row["user_modified"] . "");
         $cnt++;
     }
 
     for ($x = 0; $x < $cnt; $x++) {
-
         if (!empty($modified_when[$x])) {
             $modified_when[$x] = $modified_when[$x] + @$tzo;
             $modified_when_time = date($timefmt, $modified_when[$x]);
@@ -438,16 +418,16 @@ if ($request == 'GET') {
             $modified_from_time = date($timefmt, $modified_from[$x]);
             $modified_from_date = date($datefmt, $modified_from[$x]);
         } else {
-            $modified_from_time = "" . $row["modified_from"] . "";
-            $modified_from_date = "" . $row["modified_from"] . "";
+            $modified_from_time = "" . $modified_from[$x] . "";
+            $modified_from_date = "" . $modified_from[$x] . "";
         }
         if (!empty($modified_to[$x])) {
             $modified_to[$x] = $modified_to[$x] + @$tzo;
             $modified_to_time = date($timefmt, $modified_to[$x]);
             $modified_to_date = date($datefmt, $modified_to[$x]);
         } else {
-            $modified_to_time = "" . $row["modified_to"] . "";
-            $modified_to_date = "" . $row["modified_to"] . "";
+            $modified_to_time = "" . $modified_to[$x] . "";
+            $modified_to_date = "" . $modified_to[$x] . "";
         }
         if ((!empty($modified_from[$x])) && (empty($modified_to[$x]))) {
             $modified_status = "Deleted";
@@ -478,9 +458,7 @@ if ($request == 'GET') {
         text-decoration:underline;'>Modified From</td>\n";
                 echo "    <td nowrap width=15% align=left style='padding-left:10px;font-size:11px;color:#27408b;
         text-decoration:underline;'>Modified To</td></tr>\n";
-
             } else {
-
                 // display report name and page number of printed report above the column headings of each printed page //
 
                 $temp_page_count = $page_count + 1;
@@ -513,28 +491,28 @@ if ($request == 'GET') {
 
         // display the query results //
 
-        echo "  <tr><td nowrap align=left width=15% style='background-color:$row_color;color:" . $row["color"] . ";
+        echo "  <tr><td nowrap align=left width=15% style='background-color:$row_color;color:#000000;
         padding-left:10px;'>$user_modified[$x]</td>\n";
         echo "    <td nowrap align=left width=10% style='background-color:$row_color;color:$modified_color;
         padding-left:10px;'>$modified_status</td>\n";
-        echo "  <td nowrap align=left width=15% style='background-color:$row_color;color:" . $row["color"] . ";
+        echo "  <td nowrap align=left width=15% style='background-color:$row_color;color:#000000;
         padding-left:10px;'>$modified_when_date,&nbsp;$modified_when_time</td>\n";
-        echo "    <td nowrap align=left width=15% style='background-color:$row_color;color:" . $row["color"] . ";
+        echo "    <td nowrap align=left width=15% style='background-color:$row_color;color:#000000;
         padding-left:10px;'>$modified_by_user[$x]</td>\n";
-        echo "    <td nowrap align=left width=15% style='background-color:$row_color;color:" . $row["color"] . ";
+        echo "    <td nowrap align=left width=15% style='background-color:$row_color;color:#000000;
         padding-left:10px;'>$modified_by_ip[$x]</td>\n";
         if (!empty($modified_from[$x])) {
-            echo "    <td nowrap align=left width=15% style='background-color:$row_color;color:" . $row["color"] . ";
+            echo "    <td nowrap align=left width=15% style='background-color:$row_color;color:#000000;
         padding-left:10px;'>$modified_from_date,&nbsp;$modified_from_time</td>\n";
         } else {
-            echo "    <td nowrap align=left width=15% style='background-color:$row_color;color:" . $row["color"] . ";
+            echo "    <td nowrap align=left width=15% style='background-color:$row_color;color:#000000;
         padding-left:10px;'></td>\n";
         }
         if (!empty($modified_to[$x])) {
-            echo "    <td nowrap align=left width=15% style='background-color:$row_color;color:" . $row["color"] . ";
+            echo "    <td nowrap align=left width=15% style='background-color:$row_color;color:#000000;
         padding-left:10px;'>$modified_to_date,&nbsp;$modified_to_time</td></tr>\n";
         } else {
-            echo "    <td nowrap align=left width=15% style='background-color:$row_color;color:" . $row["color"] . ";
+            echo "    <td nowrap align=left width=15% style='background-color:$row_color;color:#000000;
         padding-left:10px;'></td></tr>\n";
         }
         $row_count++;
@@ -550,4 +528,3 @@ if ($request == 'GET') {
     echo "</table>\n";
 }
 exit;
-?>

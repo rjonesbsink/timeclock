@@ -1,12 +1,11 @@
 <?php
+
 /**
  * Export display of hours.
  */
 
-if (!isset($_SESSION['application'])) {
-    header('Location:export.php');
-    exit;
-}
+require_once '../lib/auth.php';
+require_application_context('export.php');
 
 require_once 'class.Timecard.php';
 
@@ -52,7 +51,6 @@ $week_begin_local_timestamp = work_week_begin($begin_local_timestamp);
 $GLOBALS['tc_begin_local_timestamp'] = $begin_local_timestamp; // for filtering records between week begin and report begin date
 
 while ($row = mysqli_fetch_array($result)) {
-
     $empfullname = $row['fullname'];
 
     // Scan all employee timecards for each week between begin and end dates.
@@ -109,6 +107,8 @@ or trigger_error("export_display: Cannot select hours. " . mysqli_error($GLOBALS
 // Print export page header.
 $begin_date = date('l F j, Y', $begin_local_timestamp);
 $end_date = date('l F j, Y', $end_local_timestamp);
+$h_from_date = htmlentities($from_date);
+$h_to_date = htmlentities($to_date);
 $h_user_name = htmlentities($user_name);
 $h_group_name = htmlentities($group_name);
 $h_office_name = htmlentities($office_name);
@@ -131,8 +131,8 @@ print <<<End_Of_HTML
 <a href="javascript:;"$options_link_class onclick="$(this).toggleClass('open');$('#options').slideToggle()">Options</a>
 <div id="options"$options_style>
 <form method="post" action="{$_SERVER['PHP_SELF']}">
-<input type="hidden" name="from_date" value="$from_date" />
-<input type="hidden" name="to_date" value="$to_date" />
+<input type="hidden" name="from_date" value="$h_from_date" />
+<input type="hidden" name="to_date" value="$h_to_date" />
 <input type="hidden" name="user_name" value="$h_user_name" />
 <input type="hidden" name="group_name" value="$h_group_name" />
 <input type="hidden" name="office_name" value="$h_office_name" />
@@ -161,7 +161,6 @@ End_Of_HTML;
 // Build export table html.
 $row_count = 0;
 while ($row = mysqli_fetch_array($result)) {
-
     if ($row_count == 0) {
         // Table header
         print <<<End_Of_HTML
@@ -285,7 +284,8 @@ End_Of_HTML;
 ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
 
 ////////////////////////////////////////
-function setup_record_hours() {
+function setup_record_hours()
+{
     // Create temp database table to hold records of computed timecard hours.
     $sql = <<<End_Of_SQL
 create temporary table t_computed_hours (
@@ -305,7 +305,8 @@ End_Of_SQL;
     or trigger_error("export_display: Cannot create temporary table t_computed_hours. " . mysqli_error($GLOBALS["___mysqli_ston"]), E_USER_WARNING);
 }
 
-function record_hours($tc) {
+function record_hours($tc)
+{
     // Insert records of computed hours into temp database table.
     // Helper function for Timecard::walk().
 
@@ -358,5 +359,3 @@ function record_hours($tc) {
         }
     }
 }
-
-?>

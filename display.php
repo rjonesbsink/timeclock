@@ -4,15 +4,12 @@ $row_count = 0;
 $page_count = 0;
 
 while ($row = mysqli_fetch_array($result)) {
-
     $display_stamp = "" . $row["timestamp"] . "";
     $time = date($timefmt, $display_stamp);
     $date = date($datefmt, $display_stamp);
 
     if ($row_count == 0) {
-
         if ($page_count == 0) {
-
             // display sortable column headings for main page //
 
             echo "            <table class=misc_items width=100% border=0 cellpadding=2 cellspacing=0>\n";
@@ -46,9 +43,7 @@ while ($row = mysqli_fetch_array($result)) {
             echo "                <td style='padding-left:10px;'><a style='font-size:11px;color:#27408b;'
                                     href='$current_page?sortcolumn=notes&sortdirection=$sortnewdirection'><u>Notes</u></a></td>\n";
             echo "              </tr>\n";
-
         } else {
-
             // display report name and page number of printed report above the column headings of each printed page //
 
             $temp_page_count = $page_count + 1;
@@ -89,27 +84,27 @@ while ($row = mysqli_fetch_array($result)) {
     $date = date($datefmt, $display_stamp);
 
     if ($show_display_name == "yes") {
-        echo stripslashes("              <tr class=display_row><td nowrap width=20% bgcolor='$row_color' style='padding-left:10px; 
-                          padding-right:10px;'>" . $row["displayname"] . "</td>\n");
+        echo stripslashes("              <tr class=display_row><td nowrap width=20% bgcolor='$row_color' style='padding-left:10px;
+                          padding-right:10px;'>" . htmlentities($row["displayname"]) . "</td>\n");
     } elseif ($show_display_name == "no") {
         echo stripslashes("              <tr class=display_row><td nowrap width=20% bgcolor='$row_color' style='padding-left:10px;
-                          padding-right:10px;'>" . $row["empfullname"] . "</td>\n");
+                          padding-right:10px;'>" . htmlentities($row["empfullname"]) . "</td>\n");
     }
 
-    echo "                <td nowrap align=left width=7% style='background-color:$row_color;color:" . $row["color"] . ";
-                        padding-left:10px;'>" . $row["inout"] . "</td>\n";
+    echo "                <td nowrap align=left width=7% style='background-color:$row_color;color:" . htmlentities($row["color"]) . ";
+                        padding-left:10px;'>" . htmlentities($row["inout"]) . "</td>\n";
     echo "                <td nowrap align=right width=5% bgcolor='$row_color' style='padding-right:10px;'>" . $time . "</td>\n";
     echo "                <td nowrap align=right width=5% bgcolor='$row_color' style='padding-left:10px;'>" . $date . "</td>\n";
 
     if ($display_office_name == "yes") {
-        echo "                <td nowrap align=left width=10% bgcolor='$row_color' style='padding-left:10px;'>" . $row["office"] . "</td>\n";
+        echo "                <td nowrap align=left width=10% bgcolor='$row_color' style='padding-left:10px;'>" . htmlentities($row["office"]) . "</td>\n";
     }
 
     if ($display_group_name == "yes") {
-        echo "                <td nowrap align=left width=10% bgcolor='$row_color' style='padding-left:10px;'>" . $row["groups"] . "</td>\n";
+        echo "                <td nowrap align=left width=10% bgcolor='$row_color' style='padding-left:10px;'>" . htmlentities($row["groups"]) . "</td>\n";
     }
 
-    echo stripslashes("                <td bgcolor='$row_color' style='padding-left:10px;'>" . $row["notes"] . "</td>\n");
+    echo stripslashes("                <td bgcolor='$row_color' style='padding-left:10px;'>" . htmlentities($row["notes"]) . "</td>\n");
     echo "              </tr>\n";
 
     $row_count++;
@@ -121,7 +116,6 @@ while ($row = mysqli_fetch_array($result)) {
         $row_count = 0;
         $page_count++;
     }
-
 }
 
 echo "            </table>\n";
@@ -131,4 +125,3 @@ if (!isset($_GET['printer_friendly'])) {
 }
 
 ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
-?>

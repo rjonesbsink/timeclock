@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 include_once '../config.inc.php';
@@ -12,23 +13,12 @@ $request = $_SERVER['REQUEST_METHOD'];
 const WHERE_PUNCHITEMS = "punchitems = ?";
 const FOOTER_PHP = '../footer.php';
 
-if (!isset($_SESSION['valid_user'])) {
-
-    echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
-    echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Administration</td></tr>\n";
-    echo "  <tr class=right_main_text>\n";
-    echo "    <td align=center valign=top scope=row>\n";
-    echo "      <table width=200 border=0 cellpadding=5 cellspacing=0>\n";
-    echo "        <tr class=right_main_text><td align=center>You are not presently logged in, or do not have permission to view this page.</td></tr>\n";
-    echo "        <tr class=right_main_text><td align=center>Click <a class=admin_headings href='../login.php'><u>here</u></a> to login.</td></tr>\n";
-    echo "      </table><br /></td></tr></table>\n";
-    exit;
-}
+require_once '../lib/auth.php';
+require_valid_user();
+require_once '../lib/csrf.php';
 
 if ($request == 'GET') {
-
     if (!isset($_GET['statusname'])) {
-
         echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
         echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Error!</td></tr>\n";
         echo "  <tr class=right_main_text>\n";
@@ -42,6 +32,7 @@ if ($request == 'GET') {
     }
 
     $get_status = $_GET['statusname'];
+    $h_get_status = htmlentities($get_status);
 
     $result = tc_select("*", "punchlist", WHERE_PUNCHITEMS, $get_status);
 
@@ -81,9 +72,9 @@ if ($request == 'GET') {
     echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application.png' alt='Status Summary' />
                 &nbsp;&nbsp;<a class=admin_headings href='statusadmin.php'>Status Summary</a></td></tr>\n";
     echo "        <tr><td class=current_left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Edit Status' />
-                &nbsp;&nbsp;<a class=admin_headings href=\"statusedit.php?statusname=$get_status\">Edit Status</a></td></tr>\n";
+                &nbsp;&nbsp;<a class=admin_headings href=\"statusedit.php?statusname=$h_get_status\">Edit Status</a></td></tr>\n";
     echo "        <tr><td class=left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Delete Status' />
-                &nbsp;&nbsp;<a class=admin_headings href=\"statusdelete.php?statusname=$get_status\">Delete Status</a></td></tr>\n";
+                &nbsp;&nbsp;<a class=admin_headings href=\"statusdelete.php?statusname=$h_get_status\">Delete Status</a></td></tr>\n";
     echo "        <tr><td class=left_rows_border_top height=18 align=left valign=middle><img src='../images/icons/application_add.png' alt='Create Status' />
                 &nbsp;&nbsp;<a class=admin_headings href='statuscreate.php'>Create Status</a></td></tr>\n";
     echo "        <tr><td class=left_rows height=33></td></tr>\n";
@@ -102,6 +93,7 @@ if ($request == 'GET') {
     echo "            <br />\n";
     echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
     echo "            <form name='form' action='$self' method='post'>\n";
+    echo csrf_field() . "\n";
     echo "              <tr>\n";
     echo "                <th class=rightside_heading nowrap halign=left colspan=3>
                     <img src='../images/icons/application_edit.png' />&nbsp;&nbsp;&nbsp;Edit Status</th>\n";
@@ -129,7 +121,7 @@ if ($request == 'GET') {
 
     echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>On Punch Become:</td><td colspan=2 width=80%
                       style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'><select name='punchnext'>\n";
-    echo "            <option value =''>...</option>" . html_options(tc_select("punchitems",  "punchlist"), $punchnext) . "</select></td></tr>\n";
+    echo "            <option value =''>...</option>" . html_options(tc_select("punchitems", "punchlist"), $punchnext) . "</select></td></tr>\n";
 
     echo "              <tr><td class=table_rows align=right colspan=3 style='color:red;font-family:Tahoma;font-size:10px;'>*&nbsp;required&nbsp;</td></tr>\n";
     echo "            </table>\n";
@@ -138,14 +130,16 @@ if ($request == 'GET') {
     echo "              <tr><td height=40></td></tr>\n";
     echo "            </table>\n";
     echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
-    echo "              <input type='hidden' name='get_status' value='$get_status'>\n";
+    echo "              <input type='hidden' name='get_status' value='$h_get_status'>\n";
     echo "              <tr><td width=30><input type='image' name='submit' value='Edit Status' src='../images/buttons/next_button.png'></td>
                   <td><a href='statusadmin.php'><img src='../images/buttons/cancel_button.png' border='0'></td></tr></table></form></td></tr>\n";
     include_once FOOTER_PHP;
     exit;
 } elseif ($request == 'POST') {
+    require_csrf_token();
 
     $get_status = $_POST['get_status'];
+    $h_get_status = htmlentities($get_status);
     $post_statusname = $_POST['post_statusname'];
     $post_color = $_POST['post_color'];
     $create_status = $_POST['create_status'];
@@ -174,11 +168,16 @@ if ($request == 'GET') {
     $string  = strstr($post_statusname, "'");
     $string2 = strstr($post_statusname, "\"");
 
-    if ((empty($post_statusname)) || (empty($post_color)) || (!preg_match('/' . "^([[:alnum:]]| |-|_|.)+$" . '/i', $post_statusname)) ||
-        ((!preg_match('/' . "^(#[a-fA-F0-9]{6})+$" . '/i', $post_color)) && (!preg_match('/' . "^([a-fA-F0-9]{6})+$" . '/i', $post_color))) || (!empty($string)) || (!empty($string2))
-        || !$punchnext_ok
+    if (
+        (empty($post_statusname)) ||
+        (empty($post_color)) ||
+        (!preg_match('/' . "^([[:alnum:]]| |-|_|.)+$" . '/i', $post_statusname)) ||
+        ((!preg_match('/' . "^(#[a-fA-F0-9]{6})+$" . '/i', $post_color)) &&
+        (!preg_match('/' . "^([a-fA-F0-9]{6})+$" . '/i', $post_color))) ||
+        (!empty($string)) ||
+        (!empty($string2)) ||
+        !$punchnext_ok
     ) {
-
         echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
         echo "  <tr valign=top>\n";
         echo "    <td class=left_main width=180 align=left scope=col>\n";
@@ -208,9 +207,9 @@ if ($request == 'GET') {
         echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application.png' alt='Status Summary' />
                 &nbsp;&nbsp;<a class=admin_headings href='statusadmin.php'>Status Summary</a></td></tr>\n";
         echo "        <tr><td class=current_left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Edit Status' />
-                &nbsp;&nbsp;<a class=admin_headings href=\"statusedit.php?statusname=$get_status\">Edit Status</a></td></tr>\n";
+                &nbsp;&nbsp;<a class=admin_headings href=\"statusedit.php?statusname=$h_get_status\">Edit Status</a></td></tr>\n";
         echo "        <tr><td class=left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Delete Status' />
-                &nbsp;&nbsp;<a class=admin_headings href=\"statusdelete.php?statusname=$get_status\">Delete Status</a></td></tr>\n";
+                &nbsp;&nbsp;<a class=admin_headings href=\"statusdelete.php?statusname=$h_get_status\">Delete Status</a></td></tr>\n";
         echo "        <tr><td class=left_rows_border_top height=18 align=left valign=middle><img src='../images/icons/application_add.png' alt='Create Status' />
                 &nbsp;&nbsp;<a class=admin_headings href='statuscreate.php'>Create Status</a></td></tr>\n";
         echo "        <tr><td class=left_rows height=33></td></tr>\n";
@@ -269,20 +268,24 @@ if ($request == 'GET') {
             echo "            </table>\n";
         }
 
+        $h_post_statusname = htmlentities($post_statusname);
+        $h_post_color = htmlentities($post_color);
+
         echo "            <br />\n";
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
         echo "            <form name='form' action='$self' method='post'>\n";
+        echo csrf_field() . "\n";
         echo "              <tr>\n";
         echo "                <th class=rightside_heading nowrap halign=left colspan=3>
                     <img src='../images/icons/application_edit.png' />&nbsp;&nbsp;&nbsp;Edit Office</th>\n";
         echo "              </tr>\n";
         echo "              <tr><td height=15></td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>New Status Name:</td><td colspan=2 width=80%
-                      style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'><input type='text' 
-                      size='20' maxlength='50' name='post_statusname' value=\"$post_statusname\">&nbsp;*</td></tr>\n";
+                      style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'><input type='text'
+                      size='20' maxlength='50' name='post_statusname' value=\"$h_post_statusname\">&nbsp;*</td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Color:</td><td colspan=2 width=80%
                       style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'><input type='text'
-                      size='20' maxlength='7' name='post_color' value=\"$post_color\">&nbsp;*&nbsp;&nbsp;<a href=\"#\" 
+                      size='20' maxlength='7' name='post_color' value=\"$h_post_color\">&nbsp;*&nbsp;&nbsp;<a href=\"#\"
                       onclick=\"cp.select(document.forms['form'].post_color,'pick');return false;\" name=\"pick\" id=\"pick\" 
                       style='font-size:11px;color:#27408b;'>Pick Color</a></td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Is Status considered '<b>In</b>' or '<b>Out</b>'?</td>\n";
@@ -299,7 +302,7 @@ if ($request == 'GET') {
 
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>On Punch Become:</td><td colspan=2 width=80%
                           style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'><select name='punchnext'>\n";
-        echo "            <option value =''>...</option>" . html_options(tc_select("punchitems",  "punchlist"), $punchnext) . "</select></td></tr>\n";
+        echo "            <option value =''>...</option>" . html_options(tc_select("punchitems", "punchlist"), $punchnext) . "</select></td></tr>\n";
 
         echo "              <tr><td class=table_rows align=right colspan=3 style='color:red;font-family:Tahoma;font-size:10px;'>*&nbsp;required&nbsp;</td></tr>\n";
         echo "            </table>\n";
@@ -308,14 +311,12 @@ if ($request == 'GET') {
         echo "              <tr><td height=40></td></tr>\n";
         echo "            </table>\n";
         echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
-        echo "              <input type='hidden' name='get_status' value='$get_status'>\n";
+        echo "              <input type='hidden' name='get_status' value='$h_get_status'>\n";
         echo "              <tr><td width=30><input type='image' name='submit' value='Edit Status' src='../images/buttons/next_button.png'></td>
                   <td><a href='statusadmin.php'><img src='../images/buttons/cancel_button.png' border='0'></td></tr></table></form></td></tr>\n";
         include_once FOOTER_PHP;
         exit;
-
     } else {
-
         tc_update_strings(
             "punchlist",
             array(
@@ -324,16 +325,21 @@ if ($request == 'GET') {
                 "in_or_out"  => $create_status,
                 "punchnext"  => $punchnext
             ),
-            WHERE_PUNCHITEMS, $get_status
+            WHERE_PUNCHITEMS,
+            $get_status
         );
 
         if ($post_statusname != $get_status) {
             tc_update_strings(
                 "info",
                 array("inout" => $post_statusname),
-                "`inout` = ?", $get_status
+                "`inout` = ?",
+                $get_status
             );
         }
+
+        $post_statusname = htmlentities($post_statusname);
+        $post_color = htmlentities($post_color);
 
         echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
         echo "  <tr valign=top>\n";
@@ -419,4 +425,3 @@ if ($request == 'GET') {
     }
     include_once FOOTER_PHP;
 }
-?>

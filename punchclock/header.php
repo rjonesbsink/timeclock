@@ -1,13 +1,12 @@
 <?php
+
 /**
  * Punchclock programs' header.
  */
 
 require_once 'config.inc.php';
-
 // Arguments
 global $PAGE_TITLE, $PAGE_META, $PAGE_STYLE, $PAGE_SCRIPT, $PAGE_BODY_ID, $PAGE_CONTENT_HEADER;
-
 // Default values
 $PAGE_TITLE = isset($PAGE_TITLE) ? $PAGE_TITLE : $title;
 $PAGE_META = isset($PAGE_META) ? $PAGE_META : "";
@@ -15,7 +14,6 @@ $PAGE_STYLE = isset($PAGE_STYLE) ? $PAGE_STYLE : "";
 $PAGE_SCRIPT = isset($PAGE_SCRIPT) ? $PAGE_SCRIPT : "";
 $PAGE_BODY_ID = isset($PAGE_BODY_ID) ? $PAGE_BODY_ID : "";
 $PAGE_CONTENT_HEADER = isset($PAGE_CONTENT_HEADER) ? $PAGE_CONTENT_HEADER : "";
-
 ////////////////////////////////////////
 echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"; // puts IE6 in quirks mode
 ?>
@@ -53,7 +51,7 @@ echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"; // puts IE6 in quirks mode
 </head>
 <body<?php if (strlen($PAGE_BODY_ID) > 0) {
     echo " id=\"$PAGE_BODY_ID\"";
-} ?>>
+     } ?>>
 <div class="page">
 
     <?php include 'header_timeclock.php'; ?>

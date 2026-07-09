@@ -1,4 +1,5 @@
 <?php
+
 /**
  * punchclock - timeclock for employees to punch in and out.
  *
@@ -15,7 +16,7 @@ require_once 'lib.common.php';
 require_once 'lib.select.php';
 turn_off_magic_quotes();
 
-# Uncomment next to force logout and always run punchclock without privileges 
+# Uncomment next to force logout and always run punchclock without privileges
 #session_stop();
 
 session_start();
@@ -160,4 +161,3 @@ print "<div id=\"message\">Synchronizing, Please Wait...</div>\n";
 include 'time.php';
 include 'punchclock_display.php';
 include 'footer.php';
-?>

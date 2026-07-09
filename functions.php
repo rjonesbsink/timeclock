@@ -1,6 +1,7 @@
 <?php
 
-function _tc_bind_param($stmt, $params, $types) {
+function _tc_bind_param($stmt, $params, $types)
+{
     if (is_null($params)) {
         $params = array();
     }
@@ -9,7 +10,9 @@ function _tc_bind_param($stmt, $params, $types) {
         $params = array($params);
     }
 
-    if (empty($params)) { return; }
+    if (empty($params)) {
+        return;
+    }
 
     if (is_null($types)) {
         $types = str_repeat("s", count($params));
@@ -23,7 +26,8 @@ function _tc_bind_param($stmt, $params, $types) {
     return call_user_func_array(array($stmt, 'bind_param'), @$refs);
 }
 
-function tc_execute($query, $params = array(), $types = null) {
+function tc_execute($query, $params = array(), $types = null)
+{
     if (!($stmt = $GLOBALS["___mysqli_ston"]->prepare($query))) {
         error_log("Failed to prepare $query: " . mysqli_error($GLOBALS["___mysqli_ston"]));
         return false;
@@ -36,7 +40,8 @@ function tc_execute($query, $params = array(), $types = null) {
     return $stmt->close();
 }
 
-function tc_query($query, $params = array(), $types = null) {
+function tc_query($query, $params = array(), $types = null)
+{
     if (!($stmt = $GLOBALS["___mysqli_ston"]->prepare($query))) {
         error_log("Failed to prepare $query: " . mysqli_error($GLOBALS["___mysqli_ston"]));
         return false;
@@ -49,14 +54,16 @@ function tc_query($query, $params = array(), $types = null) {
     return $stmt->get_result();
 }
 
-function tc_select($what, $from, $where = '1=1', $params = array(), $types = null) {
+function tc_select($what, $from, $where = '1=1', $params = array(), $types = null)
+{
     global $db_prefix;
-    return tc_query("SELECT $what FROM ${db_prefix}$from WHERE $where", $params, $types);
+    return tc_query("SELECT $what FROM {$db_prefix}$from WHERE $where", $params, $types);
 }
 
-function tc_select_value($what, $from, $where = '1=1', $params = array(), $types = null) {
+function tc_select_value($what, $from, $where = '1=1', $params = array(), $types = null)
+{
     global $db_prefix;
-    $result = tc_query("SELECT $what FROM ${db_prefix}$from WHERE $where", $params, $types);
+    $result = tc_query("SELECT $what FROM {$db_prefix}$from WHERE $where", $params, $types);
     $value = null;
     while ($row = mysqli_fetch_array($result)) {
         $value = $row[0];
@@ -64,12 +71,14 @@ function tc_select_value($what, $from, $where = '1=1', $params = array(), $types
     return $value;
 }
 
-function tc_delete($from, $where, $params = array(), $types = null) {
+function tc_delete($from, $where, $params = array(), $types = null)
+{
     global $db_prefix;
-    return tc_query("DELETE FROM ${db_prefix}$from WHERE $where", $params, $types);
+    return tc_query("DELETE FROM {$db_prefix}$from WHERE $where", $params, $types);
 }
 
-function tc_insert_strings($db, $keyvals) {
+function tc_insert_strings($db, $keyvals)
+{
     global $db_prefix;
     $keys = '';
     $places = '';
@@ -85,11 +94,12 @@ function tc_insert_strings($db, $keyvals) {
         $types .= "s";
         $values[] = "$value";
     }
-    tc_execute("INSERT INTO ${db_prefix}$db ($keys) VALUES ($places)", $values, $types);
+    tc_execute("INSERT INTO {$db_prefix}$db ($keys) VALUES ($places)", $values, $types);
     return mysqli_insert_id($GLOBALS["___mysqli_ston"]);
 }
 
-function tc_update_strings($db, $keyvals, $where = '1=1', $bind = array(), $types = null) {
+function tc_update_strings($db, $keyvals, $where = '1=1', $bind = array(), $types = null)
+{
     global $db_prefix;
     $places = '';
     $set_types = '';
@@ -108,20 +118,23 @@ function tc_update_strings($db, $keyvals, $where = '1=1', $bind = array(), $type
     if (!is_null($types)) {
         $types = $set_types . $types;
     }
-    tc_execute("UPDATE ${db_prefix}$db SET $places WHERE $where", array_merge($values, $bind), $types);
+    tc_execute("UPDATE {$db_prefix}$db SET $places WHERE $where", array_merge($values, $bind), $types);
 }
 
-function tc_hash_password($password) {
+function tc_hash_password($password)
+{
     return password_hash($password, PASSWORD_DEFAULT);
 }
 
-function tc_is_legacy_password_hash($hash) {
+function tc_is_legacy_password_hash($hash)
+{
     // Legacy PHP Timeclock password hashes are the 13-character output of
     // crypt($password, 'xy'). Hashes from password_hash() always start with "$".
     return $hash !== null && $hash !== '' && $hash[0] !== '$';
 }
 
-function tc_verify_password($password, $hash) {
+function tc_verify_password($password, $hash)
+{
     if (tc_is_legacy_password_hash($hash)) {
         return hash_equals($hash, crypt($password, $hash));
     }
@@ -129,7 +142,8 @@ function tc_verify_password($password, $hash) {
     return password_verify($password, $hash);
 }
 
-function tc_maybe_upgrade_password($empfullname, $password, $hash) {
+function tc_maybe_upgrade_password($empfullname, $password, $hash)
+{
     // Transparently migrate a verified legacy crypt() hash to password_hash()
     // so accounts don't need to be reset when this upgrade ships.
     if (tc_is_legacy_password_hash($hash)) {
@@ -137,7 +151,8 @@ function tc_maybe_upgrade_password($empfullname, $password, $hash) {
     }
 }
 
-function btag($tag, $attr = array()) {
+function btag($tag, $attr = array())
+{
     $begin = array(htmlentities($tag));
     foreach ($attr as $key => $value) {
         $begin[] = htmlentities($key) . "=\"" . htmlentities($value) . "\"";
@@ -145,11 +160,13 @@ function btag($tag, $attr = array()) {
     return "<" . implode(" ", $begin) . ">";
 }
 
-function tag($tag, $content = "", $attr = array()) {
+function tag($tag, $content = "", $attr = array())
+{
     return btag($tag, $attr) . htmlentities($content) . "</" . htmlentities($tag) . ">";
 }
 
-function html_options($result, $selected='') {
+function html_options($result, $selected = '')
+{
     $rv = array();
     while ($row = mysqli_fetch_array($result)) {
         $value = htmlentities($row[0]);
@@ -160,7 +177,8 @@ function html_options($result, $selected='') {
     return implode("", $rv);
 }
 
-function yes_no_bool($val, $default=false) {
+function yes_no_bool($val, $default = false)
+{
     if (strtolower(@$val) == 'yes') {
         return true;
     }
@@ -170,15 +188,18 @@ function yes_no_bool($val, $default=false) {
     return $default;
 }
 
-function value_or_null($val) {
+function value_or_null($val)
+{
     return (strlen(trim(@$val)) == 0) ? null : $val;
 }
 
-function has_value($val) {
+function has_value($val)
+{
     return strlen(trim(@$val)) != 0;
 }
 
-function secsToHours($secs, $round_time) {
+function secsToHours($secs, $round_time)
+{
 
     /* The logic for this function was written by Adam Woodbeck, who initially wrote it to round to the
        nearest 15 minutes. It has been expanded to round to the nearest 5, 10, 20, and 30 minutes, as well
@@ -264,12 +285,12 @@ function secsToHours($secs, $round_time) {
     return number_format($hours, 2);
 }
 
-function disabled_acct($get_user) {
+function disabled_acct($get_user)
+{
 
     $result = tc_select("empfullname, disabled", "employees", "empfullname = ?", $get_user);
 
     while ($row = mysqli_fetch_array($result)) {
-
         if ("" . $row["disabled"] . "" == 1) {
             echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
             echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>The account for " . htmlspecialchars($get_user) . " is
@@ -285,77 +306,78 @@ function disabled_acct($get_user) {
     }
 }
 
-function get_ipaddress() {
+function get_ipaddress()
+{
 
     if (empty($REMOTE_ADDR)) {
         if (!empty($_SERVER) && isset($_SERVER['REMOTE_ADDR'])) {
             $REMOTE_ADDR = $_SERVER['REMOTE_ADDR'];
-        } else if (!empty($_ENV) && isset($_ENV['REMOTE_ADDR'])) {
+        } elseif (!empty($_ENV) && isset($_ENV['REMOTE_ADDR'])) {
             $REMOTE_ADDR = $_ENV['REMOTE_ADDR'];
-        } else if (@getenv('REMOTE_ADDR')) {
+        } elseif (@getenv('REMOTE_ADDR')) {
             $REMOTE_ADDR = getenv('REMOTE_ADDR');
         }
     }
     if (empty($HTTP_X_FORWARDED_FOR)) {
         if (!empty($_SERVER) && isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
             $HTTP_X_FORWARDED_FOR = $_SERVER['HTTP_X_FORWARDED_FOR'];
-        } else if (!empty($_ENV) && isset($_ENV['HTTP_X_FORWARDED_FOR'])) {
+        } elseif (!empty($_ENV) && isset($_ENV['HTTP_X_FORWARDED_FOR'])) {
             $HTTP_X_FORWARDED_FOR = $_ENV['HTTP_X_FORWARDED_FOR'];
-        } else if (@getenv('HTTP_X_FORWARDED_FOR')) {
+        } elseif (@getenv('HTTP_X_FORWARDED_FOR')) {
             $HTTP_X_FORWARDED_FOR = getenv('HTTP_X_FORWARDED_FOR');
         }
     }
     if (empty($HTTP_X_FORWARDED)) {
         if (!empty($_SERVER) && isset($_SERVER['HTTP_X_FORWARDED'])) {
             $HTTP_X_FORWARDED = $_SERVER['HTTP_X_FORWARDED'];
-        } else if (!empty($_ENV) && isset($_ENV['HTTP_X_FORWARDED'])) {
+        } elseif (!empty($_ENV) && isset($_ENV['HTTP_X_FORWARDED'])) {
             $HTTP_X_FORWARDED = $_ENV['HTTP_X_FORWARDED'];
-        } else if (@getenv('HTTP_X_FORWARDED')) {
+        } elseif (@getenv('HTTP_X_FORWARDED')) {
             $HTTP_X_FORWARDED = getenv('HTTP_X_FORWARDED');
         }
     }
     if (empty($HTTP_FORWARDED_FOR)) {
         if (!empty($_SERVER) && isset($_SERVER['HTTP_FORWARDED_FOR'])) {
             $HTTP_FORWARDED_FOR = $_SERVER['HTTP_FORWARDED_FOR'];
-        } else if (!empty($_ENV) && isset($_ENV['HTTP_FORWARDED_FOR'])) {
+        } elseif (!empty($_ENV) && isset($_ENV['HTTP_FORWARDED_FOR'])) {
             $HTTP_FORWARDED_FOR = $_ENV['HTTP_FORWARDED_FOR'];
-        } else if (@getenv('HTTP_FORWARDED_FOR')) {
+        } elseif (@getenv('HTTP_FORWARDED_FOR')) {
             $HTTP_FORWARDED_FOR = getenv('HTTP_FORWARDED_FOR');
         }
     }
     if (empty($HTTP_FORWARDED)) {
         if (!empty($_SERVER) && isset($_SERVER['HTTP_FORWARDED'])) {
             $HTTP_FORWARDED = $_SERVER['HTTP_FORWARDED'];
-        } else if (!empty($_ENV) && isset($_ENV['HTTP_FORWARDED'])) {
+        } elseif (!empty($_ENV) && isset($_ENV['HTTP_FORWARDED'])) {
             $HTTP_FORWARDED = $_ENV['HTTP_FORWARDED'];
-        } else if (@getenv('HTTP_FORWARDED')) {
+        } elseif (@getenv('HTTP_FORWARDED')) {
             $HTTP_FORWARDED = getenv('HTTP_FORWARDED');
         }
     }
     if (empty($HTTP_VIA)) {
         if (!empty($_SERVER) && isset($_SERVER['HTTP_VIA'])) {
             $HTTP_VIA = $_SERVER['HTTP_VIA'];
-        } else if (!empty($_ENV) && isset($_ENV['HTTP_VIA'])) {
+        } elseif (!empty($_ENV) && isset($_ENV['HTTP_VIA'])) {
             $HTTP_VIA = $_ENV['HTTP_VIA'];
-        } else if (@getenv('HTTP_VIA')) {
+        } elseif (@getenv('HTTP_VIA')) {
             $HTTP_VIA = getenv('HTTP_VIA');
         }
     }
     if (empty($HTTP_X_COMING_FROM)) {
         if (!empty($_SERVER) && isset($_SERVER['HTTP_X_COMING_FROM'])) {
             $HTTP_X_COMING_FROM = $_SERVER['HTTP_X_COMING_FROM'];
-        } else if (!empty($_ENV) && isset($_ENV['HTTP_X_COMING_FROM'])) {
+        } elseif (!empty($_ENV) && isset($_ENV['HTTP_X_COMING_FROM'])) {
             $HTTP_X_COMING_FROM = $_ENV['HTTP_X_COMING_FROM'];
-        } else if (@getenv('HTTP_X_COMING_FROM')) {
+        } elseif (@getenv('HTTP_X_COMING_FROM')) {
             $HTTP_X_COMING_FROM = getenv('HTTP_X_COMING_FROM');
         }
     }
     if (empty($HTTP_COMING_FROM)) {
         if (!empty($_SERVER) && isset($_SERVER['HTTP_COMING_FROM'])) {
             $HTTP_COMING_FROM = $_SERVER['HTTP_COMING_FROM'];
-        } else if (!empty($_ENV) && isset($_ENV['HTTP_COMING_FROM'])) {
+        } elseif (!empty($_ENV) && isset($_ENV['HTTP_COMING_FROM'])) {
             $HTTP_COMING_FROM = $_ENV['HTTP_COMING_FROM'];
-        } else if (@getenv('HTTP_COMING_FROM')) {
+        } elseif (@getenv('HTTP_COMING_FROM')) {
             $HTTP_COMING_FROM = getenv('HTTP_COMING_FROM');
         }
     }
@@ -371,17 +393,17 @@ function get_ipaddress() {
     $proxy_ip = '';
     if (!empty($HTTP_X_FORWARDED_FOR)) {
         $proxy_ip = $HTTP_X_FORWARDED_FOR;
-    } else if (!empty($HTTP_X_FORWARDED)) {
+    } elseif (!empty($HTTP_X_FORWARDED)) {
         $proxy_ip = $HTTP_X_FORWARDED;
-    } else if (!empty($HTTP_FORWARDED_FOR)) {
+    } elseif (!empty($HTTP_FORWARDED_FOR)) {
         $proxy_ip = $HTTP_FORWARDED_FOR;
-    } else if (!empty($HTTP_FORWARDED)) {
+    } elseif (!empty($HTTP_FORWARDED)) {
         $proxy_ip = $HTTP_FORWARDED;
-    } else if (!empty($HTTP_VIA)) {
+    } elseif (!empty($HTTP_VIA)) {
         $proxy_ip = $HTTP_VIA;
-    } else if (!empty($HTTP_X_COMING_FROM)) {
+    } elseif (!empty($HTTP_X_COMING_FROM)) {
         $proxy_ip = $HTTP_X_COMING_FROM;
-    } else if (!empty($HTTP_COMING_FROM)) {
+    } elseif (!empty($HTTP_COMING_FROM)) {
         $proxy_ip = $HTTP_COMING_FROM;
     }
 
@@ -403,7 +425,8 @@ function get_ipaddress() {
     }
 }
 
-function ip_range($network, $ip) {
+function ip_range($network, $ip)
+{
 
     /**
      * Based on IP Pattern Matcher
@@ -455,7 +478,8 @@ function ip_range($network, $ip) {
         // perform a range match
         for ($i = 0; $i < 4; $i++) {
             if (preg_match('|\[([0-9]+)\-([0-9]+)\]|', $maskocts[$i], $regs)) {
-                if (($ipocts[$i] > $regs[2])
+                if (
+                    ($ipocts[$i] > $regs[2])
                     || ($ipocts[$i] < $regs[1])
                 ) {
                     $result = false;
@@ -471,7 +495,8 @@ function ip_range($network, $ip) {
     return $result;
 }
 
-function setTimeZone() {
+function setTimeZone()
+{
 
     global $use_client_tz;
     global $use_server_tz;
@@ -488,5 +513,3 @@ function setTimeZone() {
         $tzo = 0;
     }
 }
-
-?>
