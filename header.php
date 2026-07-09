@@ -1,6 +1,6 @@
 <?php
 
-include 'functions.php';
+include_once 'functions.php';
 
 ob_start();
 echo "<html>\n";

@@ -4,9 +4,10 @@
  */
 
 require_once 'config.inc.php';
+require_once "$TIMECLOCK_PATH/functions.php";
 
 ////////////////////////////////////////
-function mysqli_result($res,$row=0,$col=0){ 
+function mysqli_result($res,$row=0,$col=0){
     $numrows = mysqli_num_rows($res); 
     if ($numrows && $row <= ($numrows-1) && $row >=0){
         mysqli_data_seek($res,$row);
@@ -33,53 +34,42 @@ function unmake_id($id) {
 ////////////////////////////////////////
 function lookup_employee($empfullname) {
     // Return valid empfullname or null
-    global $db_prefix;
     $name = null;
-    $q_empfullname = mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $empfullname);
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], "SELECT empfullname FROM {$db_prefix}employees WHERE empfullname = '$q_empfullname'");
+    $result = tc_select("empfullname", "employees", "empfullname = ?", $empfullname);
     if (!$result || mysqli_num_rows($result) == 0) {
         // Check if displayname was entered.
-        $q_empfullname = mysqli_real_escape_string($GLOBALS["___mysqli_ston"], strtolower($empfullname));
-        $result = mysqli_query($GLOBALS["___mysqli_ston"], "SELECT empfullname FROM {$db_prefix}employees WHERE lower(displayname) = '$q_empfullname'")
+        $result = tc_select("empfullname", "employees", "lower(displayname) = ?", strtolower($empfullname))
         or trigger_error('lookup_employee: no result: ' . mysqli_error($GLOBALS["___mysqli_ston"]), E_USER_WARNING);
     }
     if ($result && mysqli_num_rows($result) == 1) {
         $name = mysqli_result($result,  0,  0);
     }
-    if ($result)
-        ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
 
     return $name;
 }
 
 ////////////////////////////////////////
 function get_employee_name($empfullname) {
-    global $db_prefix;
-    $q_empfullname = mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $empfullname);
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], "SELECT displayname FROM {$db_prefix}employees WHERE empfullname = '$q_empfullname'");
+    $result = tc_select("displayname", "employees", "empfullname = ?", $empfullname);
     if (!$result) {
         trigger_error('get_employee_name: no result: ' . mysqli_error($GLOBALS["___mysqli_ston"]), E_USER_WARNING);
 
         return false;
     }
     $name = mysqli_result($result,  0,  0);
-    ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
 
     return $name;
 }
 
 ////////////////////////////////////////
 function get_employee_password($empfullname) {
-    global $db_prefix;
-    $q_empfullname = mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $empfullname);
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], "SELECT employee_passwd FROM {$db_prefix}employees WHERE empfullname = '$q_empfullname'");
+    $result = tc_select("employee_passwd", "employees", "empfullname = ?", $empfullname);
     if (!$result) {
         trigger_error('get_employee_password: no result: ' . mysqli_error($GLOBALS["___mysqli_ston"]), E_USER_WARNING);
 
         return false;
     }
     $password = mysqli_result($result,  0,  0);
-    ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
 
     return $password;
 }
@@ -97,17 +87,8 @@ function is_valid_password($empfullname, $password) {
 
 ////////////////////////////////////////
 function save_employee_password($empfullname, $new_password) {
-    global $db_prefix;
     $password = crypt($new_password, 'xy');
-    $q_empfullname = mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $empfullname);
-    $q_password = mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $password);
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], "UPDATE {$db_prefix}employees SET employee_passwd = '$q_password' WHERE empfullname = '$q_empfullname'");
-    if (!$result) {
-        trigger_error('save_employee_password: cannot save new password: ' . mysqli_error($GLOBALS["___mysqli_ston"]), E_USER_WARNING);
-
-        return false;
-    }
-    ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
+    tc_update_strings("employees", array("employee_passwd" => $password), "empfullname = ?", $empfullname);
 
     return true;
 }
@@ -117,7 +98,6 @@ function get_employee_status($empfullname) {
     // Get employee's current punch-in/out status and time.
     // Return array of in/out(1/0), punch code, timestamp, and notes.
     global $db_prefix;
-    $q_empfullname = mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $empfullname);
     $query = <<<End_Of_SQL
 select {$db_prefix}employees.*, {$db_prefix}info.*, {$db_prefix}punchlist.*
   from {$db_prefix}employees
@@ -125,16 +105,15 @@ select {$db_prefix}employees.*, {$db_prefix}info.*, {$db_prefix}punchlist.*
         and {$db_prefix}info.timestamp = {$db_prefix}employees.tstamp
   left join {$db_prefix}punchlist on {$db_prefix}punchlist.punchitems = {$db_prefix}info.`inout`
  where {$db_prefix}employees.disabled <> '1'
-   and employees.empfullname = '$q_empfullname'
+   and employees.empfullname = ?
 End_Of_SQL;
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
+    $result = tc_query($query, $empfullname);
     if (!$result) {
         trigger_error('get_employee_status: no result: ' . mysqli_error($GLOBALS["___mysqli_ston"]), E_USER_WARNING);
 
         return false;
     }
     $row = mysqli_fetch_assoc($result);
-    ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
 
     return array($row['in_or_out'], $row['color'], $row['inout'], $row['timestamp'], $row['notes']);
 }

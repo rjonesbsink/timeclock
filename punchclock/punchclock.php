@@ -29,7 +29,6 @@ $PAGE_TITLE = "Punchclock - $title";
 if (isset($_REQUEST['office'])) {
     $office = $_REQUEST['office'];
     $h_office = htmlentities($office);
-    $q_office = mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $office);
     $u_office = rawurlencode($office);
 
     $display_office = $office ? $office : 'all'; // override config option
@@ -39,7 +38,6 @@ if (isset($_REQUEST['office'])) {
 if (isset($_REQUEST['group'])) {
     $group = $_REQUEST['group'];
     $h_group = htmlentities($group);
-    $q_group = mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $group);
     $u_group = rawurlencode($group);
 
     $display_group = $group ? $group : 'all'; // override config option
@@ -59,13 +57,21 @@ End_Of_HTML;
 }
 
 if ($punchclock_select_groups == "yes") {
-    $sql = $office
-        ? "select groupname from {$db_prefix}groups"
-          . " join {$db_prefix}offices on {$db_prefix}groups.officeid = {$db_prefix}offices.officeid"
-          . " where {$db_prefix}offices.officename = '$q_office'"
-          . " order by groupname"
-        : "SELECT groupname FROM {$db_prefix}groups ORDER BY groupname";
-    $select_options = select_options($sql, $group);
+    if ($office) {
+        $groups_result = tc_select(
+            "groupname",
+            "groups join {$db_prefix}offices on {$db_prefix}groups.officeid = {$db_prefix}offices.officeid",
+            "{$db_prefix}offices.officename = ? order by groupname",
+            $office
+        );
+    } else {
+        $groups_result = tc_select("groupname", "groups", "1=1 order by groupname");
+    }
+    $group_names = array();
+    while ($group_row = mysqli_fetch_row($groups_result)) {
+        $group_names[] = $group_row[0];
+    }
+    $select_options = select_options($group_names, $group);
     $select_groups = <<<End_Of_HTML
 <select id="select_groups" onchange="location.href='?office=$u_office&amp;group='+encodeURIComponent(this.value)">
 <option value="">-- All Groups --</option>

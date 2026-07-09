@@ -20,14 +20,8 @@ if (!$search)
 require "$TIMECLOCK_PATH/lib/db.php";
 
 // Search for employee names beginning with query
-$q_search = mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $search);
-$query = <<<End_Of_SQL
-select displayname
-from {$db_prefix}employees
-where displayname like '$q_search%'
-End_Of_SQL;
-
-$result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
+require_once "$TIMECLOCK_PATH/functions.php";
+$result = tc_select("displayname", "employees", "displayname like ?", $search . '%');
 if (!$result) {
     trigger_error('suggest.ajax.php: error: ' . mysqli_error($GLOBALS["___mysqli_ston"]), E_USER_WARNING);
     die();
