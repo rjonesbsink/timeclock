@@ -605,12 +605,12 @@ if ($request == 'GET') {
         }
         echo "              <tr><td class=table_rows style='padding-left:32px;' width=20% nowrap>From Date: ($tmp_datefmt)</td><td
                       style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;' width=80% >
-                      <input type='text' size='10' maxlength='10' name='from_date' value='$from_date' style='color:#27408b'>&nbsp;*&nbsp;&nbsp;
+                      <input type='text' size='10' maxlength='10' name='from_date' value='" . htmlentities($from_date) . "' style='color:#27408b'>&nbsp;*&nbsp;&nbsp;
                       <a href=\"#\" onclick=\"form.from_date.value='';cal.select(document.forms['form'].from_date,'from_date_anchor','$js_datefmt');
                       return false;\" name=\"from_date_anchor\" id=\"from_date_anchor\" style='font-size:11px;color:#27408b;'>Pick Date</a></td><tr>\n";
         echo "              <tr><td class=table_rows style='padding-left:32px;' width=20% nowrap>To Date: ($tmp_datefmt)</td><td
                       style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;' width=80% >
-                      <input type='text' size='10' maxlength='10' name='to_date' value='$to_date' style='color:#27408b'>&nbsp;*&nbsp;&nbsp;
+                      <input type='text' size='10' maxlength='10' name='to_date' value='" . htmlentities($to_date) . "' style='color:#27408b'>&nbsp;*&nbsp;&nbsp;
                       <a href=\"#\" onclick=\"form.to_date.value='';cal.select(document.forms['form'].to_date,'to_date_anchor','$js_datefmt');
                       return false;\" name=\"to_date_anchor\" id=\"to_date_anchor\" style='font-size:11px;color:#27408b;'>Pick Date</a></td><tr>\n";
         echo "              <tr><td class=table_rows align=right colspan=3 style='color:red;font-family:Tahoma;font-size:10px;'>*&nbsp;required&nbsp;</td></tr>\n";
@@ -857,11 +857,13 @@ if ($request == 'GET') {
         if (($employees_empfullname[$x] == $fullname) || ($fullname == "All")) {
 
             if (strtolower($user_or_display) == "display") {
+                $h_display_name = htmlentities($employees_displayname[$x]);
                 echo "  <tr><td width=100% colspan=2 style=\"font-size:11px;color:#000000;border-style:solid;border-color:#888888;
-          border-width:0px 0px 1px 0px;\"><b>$employees_displayname[$x]</b></td></tr>\n";
+          border-width:0px 0px 1px 0px;\"><b>$h_display_name</b></td></tr>\n";
             } else {
+                $h_display_name = htmlentities($employees_empfullname[$x]);
                 echo "  <tr><td width=100% colspan=2 style=\"font-size:11px;color:#000000;border-style:solid;border-color:#888888;
-          border-width:0px 0px 1px 0px;\"><b>$employees_empfullname[$x]</b></td></tr>\n";
+          border-width:0px 0px 1px 0px;\"><b>$h_display_name</b></td></tr>\n";
             }
             echo "  <tr><td width=75% nowrap align=left style='color:#27408b;'><b><u>Date</u></b></td>\n";
             echo "      <td width=25% nowrap align=left style='color:#27408b;'><b><u>Hours Worked</u></b></td></tr>\n";
@@ -881,18 +883,18 @@ if ($request == 'GET') {
             while ($row = mysqli_fetch_array($result)) {
 
                 $info_fullname[] = stripslashes("" . $row['fullname'] . "");
-                $info_inout[] = "" . $row['inout'] . "";
+                $info_inout[] = htmlentities("" . $row['inout'] . "");
                 $info_timestamp[] = "" . $row['timestamp'] . "" + $tzo;
-                $info_notes[] = "" . $row['notes'] . "";
-                $info_ipaddress[] = "" . $row['ipaddress'] . "";
+                $info_notes[] = htmlentities("" . $row['notes'] . "");
+                $info_ipaddress[] = htmlentities("" . $row['ipaddress'] . "");
                 $punchlist_in_or_out[] = "" . $row['in_or_out'] . "";
                 $punchlist_punchitems[] = "" . $row['punchitems'] . "";
-                $punchlist_color[] = "" . $row['color'] . "";
+                $punchlist_color[] = htmlentities("" . $row['color'] . "");
                 $info_cnt++;
             }
 
-            $employees_empfullname[$x] = stripslashes($employees_empfullname[$x]);
-            $employees_displayname[$x] = stripslashes($employees_displayname[$x]);
+            $employees_empfullname[$x] = htmlentities(stripslashes($employees_empfullname[$x]));
+            $employees_displayname[$x] = htmlentities(stripslashes($employees_displayname[$x]));
 
             for ($y = 0; $y < $info_cnt; $y++) {
 

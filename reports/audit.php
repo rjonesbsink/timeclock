@@ -318,12 +318,12 @@ if ($request == 'GET') {
         echo "              <input type='hidden' name='date_format' value='$js_datefmt'>\n";
         echo "              <tr><td class=table_rows style='padding-left:32px;' width=20% nowrap>From Date: ($tmp_datefmt)</td><td
                       style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;' width=80% >
-                      <input type='text' size='10' maxlength='10' name='from_date' value='$from_date' style='color:#27408b'>&nbsp;*&nbsp;&nbsp;
+                      <input type='text' size='10' maxlength='10' name='from_date' value='" . htmlentities($from_date) . "' style='color:#27408b'>&nbsp;*&nbsp;&nbsp;
                       <a href=\"#\" onclick=\"form.from_date.value='';cal.select(document.forms['form'].from_date,'from_date_anchor','$js_datefmt');
                       return false;\" name=\"from_date_anchor\" id=\"from_date_anchor\" style='font-size:11px;color:#27408b;'>Pick Date</a></td><tr>\n";
         echo "              <tr><td class=table_rows style='padding-left:32px;' width=20% nowrap>To Date: ($tmp_datefmt)</td><td
                       style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;' width=80% >
-                      <input type='text' size='10' maxlength='10' name='to_date' value='$to_date' style='color:#27408b'>&nbsp;*&nbsp;&nbsp;
+                      <input type='text' size='10' maxlength='10' name='to_date' value='" . htmlentities($to_date) . "' style='color:#27408b'>&nbsp;*&nbsp;&nbsp;
                       <a href=\"#\" onclick=\"form.to_date.value='';cal.select(document.forms['form'].to_date,'to_date_anchor','$js_datefmt');
                       return false;\" name=\"to_date_anchor\" id=\"to_date_anchor\" style='font-size:11px;color:#27408b;'>Pick Date</a></td><tr>\n";
         echo "              <tr><td class=table_rows align=right colspan=3 style='color:red;font-family:Tahoma;font-size:10px;'>*&nbsp;required&nbsp;</td></tr>\n";
@@ -406,10 +406,10 @@ if ($request == 'GET') {
         $modified_when[] = "" . $row["modified_when"] . "";
         $modified_from[] = "" . $row["modified_from"] . "";
         $modified_to[] = "" . $row["modified_to"] . "";
-        $modified_by_ip[] = "" . $row["modified_by_ip"] . "";
-        $modified_by_user[] = stripslashes("" . $row["modified_by_user"] . "");
+        $modified_by_ip[] = htmlentities("" . $row["modified_by_ip"] . "");
+        $modified_by_user[] = htmlentities(stripslashes("" . $row["modified_by_user"] . ""));
         $modified_why[] = "" . $row["modified_why"] . "";
-        $user_modified[] = "" . $row["user_modified"] . "";
+        $user_modified[] = htmlentities("" . $row["user_modified"] . "");
         $cnt++;
     }
 

@@ -231,7 +231,7 @@ if ($request == 'GET') {
         echo "              <tr><td height=15></td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Group Name:</td><td colspan=2 align=left width=80%
                       style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
-                      <input type='text' size='25' maxlength='50' name='post_groupname' value=\"$post_groupname\">&nbsp;*</td></tr>\n";
+                      <input type='text' size='25' maxlength='50' name='post_groupname' value=\"" . htmlentities($post_groupname) . "\">&nbsp;*</td></tr>\n";
 
         if (!empty($string)) {
             $post_groupname = addslashes($post_groupname);
@@ -286,9 +286,9 @@ if ($request == 'GET') {
         echo "              </tr>\n";
         echo "              <tr><td height=15></td></tr>\n";
         echo "              <tr><td class=table_rows width=20% height=25 style='padding-left:32px;' nowrap>Group Name:</td><td class=table_rows width=80%
-                      style='padding-left:20px;' colspan=2>$post_groupname</td></tr>\n";
+                      style='padding-left:20px;' colspan=2>" . htmlentities($post_groupname) . "</td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Parent Office:</td><td class=table_rows width=80%
-                      style='padding-left:20px;' colspan=2>$select_office_name</td></tr>\n";
+                      style='padding-left:20px;' colspan=2>" . htmlentities($select_office_name) . "</td></tr>\n";
         echo "              <tr><td height=15></td></tr>\n";
         echo "            </table>\n";
         echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";

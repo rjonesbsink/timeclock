@@ -670,6 +670,9 @@ if ($request == 'GET') {
             array($get_group, $orig_officeid)
         );
 
+        $h_post_groupname = htmlentities($post_groupname);
+        $h_post_officename = htmlentities($post_officename);
+
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
         echo "              <tr>\n";
         echo "                <td class=table_rows width=20 align=center><img src='../images/icons/accept.png' /></td>
@@ -683,9 +686,9 @@ if ($request == 'GET') {
         echo "              </tr>\n";
         echo "              <tr><td height=15></td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>New Group Name:</td><td align=left class=table_rows
-                      colspan=2 width=80% style='padding-left:20px;'>$post_groupname</td></tr>\n";
+                      colspan=2 width=80% style='padding-left:20px;'>$h_post_groupname</td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>New Parent Office:</td><td align=left class=table_rows
-                      colspan=2 width=80% style='padding-left:20px;'>$post_officename</td></tr>\n";
+                      colspan=2 width=80% style='padding-left:20px;'>$h_post_officename</td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>User Count:</td><td align=left class=table_rows
                       colspan=2 width=80% style='padding-left:20px;'>$user_cnt</td></tr>\n";
         echo "              <tr><td height=15></td></tr>\n";
@@ -711,7 +714,7 @@ if ($request == 'GET') {
 
             echo "            <br /><br /><br /><hr /><br />\n";
             echo "            <table width=90% align=center height=40 border=0 cellpadding=0 cellspacing=0>\n";
-            echo "              <tr><th class=table_heading_no_color nowrap width=100% halign=left>Members of $post_groupname Group in $post_officename
+            echo "              <tr><th class=table_heading_no_color nowrap width=100% halign=left>Members of $h_post_groupname Group in $h_post_officename
                       Office</th></tr>\n";
             echo "              <tr><td height=40 class=table_rows nowrap halign=left><img src='../images/icons/user_green.png' />&nbsp;&nbsp;Total
                       Users: $user_count_rows&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src='../images/icons/user_orange.png' />&nbsp;&nbsp;

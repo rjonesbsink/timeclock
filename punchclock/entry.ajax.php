@@ -52,10 +52,10 @@ if ($authorized_to_post_time && isset($_POST['inout'])) {
     // Post employee time.
 
     $inout = $_POST['inout'];
-    $h_inout = htmlentities($inout);
+    $js_inout = json_encode($inout, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
 
     $notes = isset($_POST['notes']) ? $_POST['notes'] : '';
-    $h_notes = htmlentities($notes);
+    $js_notes = json_encode($notes, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
 
     // Validate and get inout display color.
     $punchlist_result = tc_select("color", "punchlist", "punchitems = ?", $inout);
@@ -65,7 +65,7 @@ if ($authorized_to_post_time && isset($_POST['inout'])) {
         trigger_error('In/Out Status is not in the database.', E_USER_WARNING);
         exit;
     }
-    $h_inout_color = htmlentities($inout_color);
+    $js_inout_color = json_encode($inout_color, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
 
     // Record time.
     $tz_stamp = utm_timestamp();
@@ -80,7 +80,7 @@ if ($authorized_to_post_time && isset($_POST['inout'])) {
 
     // Update display line on punchclock list and close form.
     $id = make_id($empfullname);
-    $h_id = htmlentities($id);
+    $js_id = json_encode($id, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
     $display_stamp = local_timestamp($tz_stamp);
     $time = date($timefmt, $display_stamp);
     $date = date($datefmt, $display_stamp);
@@ -91,16 +91,16 @@ if ($authorized_to_post_time && isset($_POST['inout'])) {
 <script type="text/javascript">
 //<![CDATA[
 // Post results to main page employee list
-$('#$h_id td').each(function(index){
+$('#' + $js_id + ' td').each(function(index){
 	if (index == 1) {
-		this.innerHTML = "$h_inout";
-		this.style.color = "$h_inout_color";
+		this.innerHTML = $js_inout;
+		this.style.color = $js_inout_color;
 	}
 	if (index == 2) this.innerHTML = "$time";
 	if (index == 3) this.innerHTML = "$date";
 });
-$('#$h_id td:last').each(function(){
-	this.innerHTML = "$h_notes";
+$('#' + $js_id + ' td:last').each(function(){
+	this.innerHTML = $js_notes;
 });
 $.nyroModalRemove();	// close form
 //]]>

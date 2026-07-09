@@ -92,12 +92,12 @@ if ($request == 'GET') {
         $row_count++;
         $row_color = ($row_count % 2) ? $color2 : $color1;
 
-        $username = "" . $row['empfullname'] . "";
-        $displayname = "" . $row['displayname'] . "";
-        $user_email = "" . $row['email'] . "";
-        $user_barcode = "" . $row['barcode'] . "";
-        $groups_tmp = "" . $row['groups'] . "";
-        $office = "" . $row['office'] . "";
+        $username = htmlentities("" . $row['empfullname'] . "");
+        $displayname = htmlentities("" . $row['displayname'] . "");
+        $user_email = htmlentities("" . $row['email'] . "");
+        $user_barcode = htmlentities("" . $row['barcode'] . "");
+        $groups_tmp = htmlentities("" . $row['groups'] . "");
+        $office = htmlentities("" . $row['office'] . "");
         $admin = "" . $row['admin'] . "";
         $reports = "" . $row['reports'] . "";
         $time_admin = "" . $row['time_admin'] . "";
@@ -398,6 +398,11 @@ if ($request == 'GET') {
 
         // end post validation //
 
+        $h_post_username = htmlentities($post_username);
+        $h_display_name = htmlentities($display_name);
+        $h_email_addy = htmlentities($email_addy);
+        $h_user_barcode = htmlentities($user_barcode);
+
         echo "            <br />\n";
         echo "            <form name='form' action='$self' method='post'>\n";
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
@@ -407,16 +412,16 @@ if ($request == 'GET') {
         echo "              <tr><td height=15></td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Username:</td><td align=left class=table_rows
                       colspan=2 width=80% style='padding-left:20px;'><input type='hidden' name='post_username'
-                      value=\"$post_username\">$tmp_username</td></tr>\n";
+                      value=\"$h_post_username\">$tmp_username</td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Display Name:</td><td colspan=2 width=80%
                       style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
-                      <input type='text' size='25' maxlength='50' name='display_name' value=\"$display_name\">&nbsp;*</td></tr>\n";
+                      <input type='text' size='25' maxlength='50' name='display_name' value=\"$h_display_name\">&nbsp;*</td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Email Address:</td><td colspan=2 width=80%
                       style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
-                      <input type='text' size='25' maxlength='75' name='email_addy' value='$email_addy'>&nbsp;*</td></tr>\n";
+                      <input type='text' size='25' maxlength='75' name='email_addy' value='$h_email_addy'>&nbsp;*</td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Barcode:</td><td colspan=2 width=80%
                       style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
-                      <input type='text' size='25' maxlength='75' name='barcode' value='$user_barcode'></td></tr>\n";
+                      <input type='text' size='25' maxlength='75' name='barcode' value='$h_user_barcode'></td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Office:</td><td colspan=2 width=80%
                       style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
                       <select name='office_name' onchange='group_names();'>\n";
@@ -559,12 +564,12 @@ if ($request == 'GET') {
         $post_username
     );
     while ($row = mysqli_fetch_array($result4)) {
-        $username = "" . $row['empfullname'] . "";
-        $displayname = "" . $row['displayname'] . "";
-        $user_email = "" . $row['email'] . "";
-        $user_barcode = "" . $row['barcode'] . "";
-        $office = "" . $row['office'] . "";
-        $groups = "" . $row['groups'] . "";
+        $username = htmlentities("" . $row['empfullname'] . "");
+        $displayname = htmlentities("" . $row['displayname'] . "");
+        $user_email = htmlentities("" . $row['email'] . "");
+        $user_barcode = htmlentities("" . $row['barcode'] . "");
+        $office = htmlentities("" . $row['office'] . "");
+        $groups = htmlentities("" . $row['groups'] . "");
         $admin = "" . $row['admin'] . "";
         $reports = "" . $row['reports'] . "";
         $time_admin = "" . $row['time_admin'] . "";

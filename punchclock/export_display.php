@@ -107,6 +107,8 @@ or trigger_error("export_display: Cannot select hours. " . mysqli_error($GLOBALS
 // Print export page header.
 $begin_date = date('l F j, Y', $begin_local_timestamp);
 $end_date = date('l F j, Y', $end_local_timestamp);
+$h_from_date = htmlentities($from_date);
+$h_to_date = htmlentities($to_date);
 $h_user_name = htmlentities($user_name);
 $h_group_name = htmlentities($group_name);
 $h_office_name = htmlentities($office_name);
@@ -129,8 +131,8 @@ print <<<End_Of_HTML
 <a href="javascript:;"$options_link_class onclick="$(this).toggleClass('open');$('#options').slideToggle()">Options</a>
 <div id="options"$options_style>
 <form method="post" action="{$_SERVER['PHP_SELF']}">
-<input type="hidden" name="from_date" value="$from_date" />
-<input type="hidden" name="to_date" value="$to_date" />
+<input type="hidden" name="from_date" value="$h_from_date" />
+<input type="hidden" name="to_date" value="$h_to_date" />
 <input type="hidden" name="user_name" value="$h_user_name" />
 <input type="hidden" name="group_name" value="$h_group_name" />
 <input type="hidden" name="office_name" value="$h_office_name" />

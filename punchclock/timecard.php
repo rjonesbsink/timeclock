@@ -56,7 +56,7 @@ if (!$authorized) {
 }
 
 // Find which week to print timecard.
-$local_timestamp_in_week = isset($_REQUEST['t']) ? ($_REQUEST['t']) : local_timestamp();
+$local_timestamp_in_week = isset($_REQUEST['t']) ? (int) $_REQUEST['t'] : local_timestamp();
 
 if (isset($_REQUEST['prev'])) {
     $local_timestamp_in_week -= $one_week;
@@ -79,9 +79,10 @@ $PAGE_STYLE = <<<End_Of_HTML
 }
 </style>
 End_Of_HTML;
+$h_nav_empfullname = htmlentities($empfullname);
 $PAGE_CONTENT_HEADER = <<<End_Of_HTML
 <div class="nav-buttons">
-<a href="?emp=$empfullname&t=$local_timestamp_in_week&prev" title="Previous timecard."><img src="images/prev_page.gif" alt="Previous" /></a><a href="?emp=$empfullname&t=$local_timestamp_in_week&next" title="Next timecard."><img src="images/next_page.gif" alt="Next" /></a>
+<a href="?emp=$h_nav_empfullname&t=$local_timestamp_in_week&prev" title="Previous timecard."><img src="images/prev_page.gif" alt="Previous" /></a><a href="?emp=$h_nav_empfullname&t=$local_timestamp_in_week&next" title="Next timecard."><img src="images/next_page.gif" alt="Next" /></a>
 </div>
 End_Of_HTML;
 

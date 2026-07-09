@@ -259,6 +259,9 @@ if ($request == 'GET') {
             echo "            </table>\n";
         }
 
+        $h_post_statusname = htmlentities($post_statusname);
+        $h_post_color = htmlentities($post_color);
+
         echo "            <br />\n";
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
         echo "            <form name='form' action='$self' method='post'>\n";
@@ -268,11 +271,11 @@ if ($request == 'GET') {
         echo "              </tr>\n";
         echo "              <tr><td height=15></td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>New Status Name:</td><td colspan=2 width=80%
-                      style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'><input type='text' 
-                      size='20' maxlength='50' name='post_statusname' value=\"$post_statusname\">&nbsp;*</td></tr>\n";
+                      style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'><input type='text'
+                      size='20' maxlength='50' name='post_statusname' value=\"$h_post_statusname\">&nbsp;*</td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Color:</td><td colspan=2 width=80%
                       style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'><input type='text'
-                      size='20' maxlength='7' name='post_color' value=\"$post_color\">&nbsp;*&nbsp;&nbsp;<a href=\"#\" 
+                      size='20' maxlength='7' name='post_color' value=\"$h_post_color\">&nbsp;*&nbsp;&nbsp;<a href=\"#\"
                       onclick=\"cp.select(document.forms['form'].post_color,'pick');return false;\" name=\"pick\" id=\"pick\" 
                       style='font-size:11px;color:#27408b;'>Pick Color</a></td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Is Status considered '<b>In</b>' or '<b>Out</b>'?</td>\n";
@@ -324,6 +327,9 @@ if ($request == 'GET') {
                 "`inout` = ?", $get_status
             );
         }
+
+        $post_statusname = htmlentities($post_statusname);
+        $post_color = htmlentities($post_color);
 
         echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
         echo "  <tr valign=top>\n";

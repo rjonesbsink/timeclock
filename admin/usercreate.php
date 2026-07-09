@@ -193,6 +193,11 @@ if ($request == 'GET') {
         echo "          <td valign=top>\n";
         echo "            <br />\n";
 
+        $h_post_username = htmlentities($post_username);
+        $h_display_name = htmlentities($display_name);
+        $h_email_addy = htmlentities($email_addy);
+        $h_user_barcode = htmlentities($user_barcode);
+
         // begin post validation //
 
         if (empty($post_username)) {
@@ -325,10 +330,10 @@ if ($request == 'GET') {
         echo "              <tr><td height=15></td></tr>\n";
         echo "              <tr><td class=table_rows  height=25 width=20% style='padding-left:32px;' nowrap>Username:</td><td colspan=2 width=80%
                       style='color:red;font-family:Tahoma;font-size:11px;padding-left:20px;'>
-                      <input type='text' size='25' maxlength='50' name='post_username' value=\"$post_username\">&nbsp;*</td></tr>\n";
+                      <input type='text' size='25' maxlength='50' name='post_username' value=\"$h_post_username\">&nbsp;*</td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Display Name:</td><td colspan=2 width=80%
                       style='color:red;font-family:Tahoma;font-size:11px;padding-left:20px;'>
-                      <input type='text' size='25' maxlength='50' name='display_name' value=\"$display_name\">&nbsp;*</td></tr>\n";
+                      <input type='text' size='25' maxlength='50' name='display_name' value=\"$h_display_name\">&nbsp;*</td></tr>\n";
 
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Password:</td><td colspan=2 width=80%
                       style='padding-left:20px;'><input type='password' size='25' maxlength='25' name='password'></td></tr>\n";
@@ -337,10 +342,10 @@ if ($request == 'GET') {
                       <input type='password' size='25' maxlength='25' name='confirm_password'></td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Email Address:</td><td colspan=2 width=80%
                       style='color:red;font-family:Tahoma;font-size:11px;padding-left:20px;'>
-                      <input type='text' size='25' maxlength='75' name='email_addy' value=\"$email_addy\">&nbsp;*</td></tr>\n";
+                      <input type='text' size='25' maxlength='75' name='email_addy' value=\"$h_email_addy\">&nbsp;*</td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Barcode:</td><td colspan=2 width=80%
                       style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
-                      <input type='text' size='25' maxlength='75' name='barcode' value='$user_barcode'></td></tr>\n";
+                      <input type='text' size='25' maxlength='75' name='barcode' value='$h_user_barcode'></td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Office:</td><td colspan=2 width=80%
                       style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
                       <select name='office_name' onchange='group_names();'>\n";

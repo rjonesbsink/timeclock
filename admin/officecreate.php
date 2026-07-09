@@ -233,7 +233,7 @@ if ($request == 'GET') {
         echo "              <tr><td height=15></td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Office Name:</td><td colspan=2 width=80%
                       style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
-                      <input type='text' size='25' maxlength='50' name='post_officename' value=\"$post_officename\">&nbsp;*</td></tr>\n";
+                      <input type='text' size='25' maxlength='50' name='post_officename' value=\"" . htmlentities($post_officename) . "\">&nbsp;*</td></tr>\n";
 
         if (!empty($string)) {
             $post_officename = addslashes($post_officename);
@@ -326,10 +326,10 @@ if ($request == 'GET') {
         echo "              <tr><td height=15></td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Office Name:</td><td class=table_rows colspan=2
                       width=80% style='padding-left:20px;'>
-                      <input type='hidden' name='post_officename' value='$post_officename'>$post_officename</td></tr>\n";
+                      <input type='hidden' name='post_officename' value='" . htmlentities($post_officename) . "'>" . htmlentities($post_officename) . "</td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Create Groups Within This Office?</td><td
                       class=table_rows colspan=2 width=80% style='padding-left:20px;'>
-                      <input type='hidden' name='create_groups' value='$create_groups'>$create_groups</td></tr>\n";
+                      <input type='hidden' name='create_groups' value='" . htmlentities($create_groups) . "'>" . htmlentities($create_groups) . "</td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>How Many?</td><td class=table_rows colspan=2
                       width=80% style='padding-left:20px;'>
                       <input type='hidden' name='how_many' value='$how_many'>$how_many</td></tr>\n";
@@ -426,7 +426,7 @@ if ($request == 'GET') {
         echo "              <tr><td height=15></td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Office Name:</td><td class=table_rows colspan=2
                       width=80% style='padding-left:20px;'>
-                      <input type='hidden' name='post_officename' value='$post_officename'>$post_officename</td></tr>\n";
+                      <input type='hidden' name='post_officename' value='" . htmlentities($post_officename) . "'>" . htmlentities($post_officename) . "</td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Create Groups Within This Office?</td><td
                       class=table_rows colspan=2 width=80% style='padding-left:20px;'>\n";
 
@@ -435,7 +435,7 @@ if ($request == 'GET') {
         } else {
             $tmp_create_groups = "No";
         }
-        echo "                      <input type='hidden' name='create_groups' value='$create_groups'>$tmp_create_groups</td></tr>\n";
+        echo "                      <input type='hidden' name='create_groups' value='" . htmlentities($create_groups) . "'>$tmp_create_groups</td></tr>\n";
 
         if (!isset($how_many)) {
 

@@ -36,7 +36,7 @@ if ($request == 'POST') {
     if (has_value($barcode)) {
         $tmp_name = tc_select_value($emp_name_field, "employees", "barcode = ?", $barcode);
         if (!has_value($tmp_name)) {
-            $errors[] = "Invalid barcode '$barcode'";
+            $errors[] = "Invalid barcode '" . htmlentities($barcode) . "'";
         } elseif (isset($emp_name) and $emp_name != $tmp_name) {
             $errors[] = "Username / Barcode mismatch";
         } else {
@@ -49,14 +49,14 @@ if ($request == 'POST') {
         if (has_value($displayname)) {
             $tmp_name = tc_select_value($emp_name_field, "employees", "displayname = ?", $displayname);
             if (!has_value($tmp_name)) {
-                $errors[] = "Invalid username '$displayname'";
+                $errors[] = "Invalid username '" . htmlentities($displayname) . "'";
             }
         }
     } else {
         if (has_value($fullname)) {
             $tmp_name = tc_select_value($emp_name_field, "employees", WHERE_EMPFULLNAME, $fullname);
             if (!has_value($tmp_name)) {
-                $errors[] = "Invalid username '$fullname'";
+                $errors[] = "Invalid username '" . htmlentities($fullname) . "'";
             }
         }
     }
