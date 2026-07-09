@@ -4,6 +4,9 @@ session_start();
 $self = $_SERVER['PHP_SELF'];
 $request = $_SERVER['REQUEST_METHOD'];
 
+const WHERE_OFFICE = "office = ?";
+const WHERE_OFFICEID = "officeid = ?";
+
 include '../config.inc.php';
 if ($request !== 'POST') {
     include 'header_get.php';
@@ -104,10 +107,10 @@ if ($request == 'GET') {
         exit;
     }
 
-    $result2 = tc_select("office", "employees", "office = ?", $get_office);
+    $result2 = tc_select("office", "employees", WHERE_OFFICE, $get_office);
     @$user_cnt = mysqli_num_rows($result2);
 
-    $result3 = tc_select("*", "groups", "officeid = ?", $officeid);
+    $result3 = tc_select("*", "groups", WHERE_OFFICEID, $officeid);
     @$group_cnt = mysqli_num_rows($result3);
 
     if ($user_cnt > 0) {
@@ -240,10 +243,10 @@ if ($request == 'GET') {
         }
     }
 
-    $result2 = tc_select("office", "employees", "office = ?", $post_officename);
+    $result2 = tc_select("office", "employees", WHERE_OFFICE, $post_officename);
     @$tmp_user_cnt = mysqli_num_rows($result2);
 
-    $result3 = tc_select("*", "groups", "officeid = ?", $post_officeid);
+    $result3 = tc_select("*", "groups", WHERE_OFFICEID, $post_officeid);
     @$tmp_group_cnt = mysqli_num_rows($result3);
 
     if ($user_cnt != $tmp_user_cnt) {
@@ -392,13 +395,13 @@ if ($request == 'GET') {
             tc_update_strings(
                 "employees",
                 array("office" => $office_name, "groups" => $group_name),
-                "office = ?",
+                WHERE_OFFICE,
                 $post_officename
             );
         }
 
-        tc_delete("offices", "officeid = ?", $post_officeid);
-        tc_delete("groups", "officeid = ?", $post_officeid);
+        tc_delete("offices", WHERE_OFFICEID, $post_officeid);
+        tc_delete("groups", WHERE_OFFICEID, $post_officeid);
 
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Office Name:</td><td align=left class=table_rows
                       width=80% style='padding-left:20px;'>$post_officename</td></tr>\n";

@@ -9,6 +9,8 @@ echo "<title>$title - Change Password</title>\n";
 $self = $_SERVER['PHP_SELF'];
 $request = $_SERVER['REQUEST_METHOD'];
 
+const WHERE_EMPFULLNAME = "empfullname = ?";
+
 if (!isset($_SESSION['valid_user'])) {
 
     echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
@@ -96,7 +98,7 @@ if ($request == 'GET') {
     echo "          <td valign=top>\n";
     echo "            <br />\n";
 
-    $result = tc_select("empfullname", "employees", "empfullname = ?", $get_user);
+    $result = tc_select("empfullname", "employees", WHERE_EMPFULLNAME, $get_user);
     while ($row = mysqli_fetch_array($result)) {
         $username = "" . $row['empfullname'] . "";
     }
@@ -215,7 +217,7 @@ if ($request == 'GET') {
     // begin post validation //
 
     if (!empty($post_username)) {
-        $result = tc_select("*", "employees", "empfullname = ?", $post_username);
+        $result = tc_select("*", "employees", WHERE_EMPFULLNAME, $post_username);
         while ($row = mysqli_fetch_array($result)) {
             $username = "" . $row['empfullname'] . "";
         }
@@ -271,7 +273,7 @@ if ($request == 'GET') {
 
         $new_password = tc_hash_password($new_password);
 
-        tc_update_strings("employees", array("employee_passwd" => $new_password), "empfullname = ?", $post_username);
+        tc_update_strings("employees", array("employee_passwd" => $new_password), WHERE_EMPFULLNAME, $post_username);
 
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
         echo "              <tr><td class=table_rows width=20 align=center><img src='../images/icons/accept.png' /></td>
