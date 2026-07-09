@@ -40,7 +40,7 @@ if ($request == 'GET') {
         exit;
     }
 
-    $get_office = $_GET['officename'];
+    $get_office = htmlentities($_GET['officename']);
 
     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
     echo "  <tr valign=top>\n";
@@ -251,6 +251,8 @@ if ($request == 'GET') {
         exit;
     }
 
+    $h_get_office = htmlentities($get_office);
+
     if ((empty($post_officename)) || (!preg_match('/' . "^([[:alnum:]]| |-|_|\.)+$" . '/i', $post_officename))) {
 
         echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
@@ -270,9 +272,9 @@ if ($request == 'GET') {
         echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/brick.png' alt='Office Summary' />&nbsp;&nbsp;
                 <a class=admin_headings href='officeadmin.php'>Office Summary</a></td></tr>\n";
         echo "        <tr><td class=current_left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Edit Office' />
-                &nbsp;&nbsp;<a class=admin_headings href=\"officeedit.php?officename=$get_office\">Edit Office</a></td></tr>\n";
+                &nbsp;&nbsp;<a class=admin_headings href=\"officeedit.php?officename=$h_get_office\">Edit Office</a></td></tr>\n";
         echo "        <tr><td class=left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Delete Office' />
-                &nbsp;&nbsp;<a class=admin_headings href=\"officedelete.php?officename=$get_office\">Delete Office</a></td></tr>\n";
+                &nbsp;&nbsp;<a class=admin_headings href=\"officedelete.php?officename=$h_get_office\">Delete Office</a></td></tr>\n";
         echo "        <tr><td class=left_rows_border_top height=18 align=left valign=middle><img src='../images/icons/brick_add.png' alt='Create New Office' />
                 &nbsp;&nbsp;<a class=admin_headings href='officecreate.php'>Create New Office</a></td></tr>\n";
         echo "        <tr><td class=left_rows height=33></td></tr>\n";
@@ -315,17 +317,19 @@ if ($request == 'GET') {
                     Alphanumeric characters, hyphens, underscores, spaces, and periods are allowed when creating an Office Name.</td></tr>\n";
             echo "            </table>\n";
         }
+        $h_post_officename = htmlentities($post_officename);
+
         echo "            <br />\n";
         echo "            <form name='form' action='$self' method='post'>\n";
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
         echo "              <tr>\n";
         echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/brick_edit.png' />&nbsp;&nbsp;&nbsp;Edit Office
-                -&nbsp;$get_office</th>\n";
+                -&nbsp;$h_get_office</th>\n";
         echo "              </tr>\n";
         echo "              <tr><td height=15></td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>New Office Name:</td><td colspan=2 width=80%
-                      style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px'><input type='text' 
-                      size='25' maxlength='50' name='post_officename' value=\"$post_officename\">&nbsp;*</td></tr>\n";
+                      style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px'><input type='text'
+                      size='25' maxlength='50' name='post_officename' value=\"$h_post_officename\">&nbsp;*</td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Group Count:</td><td align=left width=80%
                       style='padding-left:20px;' class=table_rows><input type='hidden' name='group_cnt' 
                       value=\"$group_cnt\">$group_cnt</td></tr>\n";
@@ -339,7 +343,7 @@ if ($request == 'GET') {
         echo "            </table>\n";
         echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
         echo "              <input type='hidden' name='post_officeid' value=\"$post_officeid\">\n";
-        echo "              <input type='hidden' name='get_office' value=\"$get_office\">\n";
+        echo "              <input type='hidden' name='get_office' value=\"$h_get_office\">\n";
         echo "              <tr><td width=30><input type='image' name='submit' value='Edit Office' src='../images/buttons/next_button.png'></td>
                   <td><a href='officeadmin.php'><img src='../images/buttons/cancel_button.png' border='0'></td></tr></table>";
 
@@ -352,7 +356,7 @@ if ($request == 'GET') {
             echo "</form>\n";
             echo "            <br /><br /><br /><hr /><br />\n";
             echo "            <table width=60% align=center height=40 border=0 cellpadding=0 cellspacing=0>\n";
-            echo "              <tr><th class=table_heading_no_color nowrap width=100% halign=left>$get_office Groups</th></tr>\n";
+            echo "              <tr><th class=table_heading_no_color nowrap width=100% halign=left>$h_get_office Groups</th></tr>\n";
             echo "              <tr><td height=40 class=table_rows nowrap halign=left><img src='../images/icons/group.png' />&nbsp;&nbsp;Total
                       Groups: $group_cnt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                       <img src='../images/icons/user_green.png' />&nbsp;&nbsp;Total Users: $user_cnt</td></tr>\n";
@@ -383,21 +387,21 @@ if ($request == 'GET') {
 
                 echo "              <tr class=table_border bgcolor='$row_color'><td class=table_rows width=3%>&nbsp;$row_count</td>\n";
                 echo "                <td class=table_rows width=87% align=left>&nbsp;<a class=footer_links
-                    href=\"groupedit.php?groupname=" . $row["groupname"] . "&officename=$get_office\">$tmp_group</a></td>\n";
+                    href=\"groupedit.php?groupname=" . $row["groupname"] . "&officename=$h_get_office\">$tmp_group</a></td>\n";
                 echo "                <td class=table_rows width=4% align=center>$group_user_cnt</td>\n";
 
                 if ((strpos($user_agent, MSIE6)) || (strpos($user_agent, MSIE5)) || (strpos($user_agent, MSIE4)) || (strpos($user_agent, MSIE3))) {
 
                     echo "                <td class=table_rows width=3% align=center><a style='color:#27408b;text-decoration:underline;'
-                    title=\"Edit Group: " . $row["groupname"] . "\" href=\"groupedit.php?groupname=$tmp_group&officename=$get_office\" >
+                    title=\"Edit Group: " . $row["groupname"] . "\" href=\"groupedit.php?groupname=$tmp_group&officename=$h_get_office\" >
                     Edit</a></td>\n";
                     echo "                <td class=table_rows width=3% align=center><a style='color:#27408b;text-decoration:underline;'
-                    title=\"Delete Group: " . $row["groupname"] . "\" href=\"groupdelete.php?groupname=$tmp_group&officename=$get_office\" >
+                    title=\"Delete Group: " . $row["groupname"] . "\" href=\"groupdelete.php?groupname=$tmp_group&officename=$h_get_office\" >
                     Delete</a></td></tr>\n";
                 } else {
-                    echo "                <td class=table_rows width=3% align=center><a href=\"groupedit.php?groupname=$tmp_group&officename=$get_office\">
+                    echo "                <td class=table_rows width=3% align=center><a href=\"groupedit.php?groupname=$tmp_group&officename=$h_get_office\">
                     <img border=0 src='../images/icons/application_edit.png' title=\"Edit Group: " . $row["groupname"] . "\" /></a></td>\n";
-                    echo "                <td class=table_rows width=3% align=center><a href=\"groupdelete.php?groupname=$tmp_group&officename=$get_office\">
+                    echo "                <td class=table_rows width=3% align=center><a href=\"groupdelete.php?groupname=$tmp_group&officename=$h_get_office\">
                     <img border=0 src='../images/icons/delete.png' title=\"Delete Group: " . $row["groupname"] . "\" /></a></td></tr>\n";
                 }
             }
@@ -418,6 +422,8 @@ if ($request == 'GET') {
         tc_update_strings("employees", array("office" => $post_officename), WHERE_OFFICE, $get_office);
 
         tc_update_strings("offices", array("officename" => $post_officename), WHERE_OFFICENAME, $get_office);
+
+        $post_officename = htmlentities($post_officename);
 
         echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
         echo "  <tr valign=top>\n";
@@ -476,7 +482,7 @@ if ($request == 'GET') {
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
         echo "              <tr>\n";
         echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/brick_edit.png' />&nbsp;&nbsp;&nbsp;Edit Office
-                -&nbsp;$get_office</th>\n";
+                -&nbsp;$h_get_office</th>\n";
         echo "              </tr>\n";
         echo "              <tr><td height=15></td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>New Office Name:</td><td align=left class=table_rows

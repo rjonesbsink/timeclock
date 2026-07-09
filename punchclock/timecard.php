@@ -52,6 +52,7 @@ if (!$authorized) {
     ##die(error_msg("Not authorized to run this report."));
     $_SESSION['login_error_msg'] = $error_msg;
     $_SESSION['login_return_url'] = $_SERVER['REQUEST_URI'];
+    $u_empfullname = rawurlencode($empfullname);
     exit_next("login.php" . ($empfullname ? "?emp=$u_empfullname" : ''));
 }
 

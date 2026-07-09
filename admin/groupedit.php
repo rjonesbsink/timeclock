@@ -43,6 +43,8 @@ if ($request == 'GET') {
 
     $get_group = $_GET['groupname'];
     $get_office = $_GET['officename'];
+    $h_get_group = htmlentities($get_group);
+    $h_get_office = htmlentities($get_office);
 
     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
     echo "  <tr valign=top>\n";
@@ -70,9 +72,9 @@ if ($request == 'GET') {
     echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/group.png' alt='Group Summary' />&nbsp;&nbsp;
                 <a class=admin_headings href='groupadmin.php'>Group Summary</a></td></tr>\n";
     echo "        <tr><td class=current_left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Edit Group' />
-                &nbsp;&nbsp;<a class=admin_headings href=\"groupedit.php?groupname=$get_group&officename=$get_office\">Edit Group</a></td></tr>\n";
+                &nbsp;&nbsp;<a class=admin_headings href=\"groupedit.php?groupname=$h_get_group&officename=$h_get_office\">Edit Group</a></td></tr>\n";
     echo "        <tr><td class=left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Delete Group' />
-                &nbsp;&nbsp;<a class=admin_headings href=\"groupdelete.php?groupname=$get_group&officename=$get_office\">Delete Group</a></td></tr>\n";
+                &nbsp;&nbsp;<a class=admin_headings href=\"groupdelete.php?groupname=$h_get_group&officename=$h_get_office\">Delete Group</a></td></tr>\n";
     echo "        <tr><td class=left_rows_border_top height=18 align=left valign=middle><img src='../images/icons/group_add.png' alt='Create New Group' />
                 &nbsp;&nbsp;<a class=admin_headings href='groupcreate.php'>Create New Group</a></td></tr>\n";
     echo "        <tr><td class=left_rows height=33></td></tr>\n";
@@ -122,12 +124,12 @@ if ($request == 'GET') {
     echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
     echo "              <tr>\n";
     echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/group_edit.png' />&nbsp;&nbsp;&nbsp;Edit Group
-                -&nbsp;$get_group</th>\n";
+                -&nbsp;$h_get_group</th>\n";
     echo "              </tr>\n";
     echo "              <tr><td height=15></td></tr>\n";
     echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>New Group Name:</td><td colspan=2 width=80%
                       style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'><input type='text' 
-                      size='25' maxlength='50' name='post_groupname' value=\"$get_group\">&nbsp;*</td></tr>\n";
+                      size='25' maxlength='50' name='post_groupname' value=\"$h_get_group\">&nbsp;*</td></tr>\n";
 
     // query to populate dropdown with office names //
 
@@ -158,8 +160,8 @@ if ($request == 'GET') {
     echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
     echo "              <input type='hidden' name='orig_officeid' value=\"$officeid\">\n";
     echo "              <input type='hidden' name='post_groupid' value=\"$groupid\">\n";
-    echo "              <input type='hidden' name='get_group' value=\"$get_group\">\n";
-    echo "              <input type='hidden' name='get_office' value=\"$get_office\">\n";
+    echo "              <input type='hidden' name='get_group' value=\"$h_get_group\">\n";
+    echo "              <input type='hidden' name='get_office' value=\"$h_get_office\">\n";
     echo "              <tr><td width=30><input type='image' name='submit' value='Edit Group' src='../images/buttons/next_button.png'></td>
                   <td><a href='groupadmin.php'><img src='../images/buttons/cancel_button.png' border='0'></td></tr></table></form>\n";
 
@@ -179,7 +181,7 @@ if ($request == 'GET') {
 
         echo "            <br /><br /><br /><hr /><br />\n";
         echo "            <table width=90% align=center height=40 border=0 cellpadding=0 cellspacing=0>\n";
-        echo "              <tr><th class=table_heading_no_color nowrap width=100% halign=left>Members of $get_group Group in $get_office Office</th></tr>\n";
+        echo "              <tr><th class=table_heading_no_color nowrap width=100% halign=left>Members of $h_get_group Group in $h_get_office Office</th></tr>\n";
         echo "              <tr><td height=40 class=table_rows nowrap halign=left><img src='../images/icons/user_green.png' />&nbsp;&nbsp;Total
                       Users: $user_count_rows&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src='../images/icons/user_orange.png' />&nbsp;&nbsp;
                       Sys Admin Users: $admin_count_rows&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src='../images/icons/user_red.png' />&nbsp;&nbsp;
@@ -289,6 +291,8 @@ if ($request == 'GET') {
     @$post_groupid = $_POST['post_groupid'];
     $get_group = $_POST['get_group'];
     $get_office = $_POST['get_office'];
+    $h_get_group = htmlentities($get_group);
+    $h_get_office = htmlentities($get_office);
     $user_cnt = $_POST['user_cnt'];
     $post_groupname = stripslashes($post_groupname);
     $post_groupname = addslashes($post_groupname);
@@ -419,9 +423,9 @@ if ($request == 'GET') {
     if (isset($evil_group)) {
 
         echo "        <tr><td class=current_left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Edit Group' />
-                &nbsp;&nbsp;<a class=admin_headings href=\"groupedit.php?groupname=$get_group&officename=$get_office\">Edit Group</a></td></tr>\n";
+                &nbsp;&nbsp;<a class=admin_headings href=\"groupedit.php?groupname=$h_get_group&officename=$h_get_office\">Edit Group</a></td></tr>\n";
         echo "        <tr><td class=left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Delete Group' />
-                &nbsp;&nbsp;<a class=admin_headings href=\"groupdelete.php?groupname=$get_group&officename=$get_office\">Delete Group</a></td></tr>\n";
+                &nbsp;&nbsp;<a class=admin_headings href=\"groupdelete.php?groupname=$h_get_group&officename=$h_get_office\">Delete Group</a></td></tr>\n";
 
     } else {
 
@@ -492,7 +496,7 @@ if ($request == 'GET') {
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
         echo "              <tr>\n";
         echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/group_edit.png' />&nbsp;&nbsp;&nbsp;Edit Group
-                -&nbsp;$get_group</th>\n";
+                -&nbsp;$h_get_group</th>\n";
         echo "              </tr>\n";
         echo "              <tr><td height=15></td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>New Group Name:</td><td colspan=2 width=80%
@@ -530,8 +534,8 @@ if ($request == 'GET') {
         echo "              <input type='hidden' name='orig_officeid' value=\"$orig_officeid\">\n";
         echo "              <input type='hidden' name='post_officeid' value=\"$post_officeid\">\n";
         echo "              <input type='hidden' name='post_groupid' value=\"$post_groupid\">\n";
-        echo "              <input type='hidden' name='get_group' value=\"$get_group\">\n";
-        echo "              <input type='hidden' name='get_office' value=\"$get_office\">\n";
+        echo "              <input type='hidden' name='get_group' value=\"$h_get_group\">\n";
+        echo "              <input type='hidden' name='get_office' value=\"$h_get_office\">\n";
         echo "              <input type='hidden' name='user_cnt' value=\"$user_cnt\">\n";
         echo "              <tr><td width=30><input type='image' name='submit' value='Edit Group' src='../images/buttons/next_button.png'></td>
                   <td><a href='groupadmin.php'><img src='../images/buttons/cancel_button.png' border='0'></td></tr></table></form>\n";
@@ -552,7 +556,7 @@ if ($request == 'GET') {
 
             echo "            <br /><br /><br /><hr /><br />\n";
             echo "            <table width=90% align=center height=40 border=0 cellpadding=0 cellspacing=0>\n";
-            echo "              <tr><th class=table_heading_no_color nowrap width=100% halign=left>Members of $get_group Group in $get_office Office</th></tr>\n";
+            echo "              <tr><th class=table_heading_no_color nowrap width=100% halign=left>Members of $h_get_group Group in $h_get_office Office</th></tr>\n";
             echo "              <tr><td height=40 class=table_rows nowrap halign=left><img src='../images/icons/user_green.png' />&nbsp;&nbsp;Total
                       Users: $user_count_rows&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src='../images/icons/user_orange.png' />&nbsp;&nbsp;
                       Sys Admin Users: $admin_count_rows&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src='../images/icons/user_red.png' />&nbsp;&nbsp;
@@ -682,7 +686,7 @@ if ($request == 'GET') {
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
         echo "              <tr>\n";
         echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/group_edit.png' />&nbsp;&nbsp;&nbsp;Edit Group
-                -&nbsp;$get_group</th>\n";
+                -&nbsp;$h_get_group</th>\n";
         echo "              </tr>\n";
         echo "              <tr><td height=15></td></tr>\n";
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>New Group Name:</td><td align=left class=table_rows

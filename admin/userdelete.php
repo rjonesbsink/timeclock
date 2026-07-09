@@ -30,8 +30,8 @@ if ($request == 'GET') {
         exit;
     }
 
-    $get_user = $_GET['username'];
-    @$get_office = $_GET['officename'];
+    $get_user = htmlentities($_GET['username']);
+    @$get_office = htmlentities($_GET['officename'] ?? '');
 
     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
     echo "  <tr valign=top>\n";
@@ -252,6 +252,12 @@ if ($request == 'GET') {
     if ($delete_data == "1") {
         tc_delete("info", "fullname = ?", $post_username);
     }
+
+    $post_username = htmlentities($post_username);
+    $display_name = htmlentities($display_name);
+    $email_addy = htmlentities($email_addy);
+    $office_name = htmlentities($office_name);
+    $group_name = htmlentities($group_name);
 
     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
     echo "  <tr valign=top>\n";

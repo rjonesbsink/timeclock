@@ -32,8 +32,8 @@ if ($request == 'GET') {
         exit;
     }
 
-    $get_user = $_GET['username'];
-    @$get_office = $_GET['officename'];
+    $get_user = htmlentities($_GET['username']);
+    @$get_office = htmlentities($_GET['officename'] ?? '');
 
     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
     echo "  <tr valign=top>\n";
@@ -223,7 +223,7 @@ if ($request == 'GET') {
     $email_addy = $_POST['email_addy'];
     $user_barcode = value_or_null($_POST['barcode']);// UNIQUE constraint so no empty strings
     $office_name = $_POST['office_name'];
-    @$get_office = $_POST['get_office'];
+    @$get_office = htmlentities($_POST['get_office'] ?? '');
     @$group_name = $_POST['group_name'];
     @$admin_perms = $_POST['admin_perms'];
     $reports_perms = $_POST['reports_perms'];

@@ -427,16 +427,16 @@ if ($request == 'GET') {
             $modified_from_time = date($timefmt, $modified_from[$x]);
             $modified_from_date = date($datefmt, $modified_from[$x]);
         } else {
-            $modified_from_time = "" . $row["modified_from"] . "";
-            $modified_from_date = "" . $row["modified_from"] . "";
+            $modified_from_time = "" . $modified_from[$x] . "";
+            $modified_from_date = "" . $modified_from[$x] . "";
         }
         if (!empty($modified_to[$x])) {
             $modified_to[$x] = $modified_to[$x] + @$tzo;
             $modified_to_time = date($timefmt, $modified_to[$x]);
             $modified_to_date = date($datefmt, $modified_to[$x]);
         } else {
-            $modified_to_time = "" . $row["modified_to"] . "";
-            $modified_to_date = "" . $row["modified_to"] . "";
+            $modified_to_time = "" . $modified_to[$x] . "";
+            $modified_to_date = "" . $modified_to[$x] . "";
         }
         if ((!empty($modified_from[$x])) && (empty($modified_to[$x]))) {
             $modified_status = "Deleted";
@@ -502,28 +502,28 @@ if ($request == 'GET') {
 
         // display the query results //
 
-        echo "  <tr><td nowrap align=left width=15% style='background-color:$row_color;color:" . $row["color"] . ";
+        echo "  <tr><td nowrap align=left width=15% style='background-color:$row_color;color:#000000;
         padding-left:10px;'>$user_modified[$x]</td>\n";
         echo "    <td nowrap align=left width=10% style='background-color:$row_color;color:$modified_color;
         padding-left:10px;'>$modified_status</td>\n";
-        echo "  <td nowrap align=left width=15% style='background-color:$row_color;color:" . $row["color"] . ";
+        echo "  <td nowrap align=left width=15% style='background-color:$row_color;color:#000000;
         padding-left:10px;'>$modified_when_date,&nbsp;$modified_when_time</td>\n";
-        echo "    <td nowrap align=left width=15% style='background-color:$row_color;color:" . $row["color"] . ";
+        echo "    <td nowrap align=left width=15% style='background-color:$row_color;color:#000000;
         padding-left:10px;'>$modified_by_user[$x]</td>\n";
-        echo "    <td nowrap align=left width=15% style='background-color:$row_color;color:" . $row["color"] . ";
+        echo "    <td nowrap align=left width=15% style='background-color:$row_color;color:#000000;
         padding-left:10px;'>$modified_by_ip[$x]</td>\n";
         if (!empty($modified_from[$x])) {
-            echo "    <td nowrap align=left width=15% style='background-color:$row_color;color:" . $row["color"] . ";
+            echo "    <td nowrap align=left width=15% style='background-color:$row_color;color:#000000;
         padding-left:10px;'>$modified_from_date,&nbsp;$modified_from_time</td>\n";
         } else {
-            echo "    <td nowrap align=left width=15% style='background-color:$row_color;color:" . $row["color"] . ";
+            echo "    <td nowrap align=left width=15% style='background-color:$row_color;color:#000000;
         padding-left:10px;'></td>\n";
         }
         if (!empty($modified_to[$x])) {
-            echo "    <td nowrap align=left width=15% style='background-color:$row_color;color:" . $row["color"] . ";
+            echo "    <td nowrap align=left width=15% style='background-color:$row_color;color:#000000;
         padding-left:10px;'>$modified_to_date,&nbsp;$modified_to_time</td></tr>\n";
         } else {
-            echo "    <td nowrap align=left width=15% style='background-color:$row_color;color:" . $row["color"] . ";
+            echo "    <td nowrap align=left width=15% style='background-color:$row_color;color:#000000;
         padding-left:10px;'></td></tr>\n";
         }
         $row_count++;

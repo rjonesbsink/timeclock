@@ -32,6 +32,7 @@ if ($request == 'GET') {
     }
 
     $get_status = $_GET['statusname'];
+    $h_get_status = htmlentities($get_status);
 
     $result = tc_select("*", "punchlist", WHERE_PUNCHITEMS, $get_status);
 
@@ -71,9 +72,9 @@ if ($request == 'GET') {
     echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application.png' alt='Status Summary' />
                 &nbsp;&nbsp;<a class=admin_headings href='statusadmin.php'>Status Summary</a></td></tr>\n";
     echo "        <tr><td class=current_left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Edit Status' />
-                &nbsp;&nbsp;<a class=admin_headings href=\"statusedit.php?statusname=$get_status\">Edit Status</a></td></tr>\n";
+                &nbsp;&nbsp;<a class=admin_headings href=\"statusedit.php?statusname=$h_get_status\">Edit Status</a></td></tr>\n";
     echo "        <tr><td class=left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Delete Status' />
-                &nbsp;&nbsp;<a class=admin_headings href=\"statusdelete.php?statusname=$get_status\">Delete Status</a></td></tr>\n";
+                &nbsp;&nbsp;<a class=admin_headings href=\"statusdelete.php?statusname=$h_get_status\">Delete Status</a></td></tr>\n";
     echo "        <tr><td class=left_rows_border_top height=18 align=left valign=middle><img src='../images/icons/application_add.png' alt='Create Status' />
                 &nbsp;&nbsp;<a class=admin_headings href='statuscreate.php'>Create Status</a></td></tr>\n";
     echo "        <tr><td class=left_rows height=33></td></tr>\n";
@@ -128,7 +129,7 @@ if ($request == 'GET') {
     echo "              <tr><td height=40></td></tr>\n";
     echo "            </table>\n";
     echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
-    echo "              <input type='hidden' name='get_status' value='$get_status'>\n";
+    echo "              <input type='hidden' name='get_status' value='$h_get_status'>\n";
     echo "              <tr><td width=30><input type='image' name='submit' value='Edit Status' src='../images/buttons/next_button.png'></td>
                   <td><a href='statusadmin.php'><img src='../images/buttons/cancel_button.png' border='0'></td></tr></table></form></td></tr>\n";
     include_once FOOTER_PHP;
@@ -136,6 +137,7 @@ if ($request == 'GET') {
 } elseif ($request == 'POST') {
 
     $get_status = $_POST['get_status'];
+    $h_get_status = htmlentities($get_status);
     $post_statusname = $_POST['post_statusname'];
     $post_color = $_POST['post_color'];
     $create_status = $_POST['create_status'];
@@ -198,9 +200,9 @@ if ($request == 'GET') {
         echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application.png' alt='Status Summary' />
                 &nbsp;&nbsp;<a class=admin_headings href='statusadmin.php'>Status Summary</a></td></tr>\n";
         echo "        <tr><td class=current_left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Edit Status' />
-                &nbsp;&nbsp;<a class=admin_headings href=\"statusedit.php?statusname=$get_status\">Edit Status</a></td></tr>\n";
+                &nbsp;&nbsp;<a class=admin_headings href=\"statusedit.php?statusname=$h_get_status\">Edit Status</a></td></tr>\n";
         echo "        <tr><td class=left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Delete Status' />
-                &nbsp;&nbsp;<a class=admin_headings href=\"statusdelete.php?statusname=$get_status\">Delete Status</a></td></tr>\n";
+                &nbsp;&nbsp;<a class=admin_headings href=\"statusdelete.php?statusname=$h_get_status\">Delete Status</a></td></tr>\n";
         echo "        <tr><td class=left_rows_border_top height=18 align=left valign=middle><img src='../images/icons/application_add.png' alt='Create Status' />
                 &nbsp;&nbsp;<a class=admin_headings href='statuscreate.php'>Create Status</a></td></tr>\n";
         echo "        <tr><td class=left_rows height=33></td></tr>\n";
@@ -301,7 +303,7 @@ if ($request == 'GET') {
         echo "              <tr><td height=40></td></tr>\n";
         echo "            </table>\n";
         echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
-        echo "              <input type='hidden' name='get_status' value='$get_status'>\n";
+        echo "              <input type='hidden' name='get_status' value='$h_get_status'>\n";
         echo "              <tr><td width=30><input type='image' name='submit' value='Edit Status' src='../images/buttons/next_button.png'></td>
                   <td><a href='statusadmin.php'><img src='../images/buttons/cancel_button.png' border='0'></td></tr></table></form></td></tr>\n";
         include_once FOOTER_PHP;

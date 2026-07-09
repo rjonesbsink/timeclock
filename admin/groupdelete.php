@@ -35,8 +35,8 @@ if ($request == 'GET') {
         exit;
     }
 
-    $get_group = $_GET['groupname'];
-    $get_office = $_GET['officename'];
+    $get_group = htmlentities($_GET['groupname']);
+    $get_office = htmlentities($_GET['officename']);
 
     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
     echo "  <tr valign=top>\n";
@@ -255,6 +255,9 @@ if ($request == 'GET') {
     }
 
     // end post validation //
+
+    $post_officename = htmlentities($post_officename);
+    $post_groupname = htmlentities($post_groupname);
 
     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
     echo "  <tr valign=top>\n";

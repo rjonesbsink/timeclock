@@ -30,7 +30,7 @@ if ($request == 'GET') {
         exit;
     }
 
-    $get_status = $_GET['statusname'];
+    $get_status = htmlentities($_GET['statusname']);
 
     $result = tc_select("*", "punchlist", WHERE_PUNCHITEMS, $get_status);
 
@@ -149,6 +149,8 @@ if ($request == 'GET') {
     }
 
     $result2 = tc_delete("punchlist", WHERE_PUNCHITEMS, $post_statusname);
+
+    $post_statusname = htmlentities($post_statusname);
 
     if ($post_in_out == '1') {
         $post_in_out = 'In';
