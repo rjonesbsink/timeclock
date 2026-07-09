@@ -842,7 +842,7 @@ if ($request == 'GET') {
                       config.inc.php</b></td>\n";
         echo "              <input type=\"hidden\" name=\"display_ip\" value=\"2\">\n";
     }
-    echo "                  <td bgcolor='$row_color' class=table_rows width=80% align=left style='padding-left:10px;' valign=top>Choose whether to include_once
+    echo "                  <td bgcolor='$row_color' class=table_rows width=80% align=left style='padding-left:10px;' valign=top>Choose whether to include
                       in the reports the ip addresses of the systems that connect to sign-in/out into PHP Timeclock or not. This option
                       is useful for auditing purposes. The <b>ip_logging</b> option must be set to \"<b>yes</b>\" in order for this option to 
                       work as expected. Default is \"<b>yes</b>\".</td></tr>\n";
@@ -2198,7 +2198,7 @@ if ($request == 'GET') {
                       config.inc.php</b></td>\n";
             echo "              <input type=\"hidden\" name=\"display_ip\" value=\"2\">\n";
         }
-        echo "                  <td bgcolor='$row_color' class=table_rows width=80% align=left style='padding-left:10px;' valign=top>Choose whether to include_once
+        echo "                  <td bgcolor='$row_color' class=table_rows width=80% align=left style='padding-left:10px;' valign=top>Choose whether to include
                       in the reports the ip addresses of the systems that connect to sign-in/out into PHP Timeclock or not. This option
                       is useful for auditing purposes. The <b>ip_logging</b> option must be set to \"<b>yes</b>\" in order for this option to work as
                       expected. Default is \"<b>yes</b>\".</td></tr>\n";
@@ -3098,7 +3098,7 @@ $username_dropdown_only = "' . $post_username_dropdown_only . '";
 $user_or_display = "' . $post_user_or_display . '";
 
 
-/* Choose whether to include_once in the reports the ip addresses of the systems that connect to 
+/* Choose whether to include in the reports the ip addresses of the systems that connect to
    sign-in/out into PHP Timeclock or not. This option is useful for auditing purposes. The 
    ip_logging option must be set to "yes" in order for this option to work as expected.
    Default is "yes". */
@@ -3135,7 +3135,7 @@ $use_server_tz = "' . $post_use_server_tz . '";
 
 
 /* Include local weather info on the left side of the main page just below the Submit button.
-   If you would like to include_once this feature, set $display_weather to "yes". Default is "no". */
+   If you would like to include this feature, set $display_weather to "yes". Default is "no". */
 
 $display_weather = "' . $post_display_weather . '";
 

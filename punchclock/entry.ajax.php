@@ -81,6 +81,7 @@ if ($authorized_to_post_time && isset($_POST['inout'])) {
 
     // Update display line on punchclock list and close form.
     $id = make_id($empfullname);
+    $h_id = htmlentities($id);
     $display_stamp = local_timestamp($tz_stamp);
     $time = date($timefmt, $display_stamp);
     $date = date($datefmt, $display_stamp);
@@ -91,7 +92,7 @@ if ($authorized_to_post_time && isset($_POST['inout'])) {
 <script type="text/javascript">
 //<![CDATA[
 // Post results to main page employee list
-$('#$id td').each(function(index){
+$('#$h_id td').each(function(index){
 	if (index == 1) {
 		this.innerHTML = "$h_inout";
 		this.style.color = "$h_inout_color";
@@ -99,7 +100,7 @@ $('#$id td').each(function(index){
 	if (index == 2) this.innerHTML = "$time";
 	if (index == 3) this.innerHTML = "$date";
 });
-$('#$id td:last').each(function(){
+$('#$h_id td:last').each(function(){
 	this.innerHTML = "$h_notes";
 });
 $.nyroModalRemove();	// close form
