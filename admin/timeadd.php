@@ -11,6 +11,7 @@ $request = $_SERVER['REQUEST_METHOD'];
 
 const WHERE_EMPFULLNAME = "empfullname = ?";
 const SELECT_ALL_FROM = "select * from ";
+const PUNCHLIST_ORDER_BY_PUNCHITEMS = "punchlist order by punchitems asc";
 
 if (($timefmt == "G:i") || ($timefmt == "H:i")) {
     $timefmt_24hr = '1';
@@ -148,7 +149,7 @@ if ($request == 'GET') {
 
     // query to populate dropdown with statuses //
 
-    $query2 = SELECT_ALL_FROM . $db_prefix . "punchlist order by punchitems asc";
+    $query2 = SELECT_ALL_FROM . $db_prefix . PUNCHLIST_ORDER_BY_PUNCHITEMS;
     $result2 = mysqli_query($GLOBALS["___mysqli_ston"], $query2);
 
     echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Status:</td><td colspan=2 width=80%
@@ -493,7 +494,7 @@ if ($request == 'GET') {
 
         // query to populate dropdown with statuses //
 
-        $query2 = SELECT_ALL_FROM . $db_prefix . "punchlist order by punchitems asc";
+        $query2 = SELECT_ALL_FROM . $db_prefix . PUNCHLIST_ORDER_BY_PUNCHITEMS;
         $result2 = mysqli_query($GLOBALS["___mysqli_ston"], $query2);
 
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Status:</td><td colspan=2 width=80%
@@ -588,7 +589,7 @@ if ($request == 'GET') {
 
                 // query to populate dropdown with statuses //
 
-                $query2 = SELECT_ALL_FROM . $db_prefix . "punchlist order by punchitems asc";
+                $query2 = SELECT_ALL_FROM . $db_prefix . PUNCHLIST_ORDER_BY_PUNCHITEMS;
                 $result2 = mysqli_query($GLOBALS["___mysqli_ston"], $query2);
 
                 echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Status:</td><td colspan=2 width=80%
