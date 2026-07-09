@@ -1,7 +1,7 @@
 <html>
 <?php
 
-include '../functions.php';
+include_once '../functions.php';
 
 // grab the connecting ip address for the audit log. if more than 1 ip address is returned, accept the first ip and discard the rest. //
 
