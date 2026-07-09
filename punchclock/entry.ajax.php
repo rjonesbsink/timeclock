@@ -19,6 +19,9 @@ require_once "$TIMECLOCK_PATH/functions.php";
 // Connect to db.
 require_once "$TIMECLOCK_PATH/lib/db.php";
 
+const HRS_MIN_SUFFIX = " hrs:min";
+const HOURS_FORMAT = "%01.02f hrs";
+
 // Parse arguments.
 $emp = isset($_GET['emp']) ? $_GET['emp'] : null;
 $empfullname = isset($_REQUEST['empfullname']) ? $_REQUEST['empfullname'] : null;
@@ -186,13 +189,13 @@ if ($punchclock_display_timecard == 'yes') {
     // Summarize employee hours for the current week.
     list ($today_hours, $week_hours, $overtime_hours) = current_week_hours($empfullname);
     if ($timecard_display_hours_minutes == 'yes') {
-        $today_hours = hrs_min($today_hours) . " hrs:min";
-        $week_hours = hrs_min($week_hours) . " hrs:min";
-        $overtime_hours = hrs_min($overtime_hours) . " hrs:min";
+        $today_hours = hrs_min($today_hours) . HRS_MIN_SUFFIX;
+        $week_hours = hrs_min($week_hours) . HRS_MIN_SUFFIX;
+        $overtime_hours = hrs_min($overtime_hours) . HRS_MIN_SUFFIX;
     } else {
-        $today_hours = sprintf("%01.02f hrs", $today_hours);
-        $week_hours = sprintf("%01.02f hrs", $week_hours);
-        $overtime_hours = sprintf("%01.02f hrs", $overtime_hours);
+        $today_hours = sprintf(HOURS_FORMAT, $today_hours);
+        $week_hours = sprintf(HOURS_FORMAT, $week_hours);
+        $overtime_hours = sprintf(HOURS_FORMAT, $overtime_hours);
     }
 
     $overtime_line = $overtime_hours > 0 ? "<tr><th>Overtime:</th><td>$overtime_hours</td></tr>\n" : '';

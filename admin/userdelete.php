@@ -9,6 +9,8 @@ echo "<title>$title - Delete User</title>\n";
 $self = $_SERVER['PHP_SELF'];
 $request = $_SERVER['REQUEST_METHOD'];
 
+const MSG_SOMETHING_FISHY = "Something is fishy here.\n";
+
 if (!isset($_SESSION['valid_user'])) {
 
     echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
@@ -204,52 +206,52 @@ if ($request == 'GET') {
     if (!empty($post_username)
          and is_null(tc_select_value("empfullname", "employees", "empfullname = ?", $post_username))
     ) {
-        echo "Something is fishy here.\n";
+        echo MSG_SOMETHING_FISHY;
         exit;
     }
 
     if (!empty($display_name)
          and is_null(tc_select_value("displayname", "employees", "empfullname = ? AND displayname = ?", array($post_username, $display_name)))
     ) {
-        echo "Something is fishy here.\n";
+        echo MSG_SOMETHING_FISHY;
         exit;
     }
 
     if (!empty($email_addy)
          and is_null(tc_select_value("email", "employees", "empfullname = ? AND email = ?", array($post_username, $email_addy)))
     ) {
-        echo "Something is fishy here.\n";
+        echo MSG_SOMETHING_FISHY;
         exit;
     }
 
     if (!empty($office_name)
          and is_null(tc_select_value("office", "employees", "empfullname = ? AND office = ?", array($post_username, $office_name)))
     ) {
-        echo "Something is fishy here.\n";
+        echo MSG_SOMETHING_FISHY;
         exit;
     }
 
     if (!empty($group_name)
          and is_null(tc_select_value("groups", "employees", "empfullname = ? AND groups = ?", array($post_username, $group_name)))
     ) {
-        echo "Something is fishy here.\n";
+        echo MSG_SOMETHING_FISHY;
         exit;
     }
 
     if (($admin_perms != '0') && ($admin_perms != '1')) {
-        echo "Something is fishy here.\n";
+        echo MSG_SOMETHING_FISHY;
         exit;
     }
     if (($reports_perms != '0') && ($reports_perms != '1')) {
-        echo "Something is fishy here.\n";
+        echo MSG_SOMETHING_FISHY;
         exit;
     }
     if (($time_admin_perms != '0') && ($time_admin_perms != '1')) {
-        echo "Something is fishy here.\n";
+        echo MSG_SOMETHING_FISHY;
         exit;
     }
     if ((isset($delete_data)) && ($delete_data != '1')) {
-        echo "Something is fishy here.\n";
+        echo MSG_SOMETHING_FISHY;
         exit;
     }
 

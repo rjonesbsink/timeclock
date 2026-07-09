@@ -6,6 +6,8 @@
 require_once 'config.inc.php';
 require_once "$TIMECLOCK_PATH/functions.php";
 
+const WHERE_EMPFULLNAME = "empfullname = ?";
+
 ////////////////////////////////////////
 function mysqli_result($res,$row=0,$col=0){
     $numrows = mysqli_num_rows($res); 
@@ -35,7 +37,7 @@ function unmake_id($id) {
 function lookup_employee($empfullname) {
     // Return valid empfullname or null
     $name = null;
-    $result = tc_select("empfullname", "employees", "empfullname = ?", $empfullname);
+    $result = tc_select("empfullname", "employees", WHERE_EMPFULLNAME, $empfullname);
     if (!$result || mysqli_num_rows($result) == 0) {
         // Check if displayname was entered.
         $result = tc_select("empfullname", "employees", "lower(displayname) = ?", strtolower($empfullname))
@@ -50,7 +52,7 @@ function lookup_employee($empfullname) {
 
 ////////////////////////////////////////
 function get_employee_name($empfullname) {
-    $result = tc_select("displayname", "employees", "empfullname = ?", $empfullname);
+    $result = tc_select("displayname", "employees", WHERE_EMPFULLNAME, $empfullname);
     if (!$result) {
         trigger_error('get_employee_name: no result: ' . mysqli_error($GLOBALS["___mysqli_ston"]), E_USER_WARNING);
 
@@ -63,7 +65,7 @@ function get_employee_name($empfullname) {
 
 ////////////////////////////////////////
 function get_employee_password($empfullname) {
-    $result = tc_select("employee_passwd", "employees", "empfullname = ?", $empfullname);
+    $result = tc_select("employee_passwd", "employees", WHERE_EMPFULLNAME, $empfullname);
     if (!$result) {
         trigger_error('get_employee_password: no result: ' . mysqli_error($GLOBALS["___mysqli_ston"]), E_USER_WARNING);
 
@@ -93,7 +95,7 @@ function is_valid_password($empfullname, $password) {
 ////////////////////////////////////////
 function save_employee_password($empfullname, $new_password) {
     $password = tc_hash_password($new_password);
-    tc_update_strings("employees", array("employee_passwd" => $password), "empfullname = ?", $empfullname);
+    tc_update_strings("employees", array("employee_passwd" => $password), WHERE_EMPFULLNAME, $empfullname);
 
     return true;
 }

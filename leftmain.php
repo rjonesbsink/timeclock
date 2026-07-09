@@ -7,6 +7,8 @@ $request = $_SERVER['REQUEST_METHOD'];
 
 // set cookie if 'Remember Me?' checkbox is checked, or reset cookie if 'Reset Cookie?' is checked //
 
+const WHERE_EMPFULLNAME = "empfullname = ?";
+
 if ($show_display_name == "yes") {
     $emp_name_field = "displayname";
 } else {
@@ -52,7 +54,7 @@ if ($request == 'POST') {
         }
     } else {
         if (has_value($fullname)) {
-            $tmp_name = tc_select_value($emp_name_field, "employees", "empfullname = ?", $fullname);
+            $tmp_name = tc_select_value($emp_name_field, "employees", WHERE_EMPFULLNAME, $fullname);
             if (!has_value($tmp_name)) {
                 $errors[] = "Invalid username '$fullname'";
             }
@@ -280,7 +282,7 @@ QUERY
         }
 
         tc_insert_strings("info", $clockin);
-        tc_update_strings("employees", array("tstamp" => $tz_stamp), "empfullname = ?", $fullname);
+        tc_update_strings("employees", array("tstamp" => $tz_stamp), WHERE_EMPFULLNAME, $fullname);
 
         echo "<head>\n";
         echo "<meta http-equiv='refresh' content=0;url=index.php>\n";
@@ -308,7 +310,7 @@ QUERY
             }
 
             tc_insert_strings("info", $clockin);
-            tc_update_strings("employees", array("tstamp" => $tz_stamp), "empfullname = ?", $fullname);
+            tc_update_strings("employees", array("tstamp" => $tz_stamp), WHERE_EMPFULLNAME, $fullname);
 
             echo "<head>\n";
             echo "<meta http-equiv='refresh' content=0;url=index.php>\n";

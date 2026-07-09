@@ -7,6 +7,8 @@ require_once 'config.inc.php';
 require_once 'lib.common.php';
 require_once 'class.Timecard.php';
 
+const HOURS_FORMAT = "%01.02f";
+
 ////////////////////////////////////////
 function current_week_hours($empfullname) {
     global $one_week;
@@ -69,9 +71,9 @@ End_Of_HTML;
                 $h_overtime = hrs_min($tc->overtime);
                 $h_total = hrs_min(($tc->week_hours + $tc->overtime_hours));
             } else {
-                $h_hours = sprintf("%01.02f", (($timecard_hours_include_overtime == "yes") ? ($tc->hours + $tc->overtime) : $tc->hours));
-                $h_overtime = sprintf("%01.02f", $tc->overtime);
-                $h_total = sprintf("%01.02f", ($tc->week_hours + $tc->overtime_hours));
+                $h_hours = sprintf(HOURS_FORMAT, (($timecard_hours_include_overtime == "yes") ? ($tc->hours + $tc->overtime) : $tc->hours));
+                $h_overtime = sprintf(HOURS_FORMAT, $tc->overtime);
+                $h_total = sprintf(HOURS_FORMAT, ($tc->week_hours + $tc->overtime_hours));
             }
 
             $h_notes = htmlentities($tc->row['notes']);
@@ -104,13 +106,13 @@ End_Of_HTML;
         // Set flag to print paragraph of totals if they're not already obvious.
         $print_totals = ($timecard_display_running_total == "yes" || $timecard_hours_include_overtime != "yes") ? true : false;
 
-        $h_total_hours = sprintf("%01.02f", ($tc->week_hours + $tc->overtime_hours));
+        $h_total_hours = sprintf(HOURS_FORMAT, ($tc->week_hours + $tc->overtime_hours));
         $h_totals = ($print_totals) ? "\n<p>Total for week: " . hrs_min($tc->week_hours + $tc->overtime_hours) . " ($h_total_hours hours)</p>" : '';
 
-        $h_ovt_total_hours = sprintf("%01.02f", $tc->overtime_hours);
+        $h_ovt_total_hours = sprintf(HOURS_FORMAT, $tc->overtime_hours);
         $h_overtime_totals = ($print_totals && $tc->overtime_hours > 0) ? "\n<p>Total overtime: " . hrs_min($tc->overtime_hours) . " ($h_ovt_total_hours hours)</p>" : '';
 
-        $h_day_total_hours = sprintf("%01.02f", $tc->today_hours);
+        $h_day_total_hours = sprintf(HOURS_FORMAT, $tc->today_hours);
         $h_today_hours = ($tc->today_hours !== null) ? "<p>Total today: " . hrs_min($tc->today_hours) . " ($h_day_total_hours hours)</p>" : '';
 
         if ($timecard_display_running_total != "yes") {

@@ -5,6 +5,11 @@ include_once '../functions.php';
 
 require_once '../lib/db.php';
 
+const CSV_HEADER_CONTENT_TYPE = "Content-type: application/x-msdownload";
+const CSV_HEADER_CONTENT_DISPOSITION = "Content-Disposition: attachment; filename=total_hours.csv";
+const CSV_HEADER_PRAGMA = "Pragma: no-cache";
+const CSV_HEADER_EXPIRES = "Expires: 0";
+
 if (($_GET['rpt'] == 'timerpt') && (isset($_GET['display_ip'])) && (isset($_GET['csv'])) && (isset($_GET['office'])) && (isset($_GET['group'])) &&
     (isset($_GET['fullname'])) && (isset($_GET['from'])) && (isset($_GET['to'])) && (isset($_GET['tzo']))
 ) {
@@ -114,10 +119,10 @@ if (($_GET['rpt'] == 'timerpt') && (isset($_GET['display_ip'])) && (isset($_GET[
             }
         }
     }
-    header("Content-type: application/x-msdownload");
-    header("Content-Disposition: attachment; filename=total_hours.csv");
-    header("Pragma: no-cache");
-    header("Expires: 0");
+    header(CSV_HEADER_CONTENT_TYPE);
+    header(CSV_HEADER_CONTENT_DISPOSITION);
+    header(CSV_HEADER_PRAGMA);
+    header(CSV_HEADER_EXPIRES);
     echo "$headings$string";
 
 } elseif (($_GET['rpt'] == 'hrs_wkd') && (isset($_GET['display_ip'])) && (isset($_GET['csv'])) && (isset($_GET['office'])) && (isset($_GET['group'])) &&
@@ -756,10 +761,10 @@ if (($_GET['rpt'] == 'timerpt') && (isset($_GET['display_ip'])) && (isset($_GET[
             unset($currently_punched_in);
         } // end if
     } // end for $x
-    header("Content-type: application/x-msdownload");
-    header("Content-Disposition: attachment; filename=total_hours.csv");
-    header("Pragma: no-cache");
-    header("Expires: 0");
+    header(CSV_HEADER_CONTENT_TYPE);
+    header(CSV_HEADER_CONTENT_DISPOSITION);
+    header(CSV_HEADER_PRAGMA);
+    header(CSV_HEADER_EXPIRES);
     echo "$headings$string";
 
 } elseif (($_GET['rpt'] == 'auditlog') && (isset($_GET['csv'])) && (isset($_GET['from'])) && (isset($_GET['to'])) && (isset($_GET['tzo']))) {
@@ -832,10 +837,10 @@ if (($_GET['rpt'] == 'timerpt') && (isset($_GET['display_ip'])) && (isset($_GET[
 
         $string .= "$modified_status, $modified_when_date $modified_when_time, $modified_from_date $modified_from_time, $modified_to_date $modified_to_time, $modified_by_user[$x], $modified_by_ip[$x],\n";
     }
-    header("Content-type: application/x-msdownload");
-    header("Content-Disposition: attachment; filename=total_hours.csv");
-    header("Pragma: no-cache");
-    header("Expires: 0");
+    header(CSV_HEADER_CONTENT_TYPE);
+    header(CSV_HEADER_CONTENT_DISPOSITION);
+    header(CSV_HEADER_PRAGMA);
+    header(CSV_HEADER_EXPIRES);
     echo "$headings$string";
 }
 exit;

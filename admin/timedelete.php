@@ -10,6 +10,8 @@ $self = $_SERVER['PHP_SELF'];
 $request = $_SERVER['REQUEST_METHOD'];
 
 const WHERE_EMPFULLNAME = "empfullname = ?";
+const FOOTER_PHP = '../footer.php';
+const MSG_SOMETHING_FISHY = "Something is fishy here.\n";
 
 if (($timefmt == "G:i") || ($timefmt == "H:i")) {
     $timefmt_24hr = '1';
@@ -150,7 +152,7 @@ if ($request == 'GET') {
     echo "              <tr><td width=30><input type='image' name='submit' value='Delete Time' align='middle'
                       src='../images/buttons/next_button.png'></td><td><a href='timeadmin.php'><img src='../images/buttons/cancel_button.png'
                       border='0'></td></tr></table></form></td></tr>\n";
-    include '../footer.php';
+    include FOOTER_PHP;
     exit;
 } elseif ($request == 'POST') {
 
@@ -181,7 +183,7 @@ if ($request == 'GET') {
             $tmp_get_user = "" . $row['empfullname'] . "";
         }
         if (!isset($tmp_get_user)) {
-            echo "Something is fishy here.\n";
+            echo MSG_SOMETHING_FISHY;
             exit;
         }
     }
@@ -192,7 +194,7 @@ if ($request == 'GET') {
             $tmp_username = "" . $row['empfullname'] . "";
         }
         if (!isset($tmp_username)) {
-            echo "Something is fishy here.\n";
+            echo MSG_SOMETHING_FISHY;
             exit;
         }
     }
@@ -203,7 +205,7 @@ if ($request == 'GET') {
             $tmp_post_displayname = "" . $row['displayname'] . "";
         }
         if (!isset($tmp_post_displayname)) {
-            echo "Something is fishy here.\n";
+            echo MSG_SOMETHING_FISHY;
             exit;
         }
     }
@@ -348,7 +350,7 @@ if ($request == 'GET') {
         echo "              <tr><td width=30><input type='image' name='submit' value='Delete Time' align='middle'
                       src='../images/buttons/next_button.png'></td><td><a href='timeadmin.php'><img src='../images/buttons/cancel_button.png'
                       border='0'></td></tr></table></form></td></tr>\n";
-        include '../footer.php';
+        include FOOTER_PHP;
         exit;
 
         // end post validation //
@@ -418,10 +420,10 @@ if ($request == 'GET') {
 
                 $final_username[$x] = stripslashes($final_username[$x]);
                 if ($final_username[$x] != $tmp_username) {
-                    echo "Something is fishy here.\n";
+                    echo MSG_SOMETHING_FISHY;
                     exit;
                 }
-                //if ((strlen($final_mysql_timestamp[$x]) != "10") || (!is_integer($final_mysql_timestamp[$x]))) {echo "Something is fishy here.\n"; exit;}
+                //if ((strlen($final_mysql_timestamp[$x]) != "10") || (!is_integer($final_mysql_timestamp[$x]))) {echo MSG_SOMETHING_FISHY; exit;}
 
                 $result_sel = tc_select("*", "punchlist", "punchitems = ?", $final_inout[$x]);
 
@@ -429,7 +431,7 @@ if ($request == 'GET') {
                     $punchitems = "" . $row['punchitems'] . "";
                 }
                 if (!isset($punchitems)) {
-                    echo "Something is fishy here.\n";
+                    echo MSG_SOMETHING_FISHY;
                     exit;
                 }
 
@@ -445,7 +447,7 @@ if ($request == 'GET') {
                 @$tmp_num_rows = mysqli_num_rows($result5);
 
                 if ((isset($tmp_num_rows)) && (@$tmp_num_rows != '1')) {
-                    echo "Something is fishy here.\n";
+                    echo MSG_SOMETHING_FISHY;
                     exit;
                 }
 
@@ -459,7 +461,7 @@ if ($request == 'GET') {
 
                     $tmp_time[$x] = date("$timefmt", $final_mysql_timestamp[$x] + $tzo);
                     if ($tmp_time[$x] != $final_time[$x]) {
-                        echo "Something is fishy here.\n";
+                        echo MSG_SOMETHING_FISHY;
                         exit;
                     }
 
@@ -536,24 +538,24 @@ if ($request == 'GET') {
             echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
             echo "              <tr><td height=20 align=left>&nbsp;</td></tr>\n";
             echo "              <tr><td><a href='timeadmin.php'><img src='../images/buttons/done_button.png' border='0'></td></tr></table></td></tr>\n";
-            include '../footer.php';
+            include FOOTER_PHP;
             exit;
         } elseif ((!isset($_POST['delete_time_checkbox'])) && (isset($_POST['tmp_var']))) {
 
             // begin post validation //
 
             if ($_POST['tmp_var'] != '1') {
-                echo "Something is fishy here.\n";
+                echo MSG_SOMETHING_FISHY;
                 exit;
             }
             $tmp_calc = intval($calc);
             $tmp_timestamp = intval($timestamp);
             if ((strlen($tmp_calc) != "10") || (!is_integer($tmp_calc))) {
-                echo "Something is fishy here.\n";
+                echo MSG_SOMETHING_FISHY;
                 exit;
             }
             if ((strlen($tmp_timestamp) != "10") || (!is_integer($tmp_timestamp))) {
-                echo "Something is fishy here.\n";
+                echo MSG_SOMETHING_FISHY;
                 exit;
             }
 
@@ -639,7 +641,7 @@ if ($request == 'GET') {
             echo "              <tr><td width=30><input type='image' name='submit' value='Delete Time' align='middle'
                       src='../images/buttons/next_button.png'></td><td><a href='timeadmin.php'><img src='../images/buttons/cancel_button.png'
                       border='0'></td></tr></table></form></td></tr>\n";
-            include '../footer.php';
+            include FOOTER_PHP;
             exit;
 
         } else {
@@ -723,7 +725,7 @@ if ($request == 'GET') {
             echo "              <tr><td width=30><input type='image' name='submit' value='Delete Time' align='middle'
                       src='../images/buttons/next_button.png'></td><td><a href='timeadmin.php'><img src='../images/buttons/cancel_button.png'
                       border='0'></td></tr></table></form></td></tr>\n";
-            include '../footer.php';
+            include FOOTER_PHP;
             exit;
         }
 
@@ -789,7 +791,7 @@ if ($request == 'GET') {
             echo "              <tr><td width=30><input type='image' name='submit' value='Delete Time' align='middle'
                       src='../images/buttons/next_button.png'></td><td><a href='timeadmin.php'><img src='../images/buttons/cancel_button.png'
                       border='0'></td></tr></table></form></td></tr>\n";
-            include '../footer.php';
+            include FOOTER_PHP;
             exit;
         }
     }

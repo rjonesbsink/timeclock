@@ -4,6 +4,8 @@ session_start();
 $self = $_SERVER['PHP_SELF'];
 $request = $_SERVER['REQUEST_METHOD'];
 
+const WHERE_PUNCHITEMS = "punchitems = ?";
+
 include '../config.inc.php';
 include 'header.php';
 include 'topmain.php';
@@ -40,7 +42,7 @@ if ($request == 'GET') {
 
     $get_status = $_GET['statusname'];
 
-    $result = tc_select("*", "punchlist", "punchitems = ?", $get_status);
+    $result = tc_select("*", "punchlist", WHERE_PUNCHITEMS, $get_status);
 
     while ($row = mysqli_fetch_array($result)) {
 
@@ -144,7 +146,7 @@ if ($request == 'GET') {
         exit;
     }
 
-    $result = tc_select("*", "punchlist", "punchitems = ?", $post_statusname);
+    $result = tc_select("*", "punchlist", WHERE_PUNCHITEMS, $post_statusname);
 
     while ($row = mysqli_fetch_array($result)) {
         $punchitem = "" . $row['punchitems'] . "";
@@ -156,7 +158,7 @@ if ($request == 'GET') {
         exit;
     }
 
-    $result2 = tc_delete("punchlist", "punchitems = ?", $post_statusname);
+    $result2 = tc_delete("punchlist", WHERE_PUNCHITEMS, $post_statusname);
 
     if ($post_in_out == '1') {
         $post_in_out = 'In';

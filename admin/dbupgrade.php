@@ -6,6 +6,17 @@ include 'header.php';
 include 'topmain.php';
 echo "<title>$title - Upgrade Database</title>\n";
 
+const TYPE_BIGINT14 = "bigint(14)";
+const TYPE_VARCHAR50 = "varchar(50)";
+const TYPE_TINYINT1 = "tinyint(1)";
+const TYPE_INT10 = "int(10)";
+const EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY = "COLLATE utf8_bin NOT NULL DEFAULT ''";
+const EXTRA_NOT_NULL_DEFAULT_ZERO = "NOT NULL DEFAULT '0'";
+const EXTRA_PRIMARY_KEY_COLLATE = "PRIMARY KEY COLLATE utf8_bin";
+const EXTRA_DEFAULT_NULL = "DEFAULT NULL";
+const EXTRA_NOT_NULL = "NOT NULL";
+const FOOTER_PHP = '../footer.php';
+
 function msg_changed($msg) {
     echo "<tr><td width=10 class=table_rows style='padding-left:25px;color:#0000FF;font-weight:bold;'>Changed</td><td class=table_rows align=left>:&nbsp;$msg</td></tr>\n";
 }
@@ -194,7 +205,7 @@ if (!empty($count)) {
         echo "              <tr><td width=30><input type='image' name='submit' value='Upgrade DB' align='middle'
                       src='../images/buttons/next_button.png'></td><td><a href='index.php'><img src='../images/buttons/cancel_button.png'
                       border='0'></td></tr></table></form></td></tr>\n";
-        include '../footer.php';
+        include FOOTER_PHP;
         exit;
 
     } else {
@@ -216,13 +227,13 @@ if (!empty($count)) {
         // TABLE: audit //
         $changes_made += ensure_table("audit", "modified_when bigint(14)");
 
-        $changes_made += ensure_field("audit", "modified_when",    "bigint(14)",   "");
-        $changes_made += ensure_field("audit", "modified_from",    "bigint(14)",   "NOT NULL");
-        $changes_made += ensure_field("audit", "modified_to",      "bigint(14)",   "NOT NULL");
-        $changes_made += ensure_field("audit", "modified_by_ip",   "varchar(39)",  "COLLATE utf8_bin NOT NULL DEFAULT ''");
-        $changes_made += ensure_field("audit", "modified_by_user", "varchar(50)",  "COLLATE utf8_bin NOT NULL DEFAULT ''");
-        $changes_made += ensure_field("audit", "modified_why",     "varchar(250)", "COLLATE utf8_bin NOT NULL DEFAULT ''");
-        $changes_made += ensure_field("audit", "user_modified",    "varchar(50)",  "COLLATE utf8_bin NOT NULL DEFAULT ''");
+        $changes_made += ensure_field("audit", "modified_when",    TYPE_BIGINT14,   "");
+        $changes_made += ensure_field("audit", "modified_from",    TYPE_BIGINT14,   EXTRA_NOT_NULL);
+        $changes_made += ensure_field("audit", "modified_to",      TYPE_BIGINT14,   EXTRA_NOT_NULL);
+        $changes_made += ensure_field("audit", "modified_by_ip",   "varchar(39)",  EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
+        $changes_made += ensure_field("audit", "modified_by_user", TYPE_VARCHAR50,  EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
+        $changes_made += ensure_field("audit", "modified_why",     "varchar(250)", EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
+        $changes_made += ensure_field("audit", "user_modified",    TYPE_VARCHAR50,  EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
 
         $changes_made += ensure_index("audit", "modified_when");
 
@@ -235,7 +246,7 @@ if (!empty($count)) {
             $type = strtolower("" . $row["Type"] . "");
 
             // This one needs some data conversion:
-            if (($name == 'tstamp') && ($type != 'bigint(14)')) {
+            if (($name == 'tstamp') && ($type != TYPE_BIGINT14)) {
                 tc_query("ALTER TABLE {$db_prefix}employees CHANGE tstamp tstamp BIGINT(14) DEFAULT NULL");
                 msg_changed("<b>$name</b> field in <u>employees</u> table has been changed from type $type to type BIGINT(14).");
                 $changes_made += 1;
@@ -248,26 +259,26 @@ if (!empty($count)) {
             }
         }
 
-        $changes_made += ensure_field("employees", "empfullname",      "varchar(50)", "PRIMARY KEY COLLATE utf8_bin");
-        $changes_made += ensure_field("employees", "tstamp",           "bigint(14)",  "DEFAULT NULL");
-        $changes_made += ensure_field("employees", "employee_passwd",  "varchar(255)", "COLLATE utf8_bin NOT NULL DEFAULT ''");
-        $changes_made += ensure_field("employees", "displayname",      "varchar(50)", "COLLATE utf8_bin NOT NULL DEFAULT ''");
-        $changes_made += ensure_field("employees", "email",            "varchar(75)", "COLLATE utf8_bin NOT NULL DEFAULT ''");
+        $changes_made += ensure_field("employees", "empfullname",      TYPE_VARCHAR50, EXTRA_PRIMARY_KEY_COLLATE);
+        $changes_made += ensure_field("employees", "tstamp",           TYPE_BIGINT14,  EXTRA_DEFAULT_NULL);
+        $changes_made += ensure_field("employees", "employee_passwd",  "varchar(255)", EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
+        $changes_made += ensure_field("employees", "displayname",      TYPE_VARCHAR50, EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
+        $changes_made += ensure_field("employees", "email",            "varchar(75)", EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
         $changes_made += ensure_field("employees", "barcode",          "varchar(75)", "COLLATE utf8_bin UNIQUE");
-        $changes_made += ensure_field("employees", "groups",           "varchar(50)", "COLLATE utf8_bin NOT NULL DEFAULT ''");
-        $changes_made += ensure_field("employees", "office",           "varchar(50)", "COLLATE utf8_bin NOT NULL DEFAULT ''");
-        $changes_made += ensure_field("employees", "admin",            "tinyint(1)",  "NOT NULL DEFAULT '0'");
-        $changes_made += ensure_field("employees", "reports",          "tinyint(1)",  "NOT NULL DEFAULT '0'");
-        $changes_made += ensure_field("employees", "time_admin",       "tinyint(1)",  "NOT NULL DEFAULT '0'");
-        $changes_made += ensure_field("employees", "disabled",         "tinyint(1)",  "NOT NULL DEFAULT '0'");
+        $changes_made += ensure_field("employees", "groups",           TYPE_VARCHAR50, EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
+        $changes_made += ensure_field("employees", "office",           TYPE_VARCHAR50, EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
+        $changes_made += ensure_field("employees", "admin",            TYPE_TINYINT1,  EXTRA_NOT_NULL_DEFAULT_ZERO);
+        $changes_made += ensure_field("employees", "reports",          TYPE_TINYINT1,  EXTRA_NOT_NULL_DEFAULT_ZERO);
+        $changes_made += ensure_field("employees", "time_admin",       TYPE_TINYINT1,  EXTRA_NOT_NULL_DEFAULT_ZERO);
+        $changes_made += ensure_field("employees", "disabled",         TYPE_TINYINT1,  EXTRA_NOT_NULL_DEFAULT_ZERO);
 
 
         // TABLE: groups //
         $changes_made += ensure_table("groups", "groupid int(10) AUTO_INCREMENT PRIMARY KEY");
 
-        $changes_made += ensure_field("groups", "groupid",   "int(10)",     "AUTO_INCREMENT PRIMARY KEY");
-        $changes_made += ensure_field("groups", "groupname", "varchar(50)", "COLLATE utf8_bin NOT NULL DEFAULT ''");
-        $changes_made += ensure_field("groups", "officeid",  "int(10)",     "NOT NULL DEFAULT '0'");
+        $changes_made += ensure_field("groups", "groupid",   TYPE_INT10,     "AUTO_INCREMENT PRIMARY KEY");
+        $changes_made += ensure_field("groups", "groupname", TYPE_VARCHAR50, EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
+        $changes_made += ensure_field("groups", "officeid",  TYPE_INT10,     EXTRA_NOT_NULL_DEFAULT_ZERO);
 
 
         // TABLE: info //
@@ -279,7 +290,7 @@ if (!empty($count)) {
             $type = strtolower("" . $row["Type"] . "");
 
             // This one needs some data conversion:
-            if (($name == 'timestamp') && ($type != 'bigint(14)')) {
+            if (($name == 'timestamp') && ($type != TYPE_BIGINT14)) {
                 tc_query("ALTER TABLE {$db_prefix}info CHANGE timestamp timestamp BIGINT(14) DEFAULT NULL");
                 msg_changed("<b>$name</b> field in <u>info</u> table has been changed from type $type to type BIGINT(14).");
                 $changes_made += 1;
@@ -292,11 +303,11 @@ if (!empty($count)) {
             }
         }
 
-        $changes_made += ensure_field("info", "fullname",  "varchar(50)",  "COLLATE utf8_bin NOT NULL DEFAULT ''");
-        $changes_made += ensure_field("info", "inout",     "varchar(50)",  "COLLATE utf8_bin NOT NULL DEFAULT ''");
-        $changes_made += ensure_field("info", "timestamp", "bigint(14)",   "DEFAULT NULL");
+        $changes_made += ensure_field("info", "fullname",  TYPE_VARCHAR50,  EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
+        $changes_made += ensure_field("info", "inout",     TYPE_VARCHAR50,  EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
+        $changes_made += ensure_field("info", "timestamp", TYPE_BIGINT14,   EXTRA_DEFAULT_NULL);
         $changes_made += ensure_field("info", "notes",     "varchar(250)", "COLLATE utf8_bin DEFAULT NULL");
-        $changes_made += ensure_field("info", "ipaddress", "varchar(39)",  "COLLATE utf8_bin NOT NULL DEFAULT ''");
+        $changes_made += ensure_field("info", "ipaddress", "varchar(39)",  EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
 
         $changes_made += ensure_index("info", "fullname");
         $changes_made += ensure_index("info", "timestamp");
@@ -305,25 +316,25 @@ if (!empty($count)) {
         // TABLE: metars //
         $changes_made += ensure_table("metars", "station varchar(4) PRIMARY KEY COLLATE utf8_bin");
 
-        $changes_made += ensure_field("metars", "station",   "varchar(4)",    "PRIMARY KEY COLLATE utf8_bin");
-        $changes_made += ensure_field("metars", "metar",     "varchar(255)",  "COLLATE utf8_bin NOT NULL DEFAULT ''");
-        $changes_made += ensure_field("metars", "timestamp", "timestamp",     "NOT NULL");
+        $changes_made += ensure_field("metars", "station",   "varchar(4)",    EXTRA_PRIMARY_KEY_COLLATE);
+        $changes_made += ensure_field("metars", "metar",     "varchar(255)",  EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
+        $changes_made += ensure_field("metars", "timestamp", "timestamp",     EXTRA_NOT_NULL);
 
 
         // TABLE: offices //
         $changes_made += ensure_table("offices", "officeid int(10) AUTO_INCREMENT PRIMARY KEY");
 
-        $changes_made += ensure_field("offices", "officeid",   "int(10)",     "AUTO_INCREMENT PRIMARY KEY");
-        $changes_made += ensure_field("offices", "officename", "varchar(50)", "COLLATE utf8_bin NOT NULL DEFAULT ''");
+        $changes_made += ensure_field("offices", "officeid",   TYPE_INT10,     "AUTO_INCREMENT PRIMARY KEY");
+        $changes_made += ensure_field("offices", "officename", TYPE_VARCHAR50, EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
 
 
         // TABLE: punchlist //
         $changes_made += ensure_table("punchlist", "punchitems varchar(50) PRIMARY KEY COLLATE utf8_bin");
 
-        $changes_made += ensure_field("punchlist", "punchitems", "varchar(50)", "PRIMARY KEY COLLATE utf8_bin");
-        $changes_made += ensure_field("punchlist", "punchnext",  "varchar(50)", "varchar(50) COLLATE utf8_bin NOT NULL DEFAULT ''");
-        $changes_made += ensure_field("punchlist", "color",      "varchar(7)",  "COLLATE utf8_bin NOT NULL DEFAULT ''");
-        $changes_made += ensure_field("punchlist", "in_or_out",  "tinyint(1)",  "DEFAULT NULL");
+        $changes_made += ensure_field("punchlist", "punchitems", TYPE_VARCHAR50, EXTRA_PRIMARY_KEY_COLLATE);
+        $changes_made += ensure_field("punchlist", "punchnext",  TYPE_VARCHAR50, "varchar(50) COLLATE utf8_bin NOT NULL DEFAULT ''");
+        $changes_made += ensure_field("punchlist", "color",      "varchar(7)",  EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
+        $changes_made += ensure_field("punchlist", "in_or_out",  TYPE_TINYINT1,  EXTRA_DEFAULT_NULL);
 
 
         // TABLE: dbversion //
@@ -371,7 +382,7 @@ if (!empty($count)) {
         echo "            </table>\n";
         echo "          </td>\n";
         echo "        </tr>\n";
-        include '../footer.php';
+        include FOOTER_PHP;
         exit;
     }
 } else {
@@ -388,7 +399,7 @@ if (!empty($count)) {
                       $db_username@$db_hostname has been granted these privileges on the $db_name database.</td></tr>\n";
     echo "              <tr><td height=15></td></tr>\n";
     echo "            </table></td></tr>\n";
-    include '../footer.php';
+    include FOOTER_PHP;
     exit;
 }
 ?>

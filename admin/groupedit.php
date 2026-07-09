@@ -15,6 +15,12 @@ const WHERE_ADMIN_GROUP_AND_OFFICE = "admin = '1' and groups = ? and office = ?"
 const WHERE_TIME_ADMIN_GROUP_AND_OFFICE = "time_admin = '1' and groups = ? and office = ?";
 const WHERE_REPORTS_GROUP_AND_OFFICE = "reports = '1' and groups = ? and office = ?";
 const EMPLOYEE_COLUMNS = "empfullname, displayname, email, groups, office, admin, reports, time_admin, disabled";
+const FOOTER_PHP = '../footer.php';
+const MSG_OFFICE_NOT_DEFINED = "Office name is not defined for this group.\n";
+const MSIE3 = "MSIE 3";
+const MSIE4 = "MSIE 4";
+const MSIE5 = "MSIE 5";
+const MSIE6 = "MSIE 6";
 
 if (!isset($_SESSION['valid_user'])) {
 
@@ -111,7 +117,7 @@ if ($request == 'GET') {
     }
 
     if (!isset($officename)) {
-        echo "Office name is not defined for this group.\n";
+        echo MSG_OFFICE_NOT_DEFINED;
         exit;
     }
     if (!isset($groupname)) {
@@ -251,7 +257,7 @@ if ($request == 'GET') {
                 echo "                <td class=table_rows width=3% align=center>" . $reports . "</td>\n";
             }
 
-            if ((strpos($user_agent, "MSIE 6")) || (strpos($user_agent, "MSIE 5")) || (strpos($user_agent, "MSIE 4")) || (strpos($user_agent, "MSIE 3"))) {
+            if ((strpos($user_agent, MSIE6)) || (strpos($user_agent, MSIE5)) || (strpos($user_agent, MSIE4)) || (strpos($user_agent, MSIE3))) {
 
                 echo "                <td class=table_rows width=3% align=center><a style='color:#27408b;text-decoration:underline;'
                     title=\"Edit User: $empfullname\"
@@ -277,11 +283,11 @@ if ($request == 'GET') {
     }
     if ($user_count_rows > '0') {
         echo "            </table></td></tr>\n";
-        include '../footer.php';
+        include FOOTER_PHP;
         exit;
     } elseif ($user_count_rows == '0') {
         echo "            </td></tr>\n";
-        include '../footer.php';
+        include FOOTER_PHP;
         exit;
     }
 } elseif ($request == 'POST') {
@@ -331,7 +337,7 @@ if ($request == 'GET') {
         }
     }
     if (!isset($officename)) {
-        echo "Office name is not defined for this group.\n";
+        echo MSG_OFFICE_NOT_DEFINED;
         exit;
     }
 
@@ -356,7 +362,7 @@ if ($request == 'GET') {
         }
     }
     if (!isset($origofficeid)) {
-        echo "Office name is not defined for this group.\n";
+        echo MSG_OFFICE_NOT_DEFINED;
         exit;
     }
 
@@ -624,7 +630,7 @@ if ($request == 'GET') {
                     echo "                <td class=table_rows width=3% align=center>" . $reports . "</td>\n";
                 }
 
-                if ((strpos($user_agent, "MSIE 6")) || (strpos($user_agent, "MSIE 5")) || (strpos($user_agent, "MSIE 4")) || (strpos($user_agent, "MSIE 3"))) {
+                if ((strpos($user_agent, MSIE6)) || (strpos($user_agent, MSIE5)) || (strpos($user_agent, MSIE4)) || (strpos($user_agent, MSIE3))) {
 
                     echo "                <td class=table_rows width=3% align=center><a style='color:#27408b;text-decoration:underline;'
                     title=\"Edit User: $empfullname\"
@@ -650,11 +656,11 @@ if ($request == 'GET') {
         }
         if ($user_count_rows > '0') {
             echo "            </table></td></tr>\n";
-            include '../footer.php';
+            include FOOTER_PHP;
             exit;
         } elseif ($user_count_rows == '0') {
             echo "            </td></tr>\n";
-            include '../footer.php';
+            include FOOTER_PHP;
             exit;
         }
 
@@ -784,7 +790,7 @@ if ($request == 'GET') {
                     echo "                <td class=table_rows width=3% align=center>" . $reports . "</td>\n";
                 }
 
-                if ((strpos($user_agent, "MSIE 6")) || (strpos($user_agent, "MSIE 5")) || (strpos($user_agent, "MSIE 4")) || (strpos($user_agent, "MSIE 3"))) {
+                if ((strpos($user_agent, MSIE6)) || (strpos($user_agent, MSIE5)) || (strpos($user_agent, MSIE4)) || (strpos($user_agent, MSIE3))) {
 
                     echo "                <td class=table_rows width=3% align=center><a style='color:#27408b;text-decoration:underline;'
                     title=\"Edit User: $empfullname\"
@@ -810,11 +816,11 @@ if ($request == 'GET') {
         }
         if ($user_count_rows > '0') {
             echo "            </table></td></tr>\n";
-            include '../footer.php';
+            include FOOTER_PHP;
             exit;
         } elseif ($user_count_rows == '0') {
             echo "            </td></tr>\n";
-            include '../footer.php';
+            include FOOTER_PHP;
             exit;
         }
     }

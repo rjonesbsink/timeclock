@@ -3,6 +3,8 @@ session_start();
 
 $self = $_SERVER['PHP_SELF'];
 $request = $_SERVER['REQUEST_METHOD'];
+const FOOTER_PHP = '../footer.php';
+const WHERE_EMPFULLNAME = "empfullname = ?";
 
 include '../config.inc.php';
 if ($request !== 'POST') {
@@ -94,7 +96,7 @@ if ($request == 'GET') {
     echo "          <td valign=top>\n";
 
     $row_count = 0;
-    $result = tc_select("*", "employees", "empfullname = ?", $get_user);
+    $result = tc_select("*", "employees", WHERE_EMPFULLNAME, $get_user);
 
     while ($row = mysqli_fetch_array($result)) {
         $row_count++;
@@ -219,7 +221,7 @@ if ($request == 'GET') {
     echo "              <tr><td width=30><input type='image' name='submit' value='Edit User' align='middle'
                       src='../images/buttons/next_button.png'></td><td><a href='useradmin.php'><img src='../images/buttons/cancel_button.png'
                       border='0'></td></tr></table></form></td></tr>\n";
-    include '../footer.php';
+    include FOOTER_PHP;
     exit;
 } elseif ($request == 'POST') {
 
@@ -251,7 +253,7 @@ if ($request == 'GET') {
     }
 
     if (!empty($post_username)) {
-        $tmp_username = tc_select_value("empfullname", "employees", "empfullname = ?", $post_username);
+        $tmp_username = tc_select_value("empfullname", "employees", WHERE_EMPFULLNAME, $post_username);
         if (!isset($tmp_username)) {
             echo htmlspecialchars("$tmp_username, $post_username. Something is fishy here.\n");
             exit;
@@ -481,7 +483,7 @@ if ($request == 'GET') {
         echo "              <tr><td width=30><input type='image' name='submit' value='Edit User' align='middle'
                       src='../images/buttons/next_button.png'></td><td><a href='useradmin.php'><img src='../images/buttons/cancel_button.png'
                       border='0'></td></tr></table></form></td></tr>\n";
-        include '../footer.php';
+        include FOOTER_PHP;
         exit;
     }
 
@@ -495,7 +497,7 @@ if ($request == 'GET') {
         'reports'     => $reports_perms,
         'time_admin'  => $time_admin_perms,
         'disabled'    => $post_disabled
-    ), "empfullname = ?", $post_username);
+    ), WHERE_EMPFULLNAME, $post_username);
 
     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
     echo "  <tr valign=top>\n";
@@ -626,7 +628,7 @@ class=table_rows
     echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
     echo "              <tr><td height=20 align=left>&nbsp;</td></tr>\n";
     echo "              <tr><td><a href='useradmin.php'><img src='../images/buttons/done_button.png' border='0'></a></td></tr></table></td></tr>\n";
-    include '../footer.php';
+    include FOOTER_PHP;
     exit;
 }
 ?>

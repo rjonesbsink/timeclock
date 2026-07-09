@@ -12,6 +12,9 @@ $request = $_SERVER['REQUEST_METHOD'];
 const WHERE_EMPFULLNAME = "empfullname = ?";
 const SELECT_ALL_FROM = "select * from ";
 const PUNCHLIST_ORDER_BY_PUNCHITEMS = "punchlist order by punchitems asc";
+const FOOTER_PHP = '../footer.php';
+const MSG_SOMETHING_FISHY = "Something is fishy here.\n";
+const DATE_PATTERN = "/^([0-9]{1,2})[\-\/\.]([0-9]{1,2})[\-\/\.](([0-9]{2})|([0-9]{4}))$/i";
 
 if (($timefmt == "G:i") || ($timefmt == "H:i")) {
     $timefmt_24hr = '1';
@@ -174,7 +177,7 @@ if ($request == 'GET') {
     echo "              <tr><td width=30><input type='image' name='submit' value='Add Time' align='middle'
                       src='../images/buttons/next_button.png'></td><td><a href='timeadmin.php'><img src='../images/buttons/cancel_button.png'
                       border='0'></td></tr></table></form></td></tr>\n";
-    include '../footer.php';
+    include FOOTER_PHP;
     exit;
 } elseif ($request == 'POST') {
 
@@ -202,7 +205,7 @@ if ($request == 'GET') {
             $tmp_get_user = "" . $row['empfullname'] . "";
         }
         if (!isset($tmp_get_user)) {
-            echo "Something is fishy here.\n";
+            echo MSG_SOMETHING_FISHY;
             exit;
         }
     }
@@ -213,7 +216,7 @@ if ($request == 'GET') {
             $tmp_username = "" . $row['empfullname'] . "";
         }
         if (!isset($tmp_username)) {
-            echo "Something is fishy here.\n";
+            echo MSG_SOMETHING_FISHY;
             exit;
         }
     }
@@ -224,7 +227,7 @@ if ($request == 'GET') {
             $tmp_post_displayname = "" . $row['displayname'] . "";
         }
         if (!isset($tmp_post_displayname)) {
-            echo "Something is fishy here.\n";
+            echo MSG_SOMETHING_FISHY;
             exit;
         }
     }
@@ -239,7 +242,7 @@ if ($request == 'GET') {
                 $color = "" . $row['color'] . "";
             }
             if (!isset($punchitems)) {
-                echo "Something is fishy here.\n";
+                echo MSG_SOMETHING_FISHY;
                 exit;
             }
         } else {
@@ -258,11 +261,11 @@ if ($request == 'GET') {
     }
 
     if (($timefmt_24hr != $tmp_timefmt_24hr) || ($timefmt_24hr_text != $tmp_timefmt_24hr_text) || ($timefmt_size != $tmp_timefmt_size)) {
-        echo "Something is fishy here.\n";
+        echo MSG_SOMETHING_FISHY;
         exit;
     }
     if ($date_format != $js_datefmt) {
-        echo "Something is fishy here.\n";
+        echo MSG_SOMETHING_FISHY;
         exit;
     }
 
@@ -333,7 +336,7 @@ if ($request == 'GET') {
     echo "          <td valign=top>\n";
     echo "            <br />\n";
     if ((empty($post_date)) || (empty($post_time)) || ($post_statusname == '1') || (!preg_match('/' . "^([[:alnum:]]| |-|_|\.)+$" . '/i', $post_statusname)) ||
-        (!preg_match("/^([0-9]{1,2})[\-\/\.]([0-9]{1,2})[\-\/\.](([0-9]{2})|([0-9]{4}))$/i", $post_date))
+        (!preg_match(DATE_PATTERN, $post_date))
     ) {
         $evil_post = '1';
         if (empty($post_date)) {
@@ -360,7 +363,7 @@ if ($request == 'GET') {
             echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
                     Alphanumeric characters, hyphens, underscores, spaces, and periods are allowed in a Status Name.</td></tr>\n";
             echo "            </table>\n";
-        } elseif (!preg_match("/^([0-9]{1,2})[\-\/\.]([0-9]{1,2})[\-\/\.](([0-9]{2})|([0-9]{4}))$/i", $post_date)) {
+        } elseif (!preg_match(DATE_PATTERN, $post_date)) {
             echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
             echo "              <tr>\n";
             echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
@@ -426,7 +429,7 @@ if ($request == 'GET') {
         }
     }
 
-    if (preg_match("/^([0-9]{1,2})[\-\/\.]([0-9]{1,2})[\-\/\.](([0-9]{2})|([0-9]{4}))$/i", $post_date, $date_regs)) {
+    if (preg_match(DATE_PATTERN, $post_date, $date_regs)) {
         if ($calendar_style == "amer") {
             if (isset($date_regs)) {
                 $month = $date_regs[1];
@@ -523,7 +526,7 @@ if ($request == 'GET') {
         echo "              <tr><td width=30><input type='image' name='submit' value='Add Time' align='middle'
                       src='../images/buttons/next_button.png'></td><td><a href='timeadmin.php'><img src='../images/buttons/cancel_button.png'
                       border='0'></td></tr></table></form></td></tr>\n";
-        include '../footer.php';
+        include FOOTER_PHP;
         exit;
 
     } else {
@@ -618,7 +621,7 @@ if ($request == 'GET') {
                 echo "              <tr><td width=30><input type='image' name='submit' value='Add Time' align='middle'
                       src='../images/buttons/next_button.png'></td><td><a href='timeadmin.php'><img src='../images/buttons/cancel_button.png'
                       border='0'></td></tr></table></form></td></tr>\n";
-                include '../footer.php';
+                include FOOTER_PHP;
                 exit;
             }
         }
@@ -728,7 +731,7 @@ colspan=2 width=80% style='padding-left:20px;'>$post_notes</td></tr>\n";
         echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
         echo "              <tr><td height=20 align=left>&nbsp;</td></tr>\n";
         echo "              <tr><td><a href='timeadmin.php'><img src='../images/buttons/done_button.png' border='0'></td></tr></table></td></tr>\n";
-        include '../footer.php';
+        include FOOTER_PHP;
         exit;
     }
 }

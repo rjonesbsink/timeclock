@@ -6,6 +6,8 @@ $self = $_SERVER['PHP_SELF'];
 $request = $_SERVER['REQUEST_METHOD'];
 $current_page = "audit.php";
 
+const ADMIN_TOPMAIN_PHP = '../admin/topmain.php';
+
 include '../config.inc.php';
 
 if ($use_reports_password == "yes") {
@@ -14,7 +16,7 @@ if ($use_reports_password == "yes") {
 
         echo "<title>$title</title>\n";
         include '../admin/header.php';
-        include '../admin/topmain.php';
+        include ADMIN_TOPMAIN_PHP;
 
         echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
         echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Reports</td></tr>\n";
@@ -35,7 +37,7 @@ if ($request == 'GET') {
     include '../admin/header_date.php';
 
     if ($use_reports_password == "yes") {
-        include '../admin/topmain.php';
+        include ADMIN_TOPMAIN_PHP;
     } else {
         include 'topmain.php';
     }
@@ -109,7 +111,7 @@ if ($request == 'GET') {
         if (($tmp_csv != '1') && (!empty($tmp_csv))) {
             $evil_post = '1';
             if ($use_reports_password == "yes") {
-                include '../admin/topmain.php';
+                include ADMIN_TOPMAIN_PHP;
             } else {
                 include 'topmain.php';
             }
@@ -131,7 +133,7 @@ if ($request == 'GET') {
         if (empty($from_date)) {
             $evil_post = '1';
             if ($use_reports_password == "yes") {
-                include '../admin/topmain.php';
+                include ADMIN_TOPMAIN_PHP;
             } else {
                 include 'topmain.php';
             }
@@ -149,7 +151,7 @@ if ($request == 'GET') {
         } elseif (!preg_match('/' . "^([0-9]?[0-9])+[-|\/|.]+([0-9]?[0-9])+[-|\/|.]+(([0-9]{2})|([0-9]{4}))$" . '/i', $from_date, $date_regs)) {
             $evil_post = '1';
             if ($use_reports_password == "yes") {
-                include '../admin/topmain.php';
+                include ADMIN_TOPMAIN_PHP;
             } else {
                 include 'topmain.php';
             }
@@ -177,7 +179,7 @@ if ($request == 'GET') {
                 if ($from_month > 12 || $from_day > 31) {
                     $evil_post = '1';
                     if ($use_reports_password == "yes") {
-                        include '../admin/topmain.php';
+                        include ADMIN_TOPMAIN_PHP;
                     } else {
                         include 'topmain.php';
                     }
@@ -202,7 +204,7 @@ if ($request == 'GET') {
                 if ($from_month > 12 || $from_day > 31) {
                     $evil_post = '1';
                     if ($use_reports_password == "yes") {
-                        include '../admin/topmain.php';
+                        include ADMIN_TOPMAIN_PHP;
                     } else {
                         include 'topmain.php';
                     }
@@ -226,7 +228,7 @@ if ($request == 'GET') {
         if (empty($to_date)) {
             $evil_post = '1';
             if ($use_reports_password == "yes") {
-                include '../admin/topmain.php';
+                include ADMIN_TOPMAIN_PHP;
             } else {
                 include 'topmain.php';
             }
@@ -244,7 +246,7 @@ if ($request == 'GET') {
         } elseif (!preg_match('/' . "^([0-9]?[0-9])+[-|\/|.]+([0-9]?[0-9])+[-|\/|.]+(([0-9]{2})|([0-9]{4}))$" . '/i', $to_date, $date_regs)) {
             $evil_post = '1';
             if ($use_reports_password == "yes") {
-                include '../admin/topmain.php';
+                include ADMIN_TOPMAIN_PHP;
             } else {
                 include 'topmain.php';
             }
@@ -271,7 +273,7 @@ if ($request == 'GET') {
                 if ($to_month > 12 || $to_day > 31) {
                     $evil_post = '1';
                     if ($use_reports_password == "yes") {
-                        include '../admin/topmain.php';
+                        include ADMIN_TOPMAIN_PHP;
                     } else {
                         include 'topmain.php';
                     }
@@ -296,7 +298,7 @@ if ($request == 'GET') {
                 if ($to_month > 12 || $to_day > 31) {
                     $evil_post = '1';
                     if ($use_reports_password == "yes") {
-                        include '../admin/topmain.php';
+                        include ADMIN_TOPMAIN_PHP;
                     } else {
                         include 'topmain.php';
                     }

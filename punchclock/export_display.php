@@ -10,6 +10,8 @@ if (!isset($_SESSION['application'])) {
 
 require_once 'class.Timecard.php';
 
+const CHECKED_ATTR = ' checked="checked"';
+
 // Construct query parameters
 $begin_local_timestamp = make_timestamp($from_date); // begins at midnight
 $end_local_timestamp = make_timestamp($to_date) + $one_day - 1; // through end of day
@@ -110,13 +112,13 @@ $end_date = date('l F j, Y', $end_local_timestamp);
 $h_user_name = htmlentities($user_name);
 $h_group_name = htmlentities($group_name);
 $h_office_name = htmlentities($office_name);
-$chk_reg_ot = $c_reg_ot ? ' checked="checked"' : '';
-$chk_inout = $c_inout ? ' checked="checked"' : '';
-$chk_date = $c_date ? ' checked="checked"' : '';
-$chk_employee = $c_employee ? ' checked="checked"' : '';
-$chk_name = $c_name ? ' checked="checked"' : '';
-$chk_group = $c_group ? ' checked="checked"' : '';
-$chk_office = $c_office ? ' checked="checked"' : '';
+$chk_reg_ot = $c_reg_ot ? CHECKED_ATTR : '';
+$chk_inout = $c_inout ? CHECKED_ATTR : '';
+$chk_date = $c_date ? CHECKED_ATTR : '';
+$chk_employee = $c_employee ? CHECKED_ATTR : '';
+$chk_name = $c_name ? CHECKED_ATTR : '';
+$chk_group = $c_group ? CHECKED_ATTR : '';
+$chk_office = $c_office ? CHECKED_ATTR : '';
 $options_style = isset($_POST['redo']) ? '' : ' style="display:none"';
 $options_link_class = isset($_POST['redo']) ? ' class="open"' : '';
 

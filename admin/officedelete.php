@@ -6,6 +6,8 @@ $request = $_SERVER['REQUEST_METHOD'];
 
 const WHERE_OFFICE = "office = ?";
 const WHERE_OFFICEID = "officeid = ?";
+const FOOTER_PHP = '../footer.php';
+const MSG_OFFICE_NOT_DEFINED = "Office name is not defined for this group.\n";
 
 include '../config.inc.php';
 if ($request !== 'POST') {
@@ -103,7 +105,7 @@ if ($request == 'GET') {
     }
 
     if (!isset($officename)) {
-        echo "Office name is not defined for this group.\n";
+        echo MSG_OFFICE_NOT_DEFINED;
         exit;
     }
 
@@ -160,7 +162,7 @@ if ($request == 'GET') {
         echo "              <tr><td width=30><input type='image' name='submit' value='Delete Office'
                       src='../images/buttons/next_button.png'></td><td><a href='officeadmin.php'>
                       <img src='../images/buttons/cancel_button.png' border='0'></td></tr></table></form></td></tr>\n";
-        include '../footer.php';
+        include FOOTER_PHP;
         exit;
 
     } elseif ($user_cnt == '0') {
@@ -188,7 +190,7 @@ if ($request == 'GET') {
         echo "              <tr><td width=30><input type='image' name='submit' value='Delete Office'
                       src='../images/buttons/next_button.png'></td><td><a href='officeadmin.php'>
                       <img src='../images/buttons/cancel_button.png' border='0'></td></tr></table></form></td></tr>\n";
-        include '../footer.php';
+        include FOOTER_PHP;
         exit;
     }
     exit;
@@ -226,7 +228,7 @@ if ($request == 'GET') {
             $tmp_officeid = "" . $row['officeid'] . "";
         }
         if ((!isset($tmp_officename)) || (!isset($tmp_officeid))) {
-            echo "Office name is not defined for this group.\n";
+            echo MSG_OFFICE_NOT_DEFINED;
             exit;
         }
     }
@@ -238,7 +240,7 @@ if ($request == 'GET') {
             $tmp_groupid = "" . $row['groupid'] . "";
         }
         if ((!isset($tmp_groupname)) || (!isset($tmp_groupid))) {
-            echo "Office name is not defined for this group.\n";
+            echo MSG_OFFICE_NOT_DEFINED;
             exit;
         }
     }
@@ -386,7 +388,7 @@ if ($request == 'GET') {
         echo "              <tr><td width=30><input type='image' name='submit' value='Delete Office'
                       src='../images/buttons/next_button.png'></td><td><a href='officeadmin.php'>
                       <img src='../images/buttons/cancel_button.png' border='0'></td></tr></table></form></td></tr>\n";
-        include '../footer.php';
+        include FOOTER_PHP;
         exit;
 
     } else {
@@ -415,7 +417,7 @@ if ($request == 'GET') {
         echo "              <tr><td height=20 align=left>&nbsp;</td></tr>\n";
         echo "              <tr><td><a href='officeadmin.php'><img src='../images/buttons/done_button.png' border='0'></td></tr></table></td>
               </tr>\n";
-        include '../footer.php';
+        include FOOTER_PHP;
         exit;
     }
 }
