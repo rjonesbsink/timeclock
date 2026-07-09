@@ -78,16 +78,21 @@ function get_employee_password($empfullname) {
 function is_valid_password($empfullname, $password) {
     global $use_passwd;
     $employee_passwd = get_employee_password($empfullname);
-    if ($use_passwd) {
-        $password = crypt($password, 'xy');
+    if (!$use_passwd) {
+        return ($password == $employee_passwd);
     }
 
-    return ($password == $employee_passwd);
+    $is_valid = tc_verify_password($password, $employee_passwd);
+    if ($is_valid) {
+        tc_maybe_upgrade_password($empfullname, $password, $employee_passwd);
+    }
+
+    return $is_valid;
 }
 
 ////////////////////////////////////////
 function save_employee_password($empfullname, $new_password) {
-    $password = crypt($new_password, 'xy');
+    $password = tc_hash_password($new_password);
     tc_update_strings("employees", array("employee_passwd" => $password), "empfullname = ?", $empfullname);
 
     return true;

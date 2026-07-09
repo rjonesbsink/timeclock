@@ -323,8 +323,6 @@ if ($request == 'GET') {
         }
 
         // end post validation //
-        $password = crypt($password, 'xy');
-        $confirm_password = crypt($confirm_password, 'xy');
 
         echo "            <br />\n";
         echo "            <form name='form' action='$self' method='post'>\n";
@@ -408,8 +406,7 @@ if ($request == 'GET') {
         exit;
     }
 
-    $password = crypt($password, 'xy');
-    $confirm_password = crypt($confirm_password, 'xy');
+    $password = tc_hash_password($password);
 
     tc_insert_strings("employees", array(
         'empfullname'     => $post_username,

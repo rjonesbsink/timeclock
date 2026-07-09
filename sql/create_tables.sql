@@ -43,7 +43,7 @@ INSERT INTO dbversion VALUES ('1.4');
 CREATE TABLE `employees` (
   `empfullname` varchar(50) PRIMARY KEY COLLATE utf8_bin,
   `tstamp` bigint(14) DEFAULT NULL,
-  `employee_passwd` varchar(25) COLLATE utf8_bin NOT NULL DEFAULT '',
+  `employee_passwd` varchar(255) COLLATE utf8_bin NOT NULL DEFAULT '',
   `displayname` varchar(50) COLLATE utf8_bin NOT NULL DEFAULT '',
   `email` varchar(75) COLLATE utf8_bin NOT NULL DEFAULT '',
   `barcode` varchar(75) COLLATE utf8_bin UNIQUE,
