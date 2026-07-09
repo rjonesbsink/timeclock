@@ -408,9 +408,7 @@ if ($request == 'GET') {
 
     $row_color = $color2; // Initial row color
 
-    $query = "select * from " . $db_prefix . "audit where modified_when >= '" . $from_timestamp . "' and modified_when <= '" . $to_timestamp . "'
-          order by modified_when asc";
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
+    $result = tc_select("*", "audit", "modified_when >= ? and modified_when <= ? order by modified_when asc", array($from_timestamp, $to_timestamp));
 
     while ($row = mysqli_fetch_array($result)) {
 
