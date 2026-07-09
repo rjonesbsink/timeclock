@@ -39,7 +39,7 @@ if (isset($_REQUEST['next']))
     $local_timestamp_in_week += $one_week;
 
 // Connect to db.
-require "$TIMECLOCK_PATH/lib/db.php";
+require_once "$TIMECLOCK_PATH/lib/db.php";
 
 $u_empfullname = rawurlencode($empfullname);
 

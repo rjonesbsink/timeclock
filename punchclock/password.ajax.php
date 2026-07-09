@@ -14,7 +14,7 @@ require_once 'lib.common.php';
 turn_off_magic_quotes();
 
 // Connect to db.
-require "$TIMECLOCK_PATH/lib/db.php";
+require_once "$TIMECLOCK_PATH/lib/db.php";
 
 // Parse arguments
 $change_password = isset($_GET['change_password']) ? true : false;
