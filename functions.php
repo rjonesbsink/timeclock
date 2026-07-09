@@ -193,64 +193,69 @@ function secsToHours($secs, $round_time) {
     /* Add the minutes back on as a percentage of an hour (e.g. 8.25 hours == 8 hours, 15 minutes) */
 
     if ($round_time == '1') {
-        if ($mins >= 57.5)
+        if ($mins >= 57.5) {
             $hours += 1.0;
-        elseif ($mins >= 52.5)
+        } elseif ($mins >= 52.5) {
             $hours += 0.92;
-        elseif ($mins >= 47.5)
+        } elseif ($mins >= 47.5) {
             $hours += 0.83;
-        elseif ($mins >= 42.5)
+        } elseif ($mins >= 42.5) {
             $hours += 0.75;
-        elseif ($mins >= 37.5)
+        } elseif ($mins >= 37.5) {
             $hours += 0.67;
-        elseif ($mins >= 32.5)
+        } elseif ($mins >= 32.5) {
             $hours += 0.58;
-        elseif ($mins >= 27.5)
+        } elseif ($mins >= 27.5) {
             $hours += 0.50;
-        elseif ($mins >= 22.5)
+        } elseif ($mins >= 22.5) {
             $hours += 0.42;
-        elseif ($mins >= 17.5)
+        } elseif ($mins >= 17.5) {
             $hours += 0.33;
-        elseif ($mins >= 12.5)
+        } elseif ($mins >= 12.5) {
             $hours += 0.25;
-        elseif ($mins >= 7.5)
+        } elseif ($mins >= 7.5) {
             $hours += 0.17;
-        elseif ($mins >= 2.5)
+        } elseif ($mins >= 2.5) {
             $hours += 0.08;
+        }
     } elseif ($round_time == '2') {
-        if ($mins >= 55.0)
+        if ($mins >= 55.0) {
             $hours += 1.0;
-        elseif ($mins >= 45.0)
+        } elseif ($mins >= 45.0) {
             $hours += 0.83;
-        elseif ($mins >= 35.0)
+        } elseif ($mins >= 35.0) {
             $hours += 0.67;
-        elseif ($mins >= 25.0)
+        } elseif ($mins >= 25.0) {
             $hours += 0.50;
-        elseif ($mins >= 15.0)
+        } elseif ($mins >= 15.0) {
             $hours += 0.33;
-        elseif ($mins >= 5.0)
+        } elseif ($mins >= 5.0) {
             $hours += 0.17;
+        }
     } elseif ($round_time == '3') {
-        if ($mins >= 52.5)
+        if ($mins >= 52.5) {
             $hours += 1.0;
-        elseif ($mins >= 37.5)
+        } elseif ($mins >= 37.5) {
             $hours += 0.75;
-        elseif ($mins >= 22.5)
+        } elseif ($mins >= 22.5) {
             $hours += 0.5;
-        elseif ($mins >= 7.5)
+        } elseif ($mins >= 7.5) {
             $hours += 0.25;
+        }
     } elseif ($round_time == '4') {
-        if ($mins >= 50.0)
+        if ($mins >= 50.0) {
             $hours += 1.0;
-        elseif ($mins >= 30.0)
+        } elseif ($mins >= 30.0) {
             $hours += 0.67;
-        elseif ($mins >= 10.0)
+        } elseif ($mins >= 10.0) {
             $hours += 0.33;
+        }
     } elseif ($round_time == '5') {
-        if ($mins >= 45.0)
+        if ($mins >= 45.0) {
             $hours += 1.0;
-        elseif ($mins >= 15.0)
+        } elseif ($mins >= 15.0) {
             $hours += 0.5;
+        }
     } elseif (empty($round_time)) {
         $hours += $mins / 60.0;
         $hours = round($hours, 2);

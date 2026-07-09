@@ -26,8 +26,9 @@ echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"; // puts IE6 in quirks mode
 <head>
     <title><?php echo $PAGE_TITLE; ?></title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <?php if (strlen($PAGE_META) > 0)
-        echo "$PAGE_META\n"; ?>
+    <?php if (strlen($PAGE_META) > 0) {
+        echo "$PAGE_META\n";
+    } ?>
     <link rel="icon" href="/favicon.ico"/>
     <link rel="shortcut icon" href="/favicon.ico"/>
     <link rel="stylesheet" type="text/css" href="<?php echo $TIMECLOCK_URL; ?>/css/default.css"/>
@@ -41,19 +42,23 @@ echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"; // puts IE6 in quirks mode
             background-color: <?php echo $color2; ?>;
         }
     </style>
-    <?php if (strlen($PAGE_STYLE) > 0)
-        echo "$PAGE_STYLE\n"; ?>
+    <?php if (strlen($PAGE_STYLE) > 0) {
+        echo "$PAGE_STYLE\n";
+    } ?>
     <script type="text/javascript" src="scripts/jquery-1.4.2.min.js"></script>
     <script type="text/javascript" src="scripts/resize_window.js"></script>
-    <?php if (strlen($PAGE_SCRIPT) > 0)
-        echo "$PAGE_SCRIPT\n"; ?>
+    <?php if (strlen($PAGE_SCRIPT) > 0) {
+        echo "$PAGE_SCRIPT\n";
+    } ?>
 </head>
-<body<?php if (strlen($PAGE_BODY_ID) > 0)
-    echo " id=\"$PAGE_BODY_ID\""; ?>>
+<body<?php if (strlen($PAGE_BODY_ID) > 0) {
+    echo " id=\"$PAGE_BODY_ID\"";
+} ?>>
 <div class="page">
 
     <?php include 'header_timeclock.php'; ?>
 
-    <?php if (strlen($PAGE_CONTENT_HEADER) > 0)
-        echo "$PAGE_CONTENT_HEADER\n"; ?>
+    <?php if (strlen($PAGE_CONTENT_HEADER) > 0) {
+        echo "$PAGE_CONTENT_HEADER\n";
+    } ?>
     <div class="content">

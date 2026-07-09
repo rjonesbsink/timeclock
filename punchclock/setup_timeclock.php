@@ -7,8 +7,9 @@
  * to return to the browser so it can set its local timezone).
  */
 
-if (!isset($_SESSION['application']))
+if (!isset($_SESSION['application'])) {
     die("Invalid invocation.");
+}
 
 require_once "$TIMECLOCK_PATH/functions.php";
 

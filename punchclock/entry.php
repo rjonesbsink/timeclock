@@ -33,8 +33,9 @@ include 'setup_timeclock.php'; // authorize and initialize
 $emp = isset($_GET['emp']) ? $_GET['emp'] : null;
 $empfullname = isset($_REQUEST['empfullname']) ? $_REQUEST['empfullname'] : null;
 
-if (!$empfullname)
+if (!$empfullname) {
     $empfullname = $emp; // from url or form entry
+}
 
 // Lookup valid employee
 if ($empfullname) {
@@ -153,10 +154,12 @@ $PAGE_BODY_ID = 'entry';
 <?php include 'header.php'; ?>
 <div id="message">Synchronizing, Please Wait...</div>
 <?php include "time.php"; ?>
-<?php if ($msg)
-    print msg($msg); ?>
-<?php if ($error_msg)
-    print error_msg($error_msg); ?>
+<?php if ($msg) {
+    print msg($msg);
+} ?>
+<?php if ($error_msg) {
+    print error_msg($error_msg);
+} ?>
 
 <div id="entry_form">
     <form action="entry.php" method="post">

@@ -68,20 +68,27 @@ while ($row = mysqli_fetch_array($result)) {
 
 // Setup export columns and query.
 $cols = '';
-if ($c_office)
+if ($c_office) {
     $cols .= ",office";
-if ($c_group)
+}
+if ($c_group) {
     $cols .= ",groups";
-if ($c_employee)
+}
+if ($c_employee) {
     $cols .= ",empfullname";
-if ($c_name)
+}
+if ($c_name) {
     $cols .= ",displayname";
-if ($c_date)
+}
+if ($c_date) {
     $cols .= ",hours_date";
-if ($c_inout)
+}
+if ($c_inout) {
     $cols .= ",`inout`,color";
-if ($c_reg_ot)
+}
+if ($c_reg_ot) {
     $cols .= ",reg_ot";
+}
 
 $group_by_clause = $cols ? "group by " . substr($cols, 1) . "\n" : '';
 $order_by_clause = $cols ? "order by " . substr($cols, 1) . "\n" : '';
@@ -168,20 +175,27 @@ while ($row = mysqli_fetch_array($result)) {
     <th align="right" title="Click to sort table, drag to rearrange columns.">Hours</th>
 
 End_Of_HTML;
-        if ($c_reg_ot)
+        if ($c_reg_ot) {
             echo "    <th align=\"left\">Reg/OT</th>\n";
-        if ($c_inout)
+        }
+        if ($c_inout) {
             echo "    <th align=\"left\">Task/Status</th>\n";
-        if ($c_date)
+        }
+        if ($c_date) {
             echo "    <th align=\"left\">Date</th>\n";
-        if ($c_employee)
+        }
+        if ($c_employee) {
             echo "    <th align=\"left\">Employee</th>\n";
-        if ($c_name)
+        }
+        if ($c_name) {
             echo "    <th align=\"left\">Name</th>\n";
-        if ($c_group)
+        }
+        if ($c_group) {
             echo "    <th align=\"left\">Group</th>\n";
-        if ($c_office)
+        }
+        if ($c_office) {
             echo "    <th align=\"left\">Office</th>\n";
+        }
         print <<<End_Of_HTML
   </tr>
   </thead>
@@ -221,20 +235,27 @@ End_Of_HTML;
     <td align="right">$hours</td>
 
 End_Of_HTML;
-    if ($c_reg_ot)
+    if ($c_reg_ot) {
         echo "    <td align=\"center\">$reg_ot</td>\n";
-    if ($c_inout)
+    }
+    if ($c_inout) {
         echo "    <td align=\"left\" style=\"color:$h_color\">$h_inout</td>\n";
-    if ($c_date)
+    }
+    if ($c_date) {
         echo "    <td align=\"left\">$date</td>\n";
-    if ($c_employee)
+    }
+    if ($c_employee) {
         echo "    <td align=\"left\">$h_empfullname</td>\n";
-    if ($c_name)
+    }
+    if ($c_name) {
         echo "    <td align=\"left\">$h_name</td>\n";
-    if ($c_group)
+    }
+    if ($c_group) {
         echo "    <td align=\"left\">$h_groups</td>\n";
-    if ($c_office)
+    }
+    if ($c_office) {
         echo "    <td align=\"left\">$h_office</td>\n";
+    }
     print <<<End_Of_HTML
   </tr>
 End_Of_HTML;
@@ -288,8 +309,9 @@ function record_hours($tc) {
 
     if ($tc->in_or_out == 1) {
         // Don't record records between the beginning of the work week and the report's begin date.
-        if ($tc->end_time < $GLOBALS['tc_begin_local_timestamp'])
+        if ($tc->end_time < $GLOBALS['tc_begin_local_timestamp']) {
             return;
+        }
         if ($tc->start_time < $GLOBALS['tc_begin_local_timestamp']) {
             // Person punched in before start time of report and punched out after.
             // Adjust hours to be just those from the beginning of day.

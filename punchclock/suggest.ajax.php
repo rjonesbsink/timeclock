@@ -6,15 +6,17 @@
  */
 
 session_start();
-if (!isset($_SESSION['application']))
+if (!isset($_SESSION['application'])) {
     die("Invalid invocation.");
+}
 
 require_once 'config.inc.php';
 
 // Parse arguments.
 $search = isset($_GET['q']) ? $_GET['q'] : null;
-if (!$search)
+if (!$search) {
     exit;
+}
 
 // Connect to db.
 require_once "$TIMECLOCK_PATH/lib/db.php";

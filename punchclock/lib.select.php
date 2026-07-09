@@ -29,14 +29,16 @@ function select_options($arg, $val = null) {
     // $arg is a sql string or an array of values or an array of 2 value arrays
     // $val is selected value or an array of selected option values.
     $lookup = make_lookup_array($val);
-    if (is_array($arg))
+    if (is_array($arg)) {
         return _select_options_arr($arg, $lookup);
+    }
     $html = ''; // initialize return string
     $db = isset($GLOBALS['db']) ? $GLOBALS['db'] : null;
     $result = mysqli_query( $db, $arg);
     while ($row = mysqli_fetch_row($result)) {
-        if (count($row) < 2)
+        if (count($row) < 2) {
             $row[1] = $row[0];
+        }
         $selected = isset($lookup[$row[0]]) ? ' selected="selected"' : '';
         $h1 = htmlentities($row[0]);
         $h2 = htmlentities($row[1]);
@@ -47,8 +49,9 @@ function select_options($arg, $val = null) {
 }
 
 function _select_options_arr($arr, &$lookup) {
-    if (is_array($arr[0]))
+    if (is_array($arr[0])) {
         return _select_options_arr2($arr, $lookup);
+    }
     $html = ''; // initialize return string
     for ($i = 0, $l = count($arr); $i < $l; $i++) {
         $selected = isset($lookup[$arr[$i]]) ? ' selected="selected"' : '';

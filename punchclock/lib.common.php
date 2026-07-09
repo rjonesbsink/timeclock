@@ -185,13 +185,15 @@ function hrs_min($hours) {
 function work_week_begin($local_timestamp = null) {
     // Return local timestamp of the beginning of the work week.
     global $begin_week_day, $one_day;
-    if ($local_timestamp == null)
+    if ($local_timestamp == null) {
         $local_timestamp = time() - server_timezone_offset() + timezone_offset();
+    }
     $local_daystamp = day_timestamp($local_timestamp);
     $local_day_of_week = date('w', $local_daystamp);
     $ndays = $local_day_of_week - $begin_week_day;
-    if ($ndays < 0)
+    if ($ndays < 0) {
         $ndays += 7;
+    }
 
     return $local_daystamp - ($ndays * $one_day);
 }
@@ -199,24 +201,27 @@ function work_week_begin($local_timestamp = null) {
 ////////////////////////////////////////
 function utm_timestamp($local_timestamp = null) {
     // UTM timestamp for time, default is current local time.
-    if ($local_timestamp == null)
+    if ($local_timestamp == null) {
         return time() - server_timezone_offset();
+    }
 
     return $local_timestamp - timezone_offset();
 }
 
 function local_timestamp($utm_timestamp = null) {
     // Local timestamp for time, default is current time.
-    if ($utm_timestamp == null)
+    if ($utm_timestamp == null) {
         $utm_timestamp = time() - server_timezone_offset();
+    }
 
     return $utm_timestamp + timezone_offset();
 }
 
 function day_timestamp($local_timestamp = null) {
     // Local timestamp for the beginning of the day, default is current local time.
-    if ($local_timestamp == null)
+    if ($local_timestamp == null) {
         $local_timestamp = time() - server_timezone_offset() + timezone_offset();
+    }
     $month = date('m', $local_timestamp);
     $day = date('d', $local_timestamp);
     $year = date('Y', $local_timestamp);
@@ -292,10 +297,12 @@ function session_stop() {
 ////////////////////////////////////////
 function bool($str = null) {
     // true/false or yes/no
-    if ($str && preg_match('/^\s*(no|false|0+)\s*$/i', $str))
+    if ($str && preg_match('/^\s*(no|false|0+)\s*$/i', $str)) {
         return false;
-    if ($str)
+    }
+    if ($str) {
         return true;
+    }
 
     return false;
 }

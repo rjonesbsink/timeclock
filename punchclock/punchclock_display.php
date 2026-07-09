@@ -56,17 +56,19 @@ while ($row = mysqli_fetch_array($result)) {
     <th width="5%" align="center">Date</th>
 End_Of_HTML;
 
-        if ($display_office_name == "yes")
+        if ($display_office_name == "yes") {
             print <<<End_Of_HTML
 
     <th width="10%" align="left">Office</th>
 End_Of_HTML;
+        }
 
-        if ($display_group_name == "yes")
+        if ($display_group_name == "yes") {
             print <<<End_Of_HTML
 
     <th width="10%" align="left">Group</th>
 End_Of_HTML;
+        }
 
         print <<<End_Of_HTML
 
@@ -110,17 +112,19 @@ End_Of_HTML;
     <td align="right">$date</td>
 End_Of_HTML;
 
-    if ($display_office_name == "yes")
+    if ($display_office_name == "yes") {
         print <<<End_Of_HTML
 
     <td align="left">$h_office</td>
 End_Of_HTML;
+    }
 
-    if ($display_group_name == "yes")
+    if ($display_group_name == "yes") {
         print <<<End_Of_HTML
 
     <td align="left">$h_groups</td>
 End_Of_HTML;
+    }
 
     print <<<End_Of_HTML
 

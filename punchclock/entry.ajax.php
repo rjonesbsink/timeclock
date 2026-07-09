@@ -6,8 +6,9 @@
  */
 
 session_start();
-if (!isset($_SESSION['application']))
+if (!isset($_SESSION['application'])) {
     die("Invalid invocation.");
+}
 
 require_once 'config.inc.php';
 require_once 'lib.common.php';
@@ -23,10 +24,12 @@ $emp = isset($_GET['emp']) ? $_GET['emp'] : null;
 $empfullname = isset($_REQUEST['empfullname']) ? $_REQUEST['empfullname'] : null;
 $password = isset($_REQUEST['password']) ? $_REQUEST['password'] : null;
 
-if (!$empfullname)
+if (!$empfullname) {
     $empfullname = $emp; // from url or form entry
-if (!$empfullname)
+}
+if (!$empfullname) {
     die(error_msg("Unrecognized employee.")); // no employee specified
+}
 
 $h_empfullname = htmlentities($empfullname);
 $u_empfullname = rawurlencode($empfullname);
@@ -174,8 +177,9 @@ End_Of_HTML;
 // A user is authorized for the display of the form only one time.
 // This prevents a user from displaying the form and then canceling out of
 // the form allowing the form to be displayed again without entering a password.
-if (isset($_SESSION['authorized_to_enter_time']))
+if (isset($_SESSION['authorized_to_enter_time'])) {
     unset($_SESSION['authorized_to_enter_time']);
+}
 
 if ($punchclock_display_timecard == 'yes') {
 

@@ -6,8 +6,9 @@
  */
 
 session_start();
-if (!isset($_SESSION['application']))
+if (!isset($_SESSION['application'])) {
     die("Invalid invocation."); // set in punchclock.php
+}
 
 require_once 'config.inc.php';
 require_once 'lib.common.php';
@@ -26,10 +27,12 @@ $old_password = isset($_POST['old_password']) ? $_POST['old_password'] : null;
 $new_password = isset($_POST['new_password']) ? $_POST['new_password'] : null;
 $confirm_password = isset($_POST['confirm_password']) ? $_POST['confirm_password'] : null;
 
-if (!$empfullname)
+if (!$empfullname) {
     $empfullname = $emp; // from url or form entry
-if (!$empfullname)
+}
+if (!$empfullname) {
     die(error_msg("Unrecognized employee.")); // no employee specified
+}
 
 $h_empfullname = htmlentities($empfullname);
 $u_empfullname = rawurlencode($empfullname);
