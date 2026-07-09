@@ -1,6 +1,7 @@
 <?php
 
 include 'config.inc.php';
+require_once 'lib/csrf.php';
 
 $self = $_SERVER['PHP_SELF'];
 $request = $_SERVER['REQUEST_METHOD'];
@@ -16,6 +17,11 @@ if ($show_display_name == "yes") {
 }
 
 if ($request == 'POST') {
+    if (!verify_csrf_token()) {
+        echo "Your session has expired. Please try again.\n";
+        exit;
+    }
+
     @$remember_me = $_POST['remember_me'];
     @$reset_cookie = $_POST['reset_cookie'];
     @$fullname = $_POST['left_fullname'];
@@ -106,6 +112,7 @@ if ($links == "none") {
 // display form to submit signin/signout information //
 
 echo "        <form name='timeclock' action='$self' autocomplete='off' method='post'>\n";
+echo csrf_field() . "\n";
 
 if ($links == "none") {
     echo "        <tr><td height=7></td></tr>\n";

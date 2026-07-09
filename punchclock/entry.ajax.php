@@ -8,6 +8,7 @@
 session_start();
 require_once '../lib/auth.php';
 require_application_context();
+require_once '../lib/csrf.php';
 
 require_once 'config.inc.php';
 require_once 'lib.common.php';
@@ -44,6 +45,10 @@ $authorized_to_enter_time = isset($_SESSION['authorized_to_enter_time']) ? ($_SE
 $authorized_to_post_time = isset($_SESSION['authorized_to_post_time']) ? ($_SESSION['authorized_to_post_time'] == $empfullname) : false;
 
 if ($authorized_to_post_time && isset($_POST['inout'])) {
+    if (!verify_csrf_token()) {
+        die(error_msg("Your session has expired. Please try again."));
+    }
+
     // Clear all authorization flags.
     unset($_SESSION['authenticated']);
     unset($_SESSION['authorized_to_enter_time']);
@@ -121,7 +126,9 @@ if ($use_passwd == 'yes') {
     if ((!$authenticated || !$authorized_to_enter_time) && $password) {
 
         // Validate password
-        if (is_valid_password($empfullname, $password)) {
+        if (!verify_csrf_token()) {
+            print error_msg("Your session has expired. Please try again.");
+        } elseif (is_valid_password($empfullname, $password)) {
             $_SESSION['authenticated'] = $empfullname;
             $_SESSION['authorized_to_enter_time'] = $empfullname;
             $_SESSION['authorized_to_post_time'] = $empfullname;
@@ -139,6 +146,7 @@ if ($use_passwd == 'yes') {
         unset($_SESSION['authorized_to_post_time']);
 
         // Authenticate employee
+        $csrf_field = csrf_field();
         print <<<End_Of_HTML
 
 <div id="password_entry_form">
@@ -165,6 +173,7 @@ if ($use_passwd == 'yes') {
       <td><a href='javascript:history.back();' class="nyroModalClose"><img src='$TIMECLOCK_URL/images/buttons/cancel_button.png' border='0' /></a></td></tr>
 </table>
 <input type="hidden" name="empfullname" value="$h_empfullname" />
+$csrf_field
 </form>
 </div>
 
@@ -274,5 +283,6 @@ End_Of_HTML;
         </table>
         <input type="hidden" name="empfullname" value="<?php echo $h_empfullname; ?>"/>
         <input type="hidden" name="inout" value=""/>
+        <?php echo csrf_field(); ?>
     </form>
 </div>

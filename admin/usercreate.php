@@ -15,6 +15,7 @@ echo "<title>$title - Create User</title>\n";
 
 require_once '../lib/auth.php';
 require_valid_user();
+require_once '../lib/csrf.php';
 
 if ($request == 'GET') {
 
@@ -63,6 +64,7 @@ if ($request == 'GET') {
     echo "          <td valign=top>\n";
     echo "            <br />\n";
     echo "            <form name='form' action='$self' method='post'>\n";
+    echo csrf_field() . "\n";
     echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
     echo "              <tr>\n";
     echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/user_add.png' />&nbsp;&nbsp;&nbsp;Create User
@@ -120,6 +122,8 @@ if ($request == 'GET') {
 
     include_once 'header_post.php';
     include_once 'topmain.php';
+
+    require_csrf_token();
 
     $post_username = $_POST['post_username'];
     $display_name = $_POST['display_name'];
@@ -323,6 +327,7 @@ if ($request == 'GET') {
 
         echo "            <br />\n";
         echo "            <form name='form' action='$self' method='post'>\n";
+        echo csrf_field() . "\n";
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
         echo "              <tr>\n";
         echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/user_add.png' />&nbsp;&nbsp;&nbsp;Create User

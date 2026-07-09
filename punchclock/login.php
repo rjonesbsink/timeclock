@@ -7,6 +7,7 @@ $current_page = "login.php";
 
 require_once 'config.inc.php';
 require_once 'lib.common.php';
+require_once '../lib/csrf.php';
 turn_off_magic_quotes();
 
 // Check for logout
@@ -116,7 +117,9 @@ if ($use_passwd == 'yes') {
     if (!$authenticated && $password) {
 
         // Validate password
-        if (is_valid_password($empfullname, $password)) {
+        if (!verify_csrf_token()) {
+            $error_msg .= "Your session has expired. Please try again.\n";
+        } elseif (is_valid_password($empfullname, $password)) {
             $_SESSION['authenticated'] = $empfullname;
             $authenticated = true;
         } else {
@@ -128,6 +131,7 @@ if ($use_passwd == 'yes') {
         $u_empfullname = rawurlencode($empfullname);
         $h_empfullname = htmlentities($empfullname);
         $h_name_header = $show_display_name == 'yes' ? htmlentities(get_employee_name($empfullname)) : $h_empfullname;
+        $csrf_field = csrf_field();
 
         // Security: make sure no one is already authenticated before displaying password screen.
         unset($_SESSION['authenticated']);
@@ -169,6 +173,7 @@ End_Of_HTML;
       <td><a href='?emp='><img src='$TIMECLOCK_URL/images/buttons/cancel_button.png' border='0' /></a></td></tr>
 </table>
 <input type="hidden" name="empfullname" value="$h_empfullname" />
+$csrf_field
 </form>
 </div>
 End_Of_HTML;
@@ -180,6 +185,7 @@ End_Of_HTML;
 ////////////////////////////////////////
 // Successful login
 $_SESSION['authenticated'] = $empfullname;
+regenerate_csrf_token();
 $return_url = preg_replace('/\bemp(fullname)?=.*?&(.*)$/', '$2', $return_url); // remove possible emp= from url
 $return_url .= (preg_match('/[?]/', $return_url) ? '&' : '?') . "emp=" . rawurlencode($empfullname); // add emp= argument to url
 exit_next($return_url);

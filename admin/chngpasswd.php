@@ -14,6 +14,7 @@ const FOOTER_PHP = '../footer.php';
 
 require_once '../lib/auth.php';
 require_valid_user();
+require_once '../lib/csrf.php';
 
 if ($request == 'GET') {
 
@@ -111,6 +112,7 @@ if ($request == 'GET') {
 
     echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
     echo "            <form name='form' action='$self' method='post'>\n";
+    echo csrf_field() . "\n";
     echo "              <tr><th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/lock_edit.png' />&nbsp;&nbsp;&nbsp;Change
                       Password</th></tr>\n";
     echo "              <tr><td height=15></td></tr>\n";
@@ -132,6 +134,8 @@ if ($request == 'GET') {
     include_once FOOTER_PHP;
     exit;
 } elseif ($request == 'POST') {
+
+    require_csrf_token();
 
     $post_username = stripslashes($_POST['post_username']);
     $new_password = $_POST['new_password'];
@@ -239,6 +243,7 @@ if ($request == 'GET') {
         echo "            <br />\n";
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
         echo "            <form name='form' action='$self' method='post'>\n";
+        echo csrf_field() . "\n";
         echo "              <tr><th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/lock_edit.png' />&nbsp;&nbsp;&nbsp;Change
                     Password</th></tr>\n";
         echo "              <tr><td height=15></td></tr>\n";

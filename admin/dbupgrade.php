@@ -89,6 +89,7 @@ $request = $_SERVER['REQUEST_METHOD'];
 
 require_once '../lib/auth.php';
 require_valid_user();
+require_once '../lib/csrf.php';
 
 $changes_made = 0;
 $gmt_offset = date('Z');
@@ -97,6 +98,7 @@ echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
 echo "  <tr valign=top>\n";
 echo "    <td class=left_main width=180 align=left scope=col>\n";
 echo "      <form name='form' action='$self' method='post'>\n";
+echo csrf_field() . "\n";
 echo "      <table class=hide width=100% border=0 cellpadding=1 cellspacing=0>\n";
 echo "        <tr><td class=left_rows height=11></td></tr>\n";
 echo "        <tr><td class=left_rows_headings height=18 valign=middle>Users</td></tr>\n";
@@ -163,6 +165,7 @@ if (!empty($count)) {
         $user_admin = tc_select_value("empfullname", "employees", "empfullname = 'admin'");
 
         echo "            <form name='form' action='$self' method='post'>\n";
+        echo csrf_field() . "\n";
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
         echo "              <tr><th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/database_go.png' />&nbsp;&nbsp;&nbsp;Upgrade
                       Database </th></tr>\n";
@@ -199,6 +202,8 @@ if (!empty($count)) {
         exit;
 
     } else {
+
+        require_csrf_token();
 
         @$recreate_admin = $_POST['recreate_admin'];
 

@@ -20,6 +20,7 @@ $row_color = ($row_count % 2) ? $color2 : $color1;
 
 require_once '../lib/auth.php';
 require_valid_user();
+require_once '../lib/csrf.php';
 
 if (!file_exists($filename)) {
     echo "            <table align=center width=100% border=0 cellpadding=0 cellspacing=0>\n";
@@ -57,6 +58,7 @@ if ($request == 'GET') {
     echo "  <tr valign=top>\n";
     echo "    <td class=left_main width=180 align=left scope=col>\n";
     echo "      <form name='form' action='$self' method='post'>\n";
+    echo csrf_field() . "\n";
     echo "      <table class=hide width=100% border=0 cellpadding=1 cellspacing=0>\n";
     echo "        <tr><td class=left_rows height=11></td></tr>\n";
     echo "        <tr><td class=left_rows_headings height=18 valign=middle>Users</td></tr>\n";
@@ -1201,6 +1203,8 @@ if ($request == 'GET') {
 
 } elseif ($request == 'POST') {
 
+    require_csrf_token();
+
     include_once 'header_post_sysedit.php';
     include_once 'topmain.php';
 
@@ -1248,6 +1252,7 @@ if ($request == 'GET') {
     echo "        <tr class=right_main_text>\n";
     echo "          <td valign=top>\n";
     echo "            <form name='form' action='$self' method='post'>\n";
+    echo csrf_field() . "\n";
 
     $post_db_hostname = $_POST['db_hostname'];
     $post_db_name = $_POST['db_name'];

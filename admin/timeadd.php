@@ -28,6 +28,7 @@ if (($timefmt == "G:i") || ($timefmt == "H:i")) {
 
 require_once '../lib/auth.php';
 require_time_admin();
+require_once '../lib/csrf.php';
 
 if ($request == 'GET') {
 
@@ -113,6 +114,7 @@ if ($request == 'GET') {
     echo "          <td valign=top>\n";
     echo "            <br />\n";
     echo "            <form name='form' action='$self' method='post' onsubmit=\"return isDate()\">\n";
+    echo csrf_field() . "\n";
     echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
     echo "              <tr>\n";
     echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/clock_add.png' />&nbsp;&nbsp;&nbsp;Add Time
@@ -170,6 +172,8 @@ if ($request == 'GET') {
     include_once FOOTER_PHP;
     exit;
 } elseif ($request == 'POST') {
+
+    require_csrf_token();
 
     $get_user = stripslashes($_POST['get_user']);
     $post_username = stripslashes($_POST['post_username']);
@@ -452,6 +456,7 @@ if ($request == 'GET') {
     if ((isset($evil_post)) || (isset($evil_date)) || (isset($evil_time))) {
         echo "            <br />\n";
         echo "            <form name='form' action='$self' method='post' onsubmit=\"return isDate()\">\n";
+        echo csrf_field() . "\n";
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
         echo "              <tr>\n";
         echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/clock_add.png' />&nbsp;&nbsp;&nbsp;Add Time
@@ -547,6 +552,7 @@ if ($request == 'GET') {
                 echo "            </table>\n";
                 echo "            <br />\n";
                 echo "            <form name='form' action='$self' method='post' onsubmit=\"return isDate()\">\n";
+                echo csrf_field() . "\n";
                 echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
                 echo "              <tr>\n";
                 echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/clock_add.png' />&nbsp;&nbsp;&nbsp;Add Time
@@ -686,6 +692,7 @@ if ($request == 'GET') {
         echo "            </table>\n";
         echo "            <br />\n";
         echo "            <form name='form' action='$self' method='post' onsubmit=\"return isDate();\">\n";
+        echo csrf_field() . "\n";
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
         echo "              <tr>\n";
         echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/clock_add.png' />&nbsp;&nbsp;&nbsp;Add Time

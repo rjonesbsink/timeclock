@@ -4,11 +4,12 @@ session_start();
 include 'config.inc.php';
 include 'header.php';
 include 'topmain.php';
+require_once 'lib/csrf.php';
 echo "<title>$title - Reports Login</title>\n";
 
 $self = $_SERVER['PHP_SELF'];
 
-if (isset($_POST['login_userid']) && (isset($_POST['login_password']))) {
+if (isset($_POST['login_userid']) && (isset($_POST['login_password'])) && verify_csrf_token()) {
     $login_userid = $_POST['login_userid'];
     $login_password = $_POST['login_password'];
 
@@ -26,6 +27,7 @@ if (isset($_POST['login_userid']) && (isset($_POST['login_password']))) {
     if (($login_userid == @$reports_username) && $password_ok && ($reports_auth == "1")) {
         $_SESSION['valid_reports_user'] = $login_userid;
         tc_maybe_upgrade_password($reports_username, $login_password, $reports_password);
+        regenerate_csrf_token();
     }
 
 }
@@ -39,6 +41,7 @@ if (isset($_SESSION['valid_reports_user'])) {
     // build form
 
     echo "<form name='auth' method='post' action='$self'>\n";
+    echo csrf_field() . "\n";
     echo "<table align=center width=210 border=0 cellpadding=7 cellspacing=1>\n";
     echo "  <tr class=right_main_text><td colspan=2 height=35 align=center valign=top class=title_underline>PHP Timeclock Reports Login</td></tr>\n";
     echo "  <tr class=right_main_text><td align=left>Username:</td><td align=right><input type='text' name='login_userid'></td></tr>\n";

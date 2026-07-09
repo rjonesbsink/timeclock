@@ -11,6 +11,7 @@ $current_page = "entry.php";
 require_once 'config.inc.php';
 require_once 'lib.common.php';
 require_once 'lib.timecard.php';
+require_once '../lib/csrf.php';
 turn_off_magic_quotes();
 
 const HRS_MIN_SUFFIX = " hrs:min";
@@ -67,39 +68,43 @@ if (!$authorized) {
 
 ////////////////////////////////////////
 if ($authorized && isset($_POST['inout'])) {
-    // Post employee time.
+    if (!verify_csrf_token()) {
+        $error_msg .= "Your session has expired. Please try again.\n";
+    } else {
+        // Post employee time.
 
-    $inout = $_POST['inout'];
-    $h_inout = htmlentities($inout);
+        $inout = $_POST['inout'];
+        $h_inout = htmlentities($inout);
 
-    $notes = isset($_POST['notes']) ? $_POST['notes'] : '';
-    $h_notes = htmlentities($notes);
+        $notes = isset($_POST['notes']) ? $_POST['notes'] : '';
+        $h_notes = htmlentities($notes);
 
-    // Validate and get inout display color.
-    $punchlist_result = tc_select("color", "punchlist", "punchitems = ?", $inout);
-    $inout_color = mysqli_result($punchlist_result,  0,  0);
-    if (!$inout_color) {
-        #print error_msg("In/Out Status is not in the database.");
-        trigger_error('In/Out Status is not in the database.', E_USER_WARNING);
-        exit;
+        // Validate and get inout display color.
+        $punchlist_result = tc_select("color", "punchlist", "punchitems = ?", $inout);
+        $inout_color = mysqli_result($punchlist_result,  0,  0);
+        if (!$inout_color) {
+            #print error_msg("In/Out Status is not in the database.");
+            trigger_error('In/Out Status is not in the database.', E_USER_WARNING);
+            exit;
+        }
+        $h_color = htmlentities($inout_color);
+
+        // Record time.
+        $tz_stamp = utm_timestamp();
+
+        $clockin = array("fullname" => $empfullname, "inout" => $inout, "timestamp" => $tz_stamp, "notes" => $notes);
+        if (yes_no_bool($ip_logging)) {
+            $clockin["ipaddress"] = get_ipaddress();
+        }
+
+        tc_insert_strings("info", $clockin);
+        tc_update_strings("employees", array("tstamp" => $tz_stamp), "empfullname = ?", $empfullname);
+
+        # Uncomment next to display success message. The entry status display also shows last punch-in/out.
+        #$msg .= "<span color=\"$h_color\">$h_inout</span> time entry recorded.\n";
+
+        // Fall through to re-enter next punch-in/out time.
     }
-    $h_color = htmlentities($inout_color);
-
-    // Record time.
-    $tz_stamp = utm_timestamp();
-
-    $clockin = array("fullname" => $empfullname, "inout" => $inout, "timestamp" => $tz_stamp, "notes" => $notes);
-    if (yes_no_bool($ip_logging)) {
-        $clockin["ipaddress"] = get_ipaddress();
-    }
-
-    tc_insert_strings("info", $clockin);
-    tc_update_strings("employees", array("tstamp" => $tz_stamp), "empfullname = ?", $empfullname);
-
-    # Uncomment next to display success message. The entry status display also shows last punch-in/out.
-    #$msg .= "<span color=\"$h_color\">$h_inout</span> time entry recorded.\n";
-
-    // Fall through to re-enter next punch-in/out time.
 }
 
 ////////////////////////////////////////
@@ -226,6 +231,7 @@ $PAGE_BODY_ID = 'entry';
         </table>
 
         <input type="hidden" name="empfullname" value="<?php echo $h_empfullname; ?>"/>
+        <?php echo csrf_field(); ?>
     </form>
 </div>
 <?php include 'footer.php'; ?>

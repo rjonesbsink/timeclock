@@ -8,6 +8,7 @@
 session_start();
 require_once '../lib/auth.php';
 require_application_context();
+require_once '../lib/csrf.php';
 
 require_once 'config.inc.php';
 require_once 'lib.common.php';
@@ -44,8 +45,9 @@ $name_header = $show_display_name == 'yes' ? $h_displayname : $h_empfullname;
 // Process form submission.
 if ($old_password) {
 
-    // Validate password
-    if (is_valid_password($empfullname, $old_password)) {
+    if (!verify_csrf_token()) {
+        print error_msg("Your session has expired. Please try again.");
+    } elseif (is_valid_password($empfullname, $old_password)) {
 
         // Check if new password is same as confirm password entry
         if ($new_password === $confirm_password) {
@@ -145,5 +147,6 @@ End_Of_HTML;
             </tr>
         </table>
         <input type="hidden" name="empfullname" value="<?php echo $h_empfullname; ?>"/>
+        <?php echo csrf_field(); ?>
     </form>
 </div>

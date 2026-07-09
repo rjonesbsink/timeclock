@@ -18,6 +18,7 @@ echo "<title>$title - Delete Office</title>\n";
 
 require_once '../lib/auth.php';
 require_valid_user();
+require_once '../lib/csrf.php';
 
 if ($request == 'GET') {
 
@@ -119,6 +120,7 @@ if ($request == 'GET') {
         echo "            </table>\n";
         echo "            <br />\n";
         echo "            <form name='form' action='$self' method='post'>\n";
+        echo csrf_field() . "\n";
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
         echo "              <tr>\n";
         echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/brick_delete.png' />&nbsp;&nbsp;&nbsp;Delete Office
@@ -158,6 +160,7 @@ if ($request == 'GET') {
     } elseif ($user_cnt == '0') {
 
         echo "            <form name='form' action='$self' method='post'>\n";
+        echo csrf_field() . "\n";
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
         echo "              <tr>\n";
         echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/brick_delete.png' />&nbsp;&nbsp;&nbsp;Delete Office
@@ -185,6 +188,8 @@ if ($request == 'GET') {
     }
     exit;
 } elseif ($request == 'POST') {
+
+    require_csrf_token();
 
     include_once 'header_post.php';
     include_once 'topmain.php';
@@ -324,6 +329,7 @@ if ($request == 'GET') {
         echo "            </table>\n";
         echo "            <br />\n";
         echo "            <form name='form' action='$self' method='post'>\n";
+        echo csrf_field() . "\n";
     } elseif ($office_name == $post_officename) {
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
         echo "              <tr>\n";
@@ -333,6 +339,7 @@ if ($request == 'GET') {
         echo "            </table>\n";
         echo "            <br />\n";
         echo "            <form name='form' action='$self' method='post'>\n";
+        echo csrf_field() . "\n";
     } else {
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
         echo "              <tr>\n";
