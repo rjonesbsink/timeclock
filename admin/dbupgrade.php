@@ -1,9 +1,9 @@
 <?php
 session_start();
 
-include '../config.inc.php';
-include 'header.php';
-include 'topmain.php';
+include_once '../config.inc.php';
+include_once 'header.php';
+include_once 'topmain.php';
 echo "<title>$title - Upgrade Database</title>\n";
 
 const TYPE_BIGINT14 = "bigint(14)";
@@ -205,7 +205,7 @@ if (!empty($count)) {
         echo "              <tr><td width=30><input type='image' name='submit' value='Upgrade DB' align='middle'
                       src='../images/buttons/next_button.png'></td><td><a href='index.php'><img src='../images/buttons/cancel_button.png'
                       border='0'></td></tr></table></form></td></tr>\n";
-        include FOOTER_PHP;
+        include_once FOOTER_PHP;
         exit;
 
     } else {
@@ -382,7 +382,7 @@ if (!empty($count)) {
         echo "            </table>\n";
         echo "          </td>\n";
         echo "        </tr>\n";
-        include FOOTER_PHP;
+        include_once FOOTER_PHP;
         exit;
     }
 } else {
@@ -399,7 +399,7 @@ if (!empty($count)) {
                       $db_username@$db_hostname has been granted these privileges on the $db_name database.</td></tr>\n";
     echo "              <tr><td height=15></td></tr>\n";
     echo "            </table></td></tr>\n";
-    include FOOTER_PHP;
+    include_once FOOTER_PHP;
     exit;
 }
 ?>

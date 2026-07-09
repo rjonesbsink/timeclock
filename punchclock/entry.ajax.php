@@ -20,7 +20,7 @@ require_once "$TIMECLOCK_PATH/functions.php";
 require_once "$TIMECLOCK_PATH/lib/db.php";
 
 const HRS_MIN_SUFFIX = " hrs:min";
-const HOURS_FORMAT = "%01.02f hrs";
+const HOURS_FORMAT_WITH_UNIT = "%01.02f hrs";
 
 // Parse arguments.
 $emp = isset($_GET['emp']) ? $_GET['emp'] : null;
@@ -66,6 +66,7 @@ if ($authorized_to_post_time && isset($_POST['inout'])) {
         trigger_error('In/Out Status is not in the database.', E_USER_WARNING);
         exit;
     }
+    $h_inout_color = htmlentities($inout_color);
 
     // Record time.
     $tz_stamp = utm_timestamp();
@@ -93,7 +94,7 @@ if ($authorized_to_post_time && isset($_POST['inout'])) {
 $('#$id td').each(function(index){
 	if (index == 1) {
 		this.innerHTML = "$h_inout";
-		this.style.color = "$inout_color";
+		this.style.color = "$h_inout_color";
 	}
 	if (index == 2) this.innerHTML = "$time";
 	if (index == 3) this.innerHTML = "$date";
@@ -193,9 +194,9 @@ if ($punchclock_display_timecard == 'yes') {
         $week_hours = hrs_min($week_hours) . HRS_MIN_SUFFIX;
         $overtime_hours = hrs_min($overtime_hours) . HRS_MIN_SUFFIX;
     } else {
-        $today_hours = sprintf(HOURS_FORMAT, $today_hours);
-        $week_hours = sprintf(HOURS_FORMAT, $week_hours);
-        $overtime_hours = sprintf(HOURS_FORMAT, $overtime_hours);
+        $today_hours = sprintf(HOURS_FORMAT_WITH_UNIT, $today_hours);
+        $week_hours = sprintf(HOURS_FORMAT_WITH_UNIT, $week_hours);
+        $overtime_hours = sprintf(HOURS_FORMAT_WITH_UNIT, $overtime_hours);
     }
 
     $overtime_line = $overtime_hours > 0 ? "<tr><th>Overtime:</th><td>$overtime_hours</td></tr>\n" : '';

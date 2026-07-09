@@ -1,9 +1,9 @@
 <?php
 session_start();
 
-include '../config.inc.php';
-include 'header.php';
-include 'topmain.php';
+include_once '../config.inc.php';
+include_once 'header.php';
+include_once 'topmain.php';
 echo "<title>$title - Change Password</title>\n";
 
 $self = $_SERVER['PHP_SELF'];
@@ -139,7 +139,7 @@ if ($request == 'GET') {
     echo "              <tr><td width=30><input type='image' name='submit' value='Change Password'
                   src='../images/buttons/next_button.png'></td>
                   <td><a href='useradmin.php'><img src='../images/buttons/cancel_button.png' border='0'></td></tr></table></form></td></tr>\n";
-    include FOOTER_PHP;
+    include_once FOOTER_PHP;
     exit;
 } elseif ($request == 'POST') {
 
@@ -267,7 +267,7 @@ if ($request == 'GET') {
         echo "              <tr><td width=30><input type='image' name='submit' value='Change Password'
                       src='../images/buttons/next_button.png'></td><td><a href='useradmin.php'>
                       <img src='../images/buttons/cancel_button.png' border='0'></td></tr></table></form></td></tr>\n";
-        include FOOTER_PHP;
+        include_once FOOTER_PHP;
         exit;
 
     } else {
@@ -295,7 +295,7 @@ if ($request == 'GET') {
         echo "              <tr><td height=40>&nbsp;</td></tr>\n";
         echo "              <tr><td><a href='useradmin.php'><img src='../images/buttons/done_button.png' border='0'></td></tr>
             </table></td></tr>\n";
-        include FOOTER_PHP;
+        include_once FOOTER_PHP;
         exit;
     }
 }

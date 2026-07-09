@@ -14,7 +14,7 @@ require_once 'lib.timecard.php';
 turn_off_magic_quotes();
 
 const HRS_MIN_SUFFIX = " hrs:min";
-const HOURS_FORMAT = "%01.02f hrs";
+const HOURS_FORMAT_WITH_UNIT = "%01.02f hrs";
 
 // Check for logout
 if (isset($_REQUEST['logout'])) {
@@ -116,9 +116,9 @@ if ($entry_display_timecard == 'yes') {
         $week_hours = hrs_min($week_hours) . HRS_MIN_SUFFIX;
         $overtime_hours = hrs_min($overtime_hours) . HRS_MIN_SUFFIX;
     } else {
-        $today_hours = sprintf(HOURS_FORMAT, $today_hours);
-        $week_hours = sprintf(HOURS_FORMAT, $week_hours);
-        $overtime_hours = sprintf(HOURS_FORMAT, $overtime_hours);
+        $today_hours = sprintf(HOURS_FORMAT_WITH_UNIT, $today_hours);
+        $week_hours = sprintf(HOURS_FORMAT_WITH_UNIT, $week_hours);
+        $overtime_hours = sprintf(HOURS_FORMAT_WITH_UNIT, $overtime_hours);
     }
 
     $overtime_line = $overtime_hours > 0 ? "\n<tr><th>Overtime:</th><td>$overtime_hours</td></tr>\n" : '';

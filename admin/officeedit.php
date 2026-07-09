@@ -1,9 +1,9 @@
 <?php
 session_start();
 
-include '../config.inc.php';
-include 'header.php';
-include 'topmain.php';
+include_once '../config.inc.php';
+include_once 'header.php';
+include_once 'topmain.php';
 echo "<title>$title - Edit Office</title>\n";
 
 $self = $_SERVER['PHP_SELF'];
@@ -211,7 +211,7 @@ if ($request == 'GET') {
         }
         echo "            </table></td></tr>\n";
     }
-    include FOOTER_PHP;
+    include_once FOOTER_PHP;
     exit;
 } elseif ($request == 'POST') {
 
@@ -413,7 +413,7 @@ if ($request == 'GET') {
             }
             echo "            </table></td></tr>\n";
         }
-        include FOOTER_PHP;
+        include_once FOOTER_PHP;
         exit;
 
     } else {
@@ -563,7 +563,7 @@ if ($request == 'GET') {
             echo "            </table></td></tr>\n";
         }
     }
-    include FOOTER_PHP;
+    include_once FOOTER_PHP;
     exit;
 }
 ?>

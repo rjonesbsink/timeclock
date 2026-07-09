@@ -1,9 +1,9 @@
 <?php
 session_start();
 
-include '../config.inc.php';
-include 'header_date.php';
-include 'topmain.php';
+include_once '../config.inc.php';
+include_once 'header_date.php';
+include_once 'topmain.php';
 echo "<title>$title - Edit Time</title>\n";
 
 $self = $_SERVER['PHP_SELF'];
@@ -149,7 +149,7 @@ if ($request == 'GET') {
     echo "              <tr><td width=30><input type='image' name='submit' value='Edit Time' align='middle'
                       src='../images/buttons/next_button.png'></td><td><a href='timeadmin.php'><img src='../images/buttons/cancel_button.png'
                       border='0'></td></tr></table></form></td></tr>\n";
-    include FOOTER_PHP;
+    include_once FOOTER_PHP;
     exit;
 } elseif ($request == 'POST') {
 
@@ -348,7 +348,7 @@ if ($request == 'GET') {
         echo "              <tr><td width=30><input type='image' name='submit' value='Edit Time' align='middle'
                       src='../images/buttons/next_button.png'></td><td><a href='timeadmin.php'><img src='../images/buttons/cancel_button.png'
                       border='0'></td></tr></table></form></td></tr>\n";
-        include FOOTER_PHP;
+        include_once FOOTER_PHP;
         exit;
 
         // end post validation //
@@ -560,7 +560,7 @@ if ($request == 'GET') {
                 echo "              <tr><td width=30><input type='image' name='submit' value='Edit Time' align='middle'
                       src='../images/buttons/next_button.png'></td><td><a href='timeadmin.php'><img src='../images/buttons/cancel_button.png'
                       border='0'></td></tr></table></form></td></tr>\n";
-                include FOOTER_PHP;
+                include_once FOOTER_PHP;
                 exit;
             } elseif (!isset($evil_time)) {
 
@@ -699,7 +699,7 @@ if ($request == 'GET') {
                 echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
                 echo "              <tr><td height=20 align=left>&nbsp;</td></tr>\n";
                 echo "              <tr><td><a href='timeadmin.php'><img src='../images/buttons/done_button.png' border='0'></td></tr></table></td></tr>\n";
-                include FOOTER_PHP;
+                include_once FOOTER_PHP;
                 exit;
             }
 
@@ -790,7 +790,7 @@ if ($request == 'GET') {
             echo "              <tr><td width=30><input type='image' name='submit' value='Edit Time' align='middle'
                       src='../images/buttons/next_button.png'></td><td><a href='timeadmin.php'><img src='../images/buttons/cancel_button.png'
                       border='0'></td></tr></table></form></td></tr>\n";
-            include FOOTER_PHP;
+            include_once FOOTER_PHP;
             exit;
         }
 
@@ -857,7 +857,7 @@ if ($request == 'GET') {
             echo "              <tr><td width=30><input type='image' name='submit' value='Edit Time' align='middle'
                       src='../images/buttons/next_button.png'></td><td><a href='timeadmin.php'><img src='../images/buttons/cancel_button.png'
                       border='0'></td></tr></table></form></td></tr>\n";
-            include FOOTER_PHP;
+            include_once FOOTER_PHP;
             exit;
         }
     }

@@ -9,10 +9,10 @@ const WHERE_OFFICEID = "officeid = ?";
 const FOOTER_PHP = '../footer.php';
 const MSG_OFFICE_NOT_DEFINED = "Office name is not defined for this group.\n";
 
-include '../config.inc.php';
+include_once '../config.inc.php';
 if ($request !== 'POST') {
-    include 'header_get.php';
-    include 'topmain.php';
+    include_once 'header_get.php';
+    include_once 'topmain.php';
 }
 echo "<title>$title - Delete Office</title>\n";
 
@@ -162,7 +162,7 @@ if ($request == 'GET') {
         echo "              <tr><td width=30><input type='image' name='submit' value='Delete Office'
                       src='../images/buttons/next_button.png'></td><td><a href='officeadmin.php'>
                       <img src='../images/buttons/cancel_button.png' border='0'></td></tr></table></form></td></tr>\n";
-        include FOOTER_PHP;
+        include_once FOOTER_PHP;
         exit;
 
     } elseif ($user_cnt == '0') {
@@ -190,14 +190,14 @@ if ($request == 'GET') {
         echo "              <tr><td width=30><input type='image' name='submit' value='Delete Office'
                       src='../images/buttons/next_button.png'></td><td><a href='officeadmin.php'>
                       <img src='../images/buttons/cancel_button.png' border='0'></td></tr></table></form></td></tr>\n";
-        include FOOTER_PHP;
+        include_once FOOTER_PHP;
         exit;
     }
     exit;
 } elseif ($request == 'POST') {
 
-    include 'header_post.php';
-    include 'topmain.php';
+    include_once 'header_post.php';
+    include_once 'topmain.php';
 
     $post_officename = $_POST['post_officename'];
     @$office_name = $_POST['office_name'];
@@ -388,7 +388,7 @@ if ($request == 'GET') {
         echo "              <tr><td width=30><input type='image' name='submit' value='Delete Office'
                       src='../images/buttons/next_button.png'></td><td><a href='officeadmin.php'>
                       <img src='../images/buttons/cancel_button.png' border='0'></td></tr></table></form></td></tr>\n";
-        include FOOTER_PHP;
+        include_once FOOTER_PHP;
         exit;
 
     } else {
@@ -417,7 +417,7 @@ if ($request == 'GET') {
         echo "              <tr><td height=20 align=left>&nbsp;</td></tr>\n";
         echo "              <tr><td><a href='officeadmin.php'><img src='../images/buttons/done_button.png' border='0'></td></tr></table></td>
               </tr>\n";
-        include FOOTER_PHP;
+        include_once FOOTER_PHP;
         exit;
     }
 }

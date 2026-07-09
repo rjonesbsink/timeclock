@@ -1,9 +1,9 @@
 <?php
 session_start();
 
-include '../config.inc.php';
-include 'header.php';
-include 'topmain.php';
+include_once '../config.inc.php';
+include_once 'header.php';
+include_once 'topmain.php';
 echo "<title>$title - Edit Group</title>\n";
 
 $self = $_SERVER['PHP_SELF'];
@@ -283,11 +283,11 @@ if ($request == 'GET') {
     }
     if ($user_count_rows > '0') {
         echo "            </table></td></tr>\n";
-        include FOOTER_PHP;
+        include_once FOOTER_PHP;
         exit;
     } elseif ($user_count_rows == '0') {
         echo "            </td></tr>\n";
-        include FOOTER_PHP;
+        include_once FOOTER_PHP;
         exit;
     }
 } elseif ($request == 'POST') {
@@ -656,11 +656,11 @@ if ($request == 'GET') {
         }
         if ($user_count_rows > '0') {
             echo "            </table></td></tr>\n";
-            include FOOTER_PHP;
+            include_once FOOTER_PHP;
             exit;
         } elseif ($user_count_rows == '0') {
             echo "            </td></tr>\n";
-            include FOOTER_PHP;
+            include_once FOOTER_PHP;
             exit;
         }
 
@@ -816,11 +816,11 @@ if ($request == 'GET') {
         }
         if ($user_count_rows > '0') {
             echo "            </table></td></tr>\n";
-            include FOOTER_PHP;
+            include_once FOOTER_PHP;
             exit;
         } elseif ($user_count_rows == '0') {
             echo "            </td></tr>\n";
-            include FOOTER_PHP;
+            include_once FOOTER_PHP;
             exit;
         }
     }

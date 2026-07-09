@@ -1,9 +1,9 @@
 <?php
 session_start();
 
-include '../config.inc.php';
-include 'header.php';
-include 'topmain.php';
+include_once '../config.inc.php';
+include_once 'header.php';
+include_once 'topmain.php';
 echo "<title>$title - Create Group</title>\n";
 
 $self = $_SERVER['PHP_SELF'];
@@ -106,7 +106,7 @@ if ($request == 'GET') {
     echo "              <tr><td width=30><input type='image' name='submit' value='Create Group' align='middle'
                       src='../images/buttons/next_button.png'></td><td><a href='groupadmin.php'><img src='../images/buttons/cancel_button.png' 
                       border='0'></td></tr></table></form></td></tr>\n";
-    include FOOTER_PHP;
+    include_once FOOTER_PHP;
     exit;
 } elseif ($request == 'POST') {
 
@@ -277,7 +277,7 @@ if ($request == 'GET') {
         echo "              <tr><td width=30><input type='image' name='submit' value='Create Group' align='middle'
                       src='../images/buttons/next_button.png'></td><td><a href='groupadmin.php'><img src='../images/buttons/cancel_button.png' 
                       border='0'></td></tr></table></form></td></tr>\n";
-        include FOOTER_PHP;
+        include_once FOOTER_PHP;
         exit;
 
     } else {
@@ -304,7 +304,7 @@ if ($request == 'GET') {
         echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
         echo "              <tr><td height=20 align=left>&nbsp;</td></tr>\n";
         echo "              <tr><td><a href='groupcreate.php'><img src='../images/buttons/done_button.png' border='0'></td></tr></table></td></tr>\n";
-        include FOOTER_PHP;
+        include_once FOOTER_PHP;
         exit;
     }
 }

@@ -6,10 +6,10 @@ $request = $_SERVER['REQUEST_METHOD'];
 const FOOTER_PHP = '../footer.php';
 const WHERE_EMPFULLNAME = "empfullname = ?";
 
-include '../config.inc.php';
+include_once '../config.inc.php';
 if ($request !== 'POST') {
-    include 'header_get.php';
-    include 'topmain.php';
+    include_once 'header_get.php';
+    include_once 'topmain.php';
 }
 echo "<title>$title - Edit User</title>\n";
 
@@ -221,12 +221,12 @@ if ($request == 'GET') {
     echo "              <tr><td width=30><input type='image' name='submit' value='Edit User' align='middle'
                       src='../images/buttons/next_button.png'></td><td><a href='useradmin.php'><img src='../images/buttons/cancel_button.png'
                       border='0'></td></tr></table></form></td></tr>\n";
-    include FOOTER_PHP;
+    include_once FOOTER_PHP;
     exit;
 } elseif ($request == 'POST') {
 
-    include 'header_post.php';
-    include 'topmain.php';
+    include_once 'header_post.php';
+    include_once 'topmain.php';
 
     $post_username = $_POST['post_username'];
     $display_name = $_POST['display_name'];
@@ -483,7 +483,7 @@ if ($request == 'GET') {
         echo "              <tr><td width=30><input type='image' name='submit' value='Edit User' align='middle'
                       src='../images/buttons/next_button.png'></td><td><a href='useradmin.php'><img src='../images/buttons/cancel_button.png'
                       border='0'></td></tr></table></form></td></tr>\n";
-        include FOOTER_PHP;
+        include_once FOOTER_PHP;
         exit;
     }
 
@@ -628,7 +628,7 @@ class=table_rows
     echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
     echo "              <tr><td height=20 align=left>&nbsp;</td></tr>\n";
     echo "              <tr><td><a href='useradmin.php'><img src='../images/buttons/done_button.png' border='0'></a></td></tr></table></td></tr>\n";
-    include FOOTER_PHP;
+    include_once FOOTER_PHP;
     exit;
 }
 ?>

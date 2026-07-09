@@ -7,10 +7,10 @@ $request = $_SERVER['REQUEST_METHOD'];
 const CONFIG_INC_PHP = '../config.inc.php';
 const FOOTER_PHP = '../footer.php';
 
-include CONFIG_INC_PHP;
+include_once CONFIG_INC_PHP;
 if ($request == 'GET') {
-    include 'header_get_sysedit.php';
-    include 'topmain.php';
+    include_once 'header_get_sysedit.php';
+    include_once 'topmain.php';
 }
 echo "<title>$title - Edit System Settings</title>\n";
 
@@ -37,7 +37,7 @@ if (!file_exists($filename)) {
     echo "                <td height=25 class=table_rows_red>config.inc.php does not exist!</td></tr>\n";
     echo "                <td height=25 class=table_rows_red>It has either been deleted, renamed, moved, or was never installed.</td></tr>\n";
     echo "            </table></td></tr>\n";
-    include FOOTER_PHP;
+    include_once FOOTER_PHP;
     exit;
 }
 
@@ -58,7 +58,7 @@ if (!is_readable($filename)) {
         echo "&nbsp;&nbsp;(user.group).</td></tr>\n";
     }
     echo "            </table></td></tr>\n";
-    include FOOTER_PHP;
+    include_once FOOTER_PHP;
 }
 
 if ($request == 'GET') {
@@ -112,7 +112,7 @@ if ($request == 'GET') {
         echo "            <table width=100% border=0 cellpadding=0 cellspacing=0>\n";
         echo "              <tr><td height=25 class=table_rows_red>This page has been <b>disabled</b> within config.inc.php.</td></tr>";
         echo "            </table></td></tr>\n";
-        include FOOTER_PHP;
+        include_once FOOTER_PHP;
         exit;
     }
 
@@ -139,7 +139,7 @@ if ($request == 'GET') {
             echo $group["name"];
             echo "</b>&nbsp;&nbsp;(user.group).</td></tr>\n";
             echo "            </table></td></tr>\n";
-            include FOOTER_PHP;
+            include_once FOOTER_PHP;
             exit;
 
         } else {
@@ -150,7 +150,7 @@ if ($request == 'GET') {
             echo "              <tr><td height=25 class=table_rows_red>To edit the System Settings within PHP Timeclock, either change the permissions
                       on config.inc.php for this user, or assign this file to another owner, preferably your webserver user.</td></tr>\n";
             echo "            </table></td></tr>\n";
-            include FOOTER_PHP;
+            include_once FOOTER_PHP;
             exit;
         }
     }
@@ -842,7 +842,7 @@ if ($request == 'GET') {
                       config.inc.php</b></td>\n";
         echo "              <input type=\"hidden\" name=\"display_ip\" value=\"2\">\n";
     }
-    echo "                  <td bgcolor='$row_color' class=table_rows width=80% align=left style='padding-left:10px;' valign=top>Choose whether to include
+    echo "                  <td bgcolor='$row_color' class=table_rows width=80% align=left style='padding-left:10px;' valign=top>Choose whether to include_once
                       in the reports the ip addresses of the systems that connect to sign-in/out into PHP Timeclock or not. This option
                       is useful for auditing purposes. The <b>ip_logging</b> option must be set to \"<b>yes</b>\" in order for this option to 
                       work as expected. Default is \"<b>yes</b>\".</td></tr>\n";
@@ -1206,13 +1206,13 @@ if ($request == 'GET') {
     echo "              <tr><td width=62 valign=middle><input type='image' name='submit' value='Add Time' align='middle'
                       src='../images/buttons/next_button.png'></td><td><a href='index.php'><img src='../images/buttons/cancel_button.png' 
                       border='0'></td></tr></table></form></td></tr>\n";
-    include FOOTER_PHP;
+    include_once FOOTER_PHP;
     exit;
 
 } elseif ($request == 'POST') {
 
-    include 'header_post_sysedit.php';
-    include 'topmain.php';
+    include_once 'header_post_sysedit.php';
+    include_once 'topmain.php';
 
     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
     echo "  <tr valign=top>\n";
@@ -2198,7 +2198,7 @@ if ($request == 'GET') {
                       config.inc.php</b></td>\n";
             echo "              <input type=\"hidden\" name=\"display_ip\" value=\"2\">\n";
         }
-        echo "                  <td bgcolor='$row_color' class=table_rows width=80% align=left style='padding-left:10px;' valign=top>Choose whether to include
+        echo "                  <td bgcolor='$row_color' class=table_rows width=80% align=left style='padding-left:10px;' valign=top>Choose whether to include_once
                       in the reports the ip addresses of the systems that connect to sign-in/out into PHP Timeclock or not. This option
                       is useful for auditing purposes. The <b>ip_logging</b> option must be set to \"<b>yes</b>\" in order for this option to work as
                       expected. Default is \"<b>yes</b>\".</td></tr>\n";
@@ -2545,7 +2545,7 @@ if ($request == 'GET') {
         echo "              <tr><td width=62 valign=middle><input type='image' name='submit' value='Add Time' align='middle'
                       src='../images/buttons/next_button.png'></td><td><a href='index.php'><img src='../images/buttons/cancel_button.png' 
                       border='0'></td></tr></table></form></td></tr>\n";
-        include FOOTER_PHP;
+        include_once FOOTER_PHP;
         exit;
 
     } else {
@@ -3098,7 +3098,7 @@ $username_dropdown_only = "' . $post_username_dropdown_only . '";
 $user_or_display = "' . $post_user_or_display . '";
 
 
-/* Choose whether to include in the reports the ip addresses of the systems that connect to 
+/* Choose whether to include_once in the reports the ip addresses of the systems that connect to 
    sign-in/out into PHP Timeclock or not. This option is useful for auditing purposes. The 
    ip_logging option must be set to "yes" in order for this option to work as expected.
    Default is "yes". */
@@ -3135,7 +3135,7 @@ $use_server_tz = "' . $post_use_server_tz . '";
 
 
 /* Include local weather info on the left side of the main page just below the Submit button.
-   If you would like to include this feature, set $display_weather to "yes". Default is "no". */
+   If you would like to include_once this feature, set $display_weather to "yes". Default is "no". */
 
 $display_weather = "' . $post_display_weather . '";
 
@@ -3187,7 +3187,7 @@ $dbversion = "' . $post_dbversion . '";
 
         // end writing the new config.inc.php file //
 
-        include CONFIG_INC_PHP;
+        include_once CONFIG_INC_PHP;
 
         echo "            <table align=center class=table_border width=100% border=0 cellpadding=0 cellspacing=3>\n";
         echo "              <tr><td width=20 align=center height=25 class=table_rows><img src='../images/icons/accept.png' /></td>
@@ -3195,8 +3195,8 @@ $dbversion = "' . $post_dbversion . '";
         echo "            </table>\n";
         echo "            <br />\n";
 
-        include '../templates/admin_index_tpl.php';
-        include FOOTER_PHP;
+        include_once '../templates/admin_index_tpl.php';
+        include_once FOOTER_PHP;
         exit;
     }
 }
