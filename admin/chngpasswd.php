@@ -269,7 +269,7 @@ if ($request == 'GET') {
 
     } else {
 
-        $new_password = crypt($new_password, 'xy');
+        $new_password = tc_hash_password($new_password);
 
         tc_update_strings("employees", array("employee_passwd" => $new_password), "empfullname = ?", $post_username);
 

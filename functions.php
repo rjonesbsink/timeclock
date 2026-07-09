@@ -111,6 +111,32 @@ function tc_update_strings($db, $keyvals, $where = '1=1', $bind = array(), $type
     tc_execute("UPDATE ${db_prefix}$db SET $places WHERE $where", array_merge($values, $bind), $types);
 }
 
+function tc_hash_password($password) {
+    return password_hash($password, PASSWORD_DEFAULT);
+}
+
+function tc_is_legacy_password_hash($hash) {
+    // Legacy PHP Timeclock password hashes are the 13-character output of
+    // crypt($password, 'xy'). Hashes from password_hash() always start with "$".
+    return $hash !== null && $hash !== '' && $hash[0] !== '$';
+}
+
+function tc_verify_password($password, $hash) {
+    if (tc_is_legacy_password_hash($hash)) {
+        return hash_equals($hash, crypt($password, $hash));
+    }
+
+    return password_verify($password, $hash);
+}
+
+function tc_maybe_upgrade_password($empfullname, $password, $hash) {
+    // Transparently migrate a verified legacy crypt() hash to password_hash()
+    // so accounts don't need to be reset when this upgrade ships.
+    if (tc_is_legacy_password_hash($hash)) {
+        tc_update_strings("employees", array("employee_passwd" => tc_hash_password($password)), "empfullname = ?", $empfullname);
+    }
+}
+
 function btag($tag, $attr = array()) {
     $begin = array(htmlentities($tag));
     foreach ($attr as $key => $value) {

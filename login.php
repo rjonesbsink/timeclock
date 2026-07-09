@@ -10,7 +10,7 @@ $self = $_SERVER['PHP_SELF'];
 
 if (isset($_POST['login_userid']) && (isset($_POST['login_password']))) {
     $login_userid = $_POST['login_userid'];
-    $login_password = crypt($_POST['login_password'], 'xy');
+    $login_password = $_POST['login_password'];
 
     $result = tc_select("empfullname, employee_passwd, admin, time_admin", "employees", "empfullname = ?", $login_userid);
 
@@ -22,10 +22,14 @@ if (isset($_POST['login_userid']) && (isset($_POST['login_password']))) {
         $time_admin_auth = "" . $row['time_admin'] . "";
     }
 
-    if (($login_userid == @$admin_username) && ($login_password == @$admin_password) && ($admin_auth == "1")) {
+    $password_ok = isset($admin_password) && tc_verify_password($login_password, $admin_password);
+
+    if (($login_userid == @$admin_username) && $password_ok && ($admin_auth == "1")) {
         $_SESSION['valid_user'] = $login_userid;
-    } elseif (($login_userid == @$admin_username) && ($login_password == @$admin_password) && ($time_admin_auth == "1")) {
+        tc_maybe_upgrade_password($admin_username, $login_password, $admin_password);
+    } elseif (($login_userid == @$admin_username) && $password_ok && ($time_admin_auth == "1")) {
         $_SESSION['time_admin_valid_user'] = $login_userid;
+        tc_maybe_upgrade_password($admin_username, $login_password, $admin_password);
     }
 
 }

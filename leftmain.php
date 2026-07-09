@@ -231,7 +231,7 @@ QUERY
     }
 
     if ($use_passwd == "yes") {
-        $employee_passwd = crypt($_POST['employee_passwd'], 'xy');
+        $employee_passwd = $_POST['employee_passwd'];
     }
 
     // end post validation //
@@ -299,7 +299,8 @@ QUERY
             $fullname = "" . $row["empfullname"] . "";
         }
 
-        if ($employee_passwd == $tmp_password) {
+        if (tc_verify_password($employee_passwd, $tmp_password)) {
+            tc_maybe_upgrade_password($fullname, $employee_passwd, $tmp_password);
 
             $clockin = array("fullname" => $fullname, "inout" => $inout, "timestamp" => $tz_stamp, "notes" => $notes);
             if (strtolower($ip_logging) == "yes") {
