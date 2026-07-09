@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 $self = $_SERVER['PHP_SELF'];
@@ -18,7 +19,6 @@ require_valid_user();
 require_once '../lib/csrf.php';
 
 if ($request == 'GET') {
-
     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
     echo "  <tr valign=top>\n";
     echo "    <td class=left_main width=180 align=left scope=col>\n";
@@ -119,7 +119,6 @@ if ($request == 'GET') {
                       border='0'></td></tr></table></form></td></tr>\n";
     include_once FOOTER_PHP;
 } elseif ($request == 'POST') {
-
     include_once 'header_post.php';
     include_once 'topmain.php';
 
@@ -144,7 +143,8 @@ if ($request == 'GET') {
     $string = strstr($post_username, "\"");
     $string2 = strstr($display_name, "\"");
 
-    if ((@$tmp_username == $post_username) || ($password !== $confirm_password) ||
+    if (
+        (@$tmp_username == $post_username) || ($password !== $confirm_password) ||
         (!preg_match('/' . USERNAME_PATTERN . '/i', $post_username)) || (!preg_match('/' . USERNAME_PATTERN . '/i', $display_name)) || (empty($post_username)) ||
         (empty($display_name)) || (empty($email_addy)) || (empty($office_name)) || (empty($group_name)) ||
         (!preg_match('/' . "^([[:alnum:]]|~|\!|@|#|\$|%|\^|&|\*|\(|\)|-|\+|`|_|\=|[{]|[}]|\[|\]|\||\:|\<|\>|\.|,|\?)+$" . '/i', $password)) ||
@@ -309,14 +309,16 @@ if ($request == 'GET') {
             echo "            </table>\n";
         }
 
-        if (!empty($office_name)
+        if (
+            !empty($office_name)
             and is_null(tc_select_value("officename", "offices", "officename = ?", $office_name))
         ) {
             echo "Office is not defined.\n";
             exit;
         }
 
-        if (!empty($group_name)
+        if (
+            !empty($group_name)
             and is_null(tc_select_value("groupname", "groups", "groupname = ?", $group_name))
         ) {
             echo "Group is not defined.\n";
@@ -495,7 +497,9 @@ if ($request == 'GET') {
 
     $result4 = tc_select(
         "empfullname, displayname, email, barcode, groups, office, admin, reports, time_admin, disabled",
-        "employees", "empfullname = ? ORDER BY empfullname", $post_username
+        "employees",
+        "empfullname = ? ORDER BY empfullname",
+        $post_username
     );
     while ($row = mysqli_fetch_array($result4)) {
         $username = "" . $row['empfullname'] . "";
@@ -564,4 +568,3 @@ if ($request == 'GET') {
     include_once FOOTER_PHP;
     exit;
 }
-?>

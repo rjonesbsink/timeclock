@@ -34,5 +34,3 @@ echo "    <td align=center valign=top>&#8226;&nbsp;<a class=admin_headings href=
 echo "  <tr class=right_main_text height=92%>\n";
 echo "    <td align=center valign=top>&#8226;&nbsp;<a class=admin_headings href='audit.php'>Audit Log</a>&nbsp;&#8226;</td></tr>\n";
 include '../footer.php';
-?>
-

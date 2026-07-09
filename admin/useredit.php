@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 $self = $_SERVER['PHP_SELF'];
@@ -18,9 +19,7 @@ require_valid_user();
 require_once '../lib/csrf.php';
 
 if ($request == 'GET') {
-
     if (!isset($_GET['username'])) {
-
         echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
         echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Error!</td></tr>\n";
         echo "  <tr class=right_main_text>\n";
@@ -216,7 +215,6 @@ if ($request == 'GET') {
     include_once FOOTER_PHP;
     exit;
 } elseif ($request == 'POST') {
-
     require_csrf_token();
 
     include_once 'header_post.php';
@@ -252,18 +250,17 @@ if ($request == 'GET') {
             echo htmlspecialchars("$tmp_username, $post_username. Something is fishy here.\n");
             exit;
         }
-    }
-    else {
+    } else {
         $tmp_username = "";
     }
 
     $string = strstr($display_name, "\"");
-    if ((!preg_match('/' . "^([[:alnum:]]| |-|'|,)+$" . '/i', $display_name)) || (empty($display_name)) || (empty($email_addy)) || (empty($office_name)) || (empty($group_name)) ||
+    if (
+        (!preg_match('/' . "^([[:alnum:]]| |-|'|,)+$" . '/i', $display_name)) || (empty($display_name)) || (empty($email_addy)) || (empty($office_name)) || (empty($group_name)) ||
         (!preg_match('/' . "^([[:alnum:]]|_|\.|-)+@([[:alnum:]]|\.|-)+(\.)([a-z]{2,4})$" . '/i', $email_addy)) || (($admin_perms != '1') && (!empty($admin_perms))) ||
         (($reports_perms != '1') && (!empty($reports_perms))) || (($time_admin_perms != '1') && (!empty($time_admin_perms))) || (($post_disabled != '1') &&
                                                                                                                                  (!empty($post_disabled))) || (!empty($string))
     ) {
-
         echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
         echo "  <tr valign=top>\n";
         echo "    <td class=left_main width=180 align=left scope=col>\n";
@@ -386,14 +383,16 @@ if ($request == 'GET') {
             echo "            </table>\n";
         }
 
-        if (!empty($office_name)
+        if (
+            !empty($office_name)
             and is_null(tc_select_value("officename", "offices", "officename = ?", $office_name))
         ) {
             echo "Office is not defined.\n";
             exit;
         }
 
-        if (!empty($group_name)
+        if (
+            !empty($group_name)
             and is_null(tc_select_value("groupname", "groups", "groupname = ?", $group_name))
         ) {
             echo "Group is not defined.\n";
@@ -631,4 +630,3 @@ class=table_rows
     include_once FOOTER_PHP;
     exit;
 }
-?>

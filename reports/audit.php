@@ -22,7 +22,6 @@ if (reports_login_required()) {
 echo "<title>$title - Audit Log</title>\n";
 
 if ($request == 'GET') {
-
     include_once '../admin/header_date.php';
 
     if ($use_reports_password == "yes") {
@@ -85,9 +84,7 @@ if ($request == 'GET') {
                       border='0'></td></tr></table></form></td></tr>\n";
     include_once '../footer.php';
     exit;
-
 } else {
-
     include_once '../admin/header_date.php';
 
     $from_date = $_POST['from_date'];
@@ -155,9 +152,7 @@ if ($request == 'GET') {
             echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
                     A valid From Date is required.</td></tr>\n";
             echo "            </table>\n";
-
         } else {
-
             if ($calendar_style == "amer") {
                 //if (isset($date_regs)) {$from_month = $date_regs[1]; $from_day = $date_regs[2]; $from_year = $date_regs[3];}
                 if (isset($date_regs)) {
@@ -250,9 +245,7 @@ if ($request == 'GET') {
             echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
                     A valid To Date is required.</td></tr>\n";
             echo "            </table>\n";
-
         } else {
-
             if ($calendar_style == "amer") {
                 if (isset($date_regs)) {
                     $to_month = $date_regs[1];
@@ -402,7 +395,6 @@ if ($request == 'GET') {
     $result = tc_select("*", "audit", "modified_when >= ? and modified_when <= ? order by modified_when asc", array($from_timestamp, $to_timestamp));
 
     while ($row = mysqli_fetch_array($result)) {
-
         $modified_when[] = "" . $row["modified_when"] . "";
         $modified_from[] = "" . $row["modified_from"] . "";
         $modified_to[] = "" . $row["modified_to"] . "";
@@ -414,7 +406,6 @@ if ($request == 'GET') {
     }
 
     for ($x = 0; $x < $cnt; $x++) {
-
         if (!empty($modified_when[$x])) {
             $modified_when[$x] = $modified_when[$x] + @$tzo;
             $modified_when_time = date($timefmt, $modified_when[$x]);
@@ -467,9 +458,7 @@ if ($request == 'GET') {
         text-decoration:underline;'>Modified From</td>\n";
                 echo "    <td nowrap width=15% align=left style='padding-left:10px;font-size:11px;color:#27408b;
         text-decoration:underline;'>Modified To</td></tr>\n";
-
             } else {
-
                 // display report name and page number of printed report above the column headings of each printed page //
 
                 $temp_page_count = $page_count + 1;
@@ -539,4 +528,3 @@ if ($request == 'GET') {
     echo "</table>\n";
 }
 exit;
-?>

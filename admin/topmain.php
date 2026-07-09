@@ -8,9 +8,7 @@ echo "  <tr>";
 
 if ($logo == "none") {
     echo "    <td height=35 align=left></td>\n";
-
 } else {
-
     echo "<td align=left><a href='../index.php'><img border=0 src='../$logo'></a></td>\n";
 }
 
@@ -30,9 +28,7 @@ if ($date_link == "none") {
          If that doesn't work, restart your web browser and reset again.</p></td>\n";
     }
     echo "    <td colspan=2 scope=col align=right valign=middle><a style='color:#000000;font-family:Tahoma;font-size:10pt;text-decoration:none;'>";
-
 } else {
-
     if ($use_client_tz == "yes") {
         echo "    <td class=notprint valign=middle align=right style='font-size:9px;'>
       <p>If the times below appear to be an hour off, click <a href='../resetcookie.php' style='font-size:9px;'>here</a> to reset.<br />
@@ -57,7 +53,7 @@ if (isset($_SESSION['valid_user'])) {
     $logged_in_user = $_SESSION['valid_user'];
     echo "    <td align=left valign=middle width=10 style='padding-left:12px;'><img src='../images/icons/user_orange.png' border='0'></td>\n";
     echo "    <td align=left valign=middle style='color:#000000;font-family:Tahoma;font-size:10pt;padding-left:8px;'>logged in as: $logged_in_user</td>\n";
-} else if (isset($_SESSION['time_admin_valid_user'])) {
+} elseif (isset($_SESSION['time_admin_valid_user'])) {
     $logged_in_user = $_SESSION['time_admin_valid_user'];
     echo "    <td align=left valign=middle width=10 style='padding-left:12px;'><img src='../images/icons/user_red.png' border='0'></td>\n";
     echo "    <td align=left valign=middle style='color:#000000;font-family:Tahoma;font-size:10pt;padding-left:8px;'>logged in as: $logged_in_user</td>\n";
@@ -75,10 +71,8 @@ echo "    <td align=right valign=middle width=10><a href='../login.php' style='c
 echo "    <td align=right valign=middle width=23><img src='../images/icons/report.png' border='0'>&nbsp;&nbsp;</td>\n";
 
 if ($use_reports_password == "yes") {
-
     echo "    <td align=right valign=middle width=10><a href='../login_reports.php' style='color:#000000;font-family:Tahoma;font-size:10pt;text-decoration:none;'>
         Reports&nbsp;&nbsp;</a></td>\n";
-
 } elseif ($use_reports_password == "no") {
     echo "    <td align=right valign=middle width=10><a href='../reports/index.php' style='color:#000000;font-family:Tahoma;font-size:10pt;text-decoration:none;'>
         Reports&nbsp;&nbsp;</a></td>\n";
@@ -94,4 +88,3 @@ if ((isset($_SESSION['valid_user'])) || (isset($_SESSION['time_admin_valid_user'
         Logout&nbsp;&nbsp;</a></td></tr>\n";
 }
 echo "</table>\n";
-?>

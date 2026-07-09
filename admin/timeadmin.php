@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 $self = $_SERVER['PHP_SELF'];
@@ -79,7 +80,6 @@ $query = "select empfullname, displayname, email, groups, office, admin, reports
 $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
 
 while ($row = mysqli_fetch_array($result)) {
-
     $empfullname = stripslashes("" . $row['empfullname'] . "");
     $displayname = stripslashes("" . $row['displayname'] . "");
 
@@ -101,7 +101,6 @@ while ($row = mysqli_fetch_array($result)) {
     }
 
     if ((strpos($user_agent, "MSIE 6")) || (strpos($user_agent, "MSIE 5")) || (strpos($user_agent, "MSIE 4")) || (strpos($user_agent, "MSIE 3"))) {
-
         echo "                <td class=table_rows width=3% align=center><a style='color:#27408b;text-decoration:underline;'
                     title=\"Add Time For: $empfullname\" href=\"timeadd.php?username=$empfullname\">Add</a></td>\n";
         echo "                <td class=table_rows width=3% align=center><a style='color:#27408b;text-decoration:underline;'
@@ -109,9 +108,7 @@ while ($row = mysqli_fetch_array($result)) {
         echo "                <td class=table_rows width=3% align=center><a style='color:#27408b;text-decoration:underline;'
                     title=\"Delete Time For: $empfullname\" href=\"timedelete.php?username=$empfullname\">
                     Delete</a></td></tr>\n";
-
     } else {
-
         echo "                <td class=table_rows width=3% align=center><a title=\"Add Time For: $empfullname\"
                     href=\"timeadd.php?username=$empfullname\">
                     <img border=0 src='../images/icons/clock_add.png' /></a></td>\n";
@@ -126,4 +123,3 @@ while ($row = mysqli_fetch_array($result)) {
 echo "          </table></td></tr>\n";
 include '../footer.php';
 exit;
-?>

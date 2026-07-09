@@ -4,15 +4,12 @@ $row_count = 0;
 $page_count = 0;
 
 while ($row = mysqli_fetch_array($result)) {
-
     $display_stamp = "" . $row["timestamp"] . "";
     $time = date($timefmt, $display_stamp);
     $date = date($datefmt, $display_stamp);
 
     if ($row_count == 0) {
-
         if ($page_count == 0) {
-
             // display sortable column headings for main page //
 
             echo "            <table class=misc_items width=100% border=0 cellpadding=2 cellspacing=0>\n";
@@ -46,9 +43,7 @@ while ($row = mysqli_fetch_array($result)) {
             echo "                <td style='padding-left:10px;'><a style='font-size:11px;color:#27408b;'
                                     href='$current_page?sortcolumn=notes&sortdirection=$sortnewdirection'><u>Notes</u></a></td>\n";
             echo "              </tr>\n";
-
         } else {
-
             // display report name and page number of printed report above the column headings of each printed page //
 
             $temp_page_count = $page_count + 1;
@@ -121,7 +116,6 @@ while ($row = mysqli_fetch_array($result)) {
         $row_count = 0;
         $page_count++;
     }
-
 }
 
 echo "            </table>\n";
@@ -131,4 +125,3 @@ if (!isset($_GET['printer_friendly'])) {
 }
 
 ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
-?>

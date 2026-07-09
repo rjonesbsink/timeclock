@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 include 'config.inc.php';
@@ -16,7 +17,6 @@ if (isset($_POST['login_userid']) && (isset($_POST['login_password'])) && verify
     $result = tc_select("empfullname, employee_passwd, admin, time_admin", "employees", "empfullname = ?", $login_userid);
 
     while ($row = mysqli_fetch_array($result)) {
-
         $admin_username = "" . $row['empfullname'] . "";
         $admin_password = "" . $row['employee_passwd'] . "";
         $admin_auth = "" . $row['admin'] . "";
@@ -34,7 +34,6 @@ if (isset($_POST['login_userid']) && (isset($_POST['login_password'])) && verify
         tc_maybe_upgrade_password($admin_username, $login_password, $admin_password);
         regenerate_csrf_token();
     }
-
 }
 
 if (isset($_SESSION['valid_user'])) {
@@ -43,9 +42,7 @@ if (isset($_SESSION['valid_user'])) {
 } elseif (isset($_SESSION['time_admin_valid_user'])) {
     echo "<script type='text/javascript' language='javascript'> window.location.href = 'admin/timeadmin.php';</script>";
     exit;
-
 } else {
-
     // build form
 
     echo "<form name='auth' method='post' action='$self'>\n";
@@ -67,4 +64,3 @@ if (isset($_SESSION['valid_user'])) {
 
 echo "</body>\n";
 echo "</html>\n";
-?>

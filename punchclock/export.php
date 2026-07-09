@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Export timeclock hours.
  */
@@ -168,7 +169,6 @@ End_Of_HTML;
 </html>
 End_Of_HTML;
     exit;
-
 }
 
 ////////////////////////////////////////
@@ -227,4 +227,3 @@ End_Of_HTML;
 include 'header.php';
 include 'export_display.php';
 include 'footer.php';
-?>

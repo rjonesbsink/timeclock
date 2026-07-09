@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 include_once '../config.inc.php';
@@ -26,9 +27,7 @@ require_valid_user();
 require_once '../lib/csrf.php';
 
 if ($request == 'GET') {
-
     if (!isset($_GET['officename'])) {
-
         echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
         echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Error!</td></tr>\n";
         echo "  <tr class=right_main_text>\n";
@@ -95,7 +94,6 @@ if ($request == 'GET') {
     $result = tc_select("*", "offices", WHERE_OFFICENAME, $get_office);
 
     while ($row = mysqli_fetch_array($result)) {
-
         $officename = "" . $row['officename'] . "";
         $officeid = "" . $row['officeid'] . "";
     }
@@ -148,7 +146,6 @@ if ($request == 'GET') {
     }
 
     if ($group_cnt != '0') {
-
         echo "</form>\n";
         echo "            <br /><br /><br /><hr /><br />\n";
         echo "            <table width=60% align=center height=40 border=0 cellpadding=0 cellspacing=0>\n";
@@ -169,7 +166,6 @@ if ($request == 'GET') {
         $result = tc_select("*", "groups", WHERE_OFFICEID_ORDER_BY_GROUPNAME, $officeid);
 
         while ($row = mysqli_fetch_array($result)) {
-
             $tmp_group = "" . $row['groupname'] . "";
 
             $result3 = tc_select("*", "employees", WHERE_OFFICE_AND_GROUPS, array($officename, $tmp_group));
@@ -185,7 +181,6 @@ if ($request == 'GET') {
                     value=\"$group_user_cnt\">$group_user_cnt</td>\n";
 
             if ((strpos($user_agent, MSIE6)) || (strpos($user_agent, MSIE5)) || (strpos($user_agent, MSIE4)) || (strpos($user_agent, MSIE3))) {
-
                 echo "                <td class=table_rows width=3% align=center><a style='color:#27408b;text-decoration:underline;'
                     title=\"Edit Group: " . $row["groupname"] . "\" href=\"groupedit.php?groupname=$tmp_group&officename=$get_office\" >
                     Edit</a></td>\n";
@@ -206,7 +201,6 @@ if ($request == 'GET') {
     include_once FOOTER_PHP;
     exit;
 } elseif ($request == 'POST') {
-
     require_csrf_token();
 
     $post_officename = $_POST['post_officename'];
@@ -258,7 +252,6 @@ if ($request == 'GET') {
     $h_get_office = htmlentities($get_office);
 
     if ((empty($post_officename)) || (!preg_match('/' . "^([[:alnum:]]| |-|_|\.)+$" . '/i', $post_officename))) {
-
         echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
         echo "  <tr valign=top>\n";
         echo "    <td class=left_main width=180 align=left scope=col>\n";
@@ -357,7 +350,6 @@ if ($request == 'GET') {
         }
 
         if ($group_cnt != '0') {
-
             echo "</form>\n";
             echo "            <br /><br /><br /><hr /><br />\n";
             echo "            <table width=60% align=center height=40 border=0 cellpadding=0 cellspacing=0>\n";
@@ -381,7 +373,6 @@ if ($request == 'GET') {
             $result = tc_select("*", "groups", WHERE_OFFICEID_ORDER_BY_GROUPNAME, $post_officeid);
 
             while ($row = mysqli_fetch_array($result)) {
-
                 $tmp_group = "" . $row['groupname'] . "";
 
                 $result3 = tc_select("*", "employees", WHERE_OFFICE_AND_GROUPS, array($get_office, $tmp_group));
@@ -396,7 +387,6 @@ if ($request == 'GET') {
                 echo "                <td class=table_rows width=4% align=center>$group_user_cnt</td>\n";
 
                 if ((strpos($user_agent, MSIE6)) || (strpos($user_agent, MSIE5)) || (strpos($user_agent, MSIE4)) || (strpos($user_agent, MSIE3))) {
-
                     echo "                <td class=table_rows width=3% align=center><a style='color:#27408b;text-decoration:underline;'
                     title=\"Edit Group: " . $row["groupname"] . "\" href=\"groupedit.php?groupname=$tmp_group&officename=$h_get_office\" >
                     Edit</a></td>\n";
@@ -414,9 +404,7 @@ if ($request == 'GET') {
         }
         include_once FOOTER_PHP;
         exit;
-
     } else {
-
         ///////////////////////////////////////////////////////////////////////////////////////////////
 
         $officeid_result = tc_select("*", "offices", WHERE_OFFICENAME, $post_officename);
@@ -508,7 +496,6 @@ if ($request == 'GET') {
         }
 
         if ($group_cnt != '0') {
-
             echo "\n";
             echo "            <br /><br /><br /><hr /><br />\n";
             echo "            <table width=60% align=center height=40 border=0 cellpadding=0 cellspacing=0>\n";
@@ -532,7 +519,6 @@ if ($request == 'GET') {
             $result = tc_select("*", "groups", WHERE_OFFICEID_ORDER_BY_GROUPNAME, $post_officeid);
 
             while ($row = mysqli_fetch_array($result)) {
-
                 $tmp_group = "" . $row['groupname'] . "";
 
                 $result3 = tc_select("*", "employees", WHERE_OFFICE_AND_GROUPS, array($post_officename, $tmp_group));
@@ -547,7 +533,6 @@ if ($request == 'GET') {
                 echo "                <td class=table_rows width=4% align=center>$group_user_cnt</td>\n";
 
                 if ((strpos($user_agent, MSIE6)) || (strpos($user_agent, MSIE5)) || (strpos($user_agent, MSIE4)) || (strpos($user_agent, MSIE3))) {
-
                     echo "                <td class=table_rows width=3% align=center><a style='color:#27408b;text-decoration:underline;'
                     title=\"Edit Group: " . $row["groupname"] . "\" href=\"groupedit.php?groupname=$tmp_group&officename=$post_officename\" >
                     Edit</a></td>\n";
@@ -567,4 +552,3 @@ if ($request == 'GET') {
     include_once FOOTER_PHP;
     exit;
 }
-?>

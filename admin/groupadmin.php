@@ -75,7 +75,6 @@ $query = "select * from " . $db_prefix . "groups, " . $db_prefix . "offices wher
 $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
 
 while ($row = mysqli_fetch_array($result)) {
-
     $query2 = "select groups from " . $db_prefix . "employees where groups = '" . $row['groupname'] . "' and office = '" . $row['officename'] . "'";
     $result2 = mysqli_query($GLOBALS["___mysqli_ston"], $query2);
     @$user_cnt = mysqli_num_rows($result2);
@@ -92,7 +91,6 @@ while ($row = mysqli_fetch_array($result)) {
     echo "                <td class=table_rows nowrap width=4% align=center>$user_cnt</td>\n";
 
     if ((strpos($user_agent, "MSIE 6")) || (strpos($user_agent, "MSIE 5")) || (strpos($user_agent, "MSIE 4")) || (strpos($user_agent, "MSIE 3"))) {
-
         echo "                <td class=table_rows width=3% align=center><a style='color:#27408b;text-decoration:underline;'
                     title=\"Edit Group: " . $row["groupname"] . "\" href=\"groupedit.php?groupname=" . $row["groupname"] . "&officename=$parent_office\" >
                     Edit</a></td>\n";
@@ -111,4 +109,3 @@ while ($row = mysqli_fetch_array($result)) {
 echo "          </table></td></tr>\n";
 include '../footer.php';
 exit;
-?>

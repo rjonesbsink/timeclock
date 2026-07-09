@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Timecard entries of employee punch-in/out times and hours.
  *
@@ -60,4 +61,3 @@ End_Of_HTML;
 print timecard_html($empfullname, $local_timestamp_in_week);
 
 print "<a id=\"printer_friendly\" href=\"timecard.php?emp=$h_empfullname&t=$local_timestamp_in_week\" target=\"_blank\">Printer Friendly</a>";
-?>

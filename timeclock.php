@@ -1,11 +1,11 @@
 <?php
+
 session_start();
 
 include 'config.inc.php';
 include 'header.php';
 
 if (!isset($_GET['printer_friendly'])) {
-
     if (isset($_SESSION['valid_user'])) {
         $set_logout = "1";
     }
@@ -67,7 +67,6 @@ if (($display_current_users == "yes") && ($display_office == "all") && ($display
               order by `$sortcolumn` $sortdirection";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
 } elseif (($display_current_users == "yes") && ($display_office != "all") && ($display_group == "all")) {
-
     $current_users_date = strtotime(date($datefmt));
     $calc = 86400;
     $a = $current_users_date + $calc - @$tzo;
@@ -82,7 +81,6 @@ if (($display_current_users == "yes") && ($display_office == "all") && ($display
               order by `$sortcolumn` $sortdirection";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
 } elseif (($display_current_users == "yes") && ($display_office == "all") && ($display_group != "all")) {
-
     $current_users_date = strtotime(date($datefmt));
     $calc = 86400;
     $a = $current_users_date + $calc - @$tzo;
@@ -97,7 +95,6 @@ if (($display_current_users == "yes") && ($display_office == "all") && ($display
               order by `$sortcolumn` $sortdirection";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
 } elseif (($display_current_users == "yes") && ($display_office != "all") && ($display_group != "all")) {
-
     $current_users_date = strtotime(date($datefmt));
     $calc = 86400;
     $a = $current_users_date + $calc - @$tzo;
@@ -113,7 +110,6 @@ if (($display_current_users == "yes") && ($display_office == "all") && ($display
               order by `$sortcolumn` $sortdirection";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
 } elseif (($display_current_users == "no") && ($display_office == "all") && ($display_group == "all")) {
-
     $query = "select " . $db_prefix . "info.*, " . $db_prefix . "employees.*, " . $db_prefix . "punchlist.*
               from " . $db_prefix . "info, " . $db_prefix . "employees, " . $db_prefix . "punchlist
               where " . $db_prefix . "info.timestamp = " . $db_prefix . "employees.tstamp and " . $db_prefix . "info.fullname = " . $db_prefix . "employees.empfullname
@@ -122,7 +118,6 @@ if (($display_current_users == "yes") && ($display_office == "all") && ($display
               order by `$sortcolumn` $sortdirection";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
 } elseif (($display_current_users == "no") && ($display_office != "all") && ($display_group == "all")) {
-
     $query = "select " . $db_prefix . "info.*, " . $db_prefix . "employees.*, " . $db_prefix . "punchlist.*
               from " . $db_prefix . "info, " . $db_prefix . "employees, " . $db_prefix . "punchlist
               where " . $db_prefix . "info.timestamp = " . $db_prefix . "employees.tstamp and " . $db_prefix . "info.fullname = " . $db_prefix . "employees.empfullname
@@ -131,7 +126,6 @@ if (($display_current_users == "yes") && ($display_office == "all") && ($display
               order by `$sortcolumn` $sortdirection";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
 } elseif (($display_current_users == "no") && ($display_office == "all") && ($display_group != "all")) {
-
     $query = "select " . $db_prefix . "info.*, " . $db_prefix . "employees.*, " . $db_prefix . "punchlist.*
               from " . $db_prefix . "info, " . $db_prefix . "employees, " . $db_prefix . "punchlist
               where " . $db_prefix . "info.timestamp = " . $db_prefix . "employees.tstamp and " . $db_prefix . "info.fullname = " . $db_prefix . "employees.empfullname
@@ -140,7 +134,6 @@ if (($display_current_users == "yes") && ($display_office == "all") && ($display
               order by `$sortcolumn` $sortdirection";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
 } elseif (($display_current_users == "no") && ($display_office != "all") && ($display_group != "all")) {
-
     $query = "select " . $db_prefix . "info.*, " . $db_prefix . "employees.*, " . $db_prefix . "punchlist.*
               from " . $db_prefix . "info, " . $db_prefix . "employees, " . $db_prefix . "punchlist
               where " . $db_prefix . "info.timestamp = " . $db_prefix . "employees.tstamp and " . $db_prefix . "info.fullname = " . $db_prefix . "employees.empfullname
@@ -181,6 +174,3 @@ include 'display.php';
 if (!isset($_GET['printer_friendly'])) {
     include 'footer.php';
 }
-
-?>
-

@@ -106,7 +106,6 @@ if ($links == "none") {
         echo "        <tr><td class=left_rows height=18 align=left valign=middle><a class=admin_headings href='$links[$x]' target='_new'>$display_links[$x]</a></td>
                       </tr>\n";
     }
-
 }
 
 // display form to submit signin/signout information //
@@ -173,7 +172,7 @@ if (yes_no_bool($manual_clockin)) {
 
     echo "              <select name='left_inout'>\n";
     echo "              <option value =''>...</option>\n";
-    echo html_options(tc_select("punchitems",  "punchlist"));
+    echo html_options(tc_select("punchitems", "punchlist"));
     echo "              </select></td></tr>\n";
 
     echo "        <tr><td height=7></td></tr>\n";
@@ -209,7 +208,6 @@ if (yes_no_bool($display_weather)) {
 echo "      </table></td>\n";
 
 if ($request == 'POST') {
-
     // signin/signout data passed over from timeclock.php //
 
     $inout = $_POST['left_inout'];
@@ -230,8 +228,7 @@ QUERY
         while ($row = mysqli_fetch_array($result)) {
             $inout = $row[0];
         }
-    }
-    elseif (has_value($inout)) {
+    } elseif (has_value($inout)) {
         $inout = tc_select_value("punchitems", "punchlist", "punchitems = ?", $inout);
         if (!has_value($inout)) {
             echo "In/Out Status is not in the database.\n";
@@ -247,11 +244,9 @@ QUERY
 
     if (!has_value($emp_name) && !has_value($inout)) {
         $errors[] = "You have not chosen a username or a status. Please try again.";
-    }
-    elseif (!has_value($emp_name)) {
+    } elseif (!has_value($emp_name)) {
         $errors[] = "You have not chosen a username. Please try again.";
-    }
-    elseif (!has_value($inout)) {
+    } elseif (!has_value($inout)) {
         $errors[] = "You have not chosen a status. Please try again.";
     }
 
@@ -278,7 +273,6 @@ QUERY
     $tz_stamp = mktime($hour, $min, $sec, $month, $day, $year);
 
     if (has_value($barcode) or $use_passwd == "no") {
-
         if (!has_value($fullname)) {
             $fullname = tc_select_value("empfullname", "employees", "$emp_name_field = ?", $emp_name);
         }
@@ -294,9 +288,7 @@ QUERY
         echo "<head>\n";
         echo "<meta http-equiv='refresh' content=0;url=index.php>\n";
         echo "</head>\n";
-
     } else {
-
         $sel_result = tc_select(
             "empfullname, employee_passwd",
             "employees",
@@ -322,9 +314,7 @@ QUERY
             echo "<head>\n";
             echo "<meta http-equiv='refresh' content=0;url=index.php>\n";
             echo "</head>\n";
-
         } else {
-
             echo "    <td align=left class=right_main scope=col>\n";
             echo "      <table width=100% height=100% border=0 cellpadding=10 cellspacing=1>\n";
             echo "        <tr class=right_main_text>\n";
@@ -334,7 +324,5 @@ QUERY
             include 'footer.php';
             exit;
         }
-
     }
 }
-?>

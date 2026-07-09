@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Setup timeclock database and authorizations.
  *
@@ -73,4 +74,3 @@ if ($use_client_tz == "yes") {
 } else {
     $tzo = "1";
 }
-?>

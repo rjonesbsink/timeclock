@@ -22,7 +22,6 @@ if (reports_login_required()) {
 echo "<title>$title - Daily Time Report</title>\n";
 
 if ($request == 'GET') {
-
     include_once 'header_get_reports.php';
 
     if ($use_reports_password == "yes") {
@@ -46,7 +45,6 @@ if ($request == 'GET') {
     echo "              <tr><td height=15></td></tr>\n";
     echo "              <input type='hidden' name='date_format' value='$js_datefmt'>\n";
     if ($username_dropdown_only == "yes") {
-
         $query = "select * from " . $db_prefix . "employees order by empfullname asc";
         $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
 
@@ -119,9 +117,7 @@ if ($request == 'GET') {
                       border='0'></td></tr></table></form></td></tr>\n";
     include_once '../footer.php';
     exit;
-
 } else {
-
     include_once 'header_post_reports.php';
 
     @$office_name = $_POST['office_name'];
@@ -250,9 +246,7 @@ if ($request == 'GET') {
             echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
                     A valid From Date is required.</td></tr>\n";
             echo "            </table>\n";
-
         } else {
-
             if ($calendar_style == "amer") {
                 if (isset($date_regs)) {
                     $from_month = $date_regs[1];
@@ -344,9 +338,7 @@ if ($request == 'GET') {
             echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
                     A valid To Date is required.</td></tr>\n";
             echo "            </table>\n";
-
         } else {
-
             if ($calendar_style == "amer") {
                 if (isset($date_regs)) {
                     $to_month = $date_regs[1];
@@ -411,7 +403,6 @@ if ($request == 'GET') {
         echo "              <tr><td height=15></td></tr>\n";
         echo "              <input type='hidden' name='date_format' value='$js_datefmt'>\n";
         if ($username_dropdown_only == "yes") {
-
             $query = "select * from " . $db_prefix . "employees order by empfullname asc";
             $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
 
@@ -428,7 +419,6 @@ if ($request == 'GET') {
             echo "                  </select>&nbsp;*</td></tr>\n";
             ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
         } else {
-
             echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Choose Office:</td><td colspan=2 width=80%
                       style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
                       <select name='office_name' onchange='group_names();'>\n";
@@ -576,15 +566,12 @@ if ($request == 'GET') {
     $result = tc_select("empfullname, displayname", "employees", "$where order by $order_col asc", $emp_params);
 
     while ($row = mysqli_fetch_array($result)) {
-
         $employees_empfullname[] = "" . $row['empfullname'] . "";
         $employees_displayname[] = "" . $row['displayname'] . "";
         $employees_cnt++;
     }
     for ($x = 0; $x < $employees_cnt; $x++) {
-
         if (($employees_empfullname[$x] == $fullname) || ($fullname == "All")) {
-
             $row_color = $color2; // Initial row color
 
             $result = tc_query(
@@ -599,14 +586,12 @@ if ($request == 'GET') {
             );
 
             while ($row = mysqli_fetch_array($result)) {
-
                 $display_stamp = "" . $row["timestamp"] . "";
                 $time = date($timefmt, $display_stamp);
                 $date = date($datefmt, $display_stamp);
 
                 if ($row_count == 0) {
                     if ($page_count == 0) {
-
                         echo "            <table class=misc_items width=100% border=0 cellpadding=2 cellspacing=0>\n";
                         echo "              <tr class=notprint>\n";
                         echo "                <td nowrap width=20% align=left style='padding-left:10px;padding-right:10px;font-size:11px;color:#27408b;
@@ -622,9 +607,7 @@ if ($request == 'GET') {
                         text-decoration:underline;'>Originating IP</td>\n";
                         }
                         echo "                <td style='padding-left:10px;'><a style='font-size:11px;color:#27408b;text-decoration:underline;'>Notes</td>\n";
-
                     } else {
-
                         // display report name and page number of printed report above the column headings of each printed page //
 
                         $temp_page_count = $page_count + 1;
@@ -695,4 +678,3 @@ if ($request == 'GET') {
     }
 }
 exit;
-?>

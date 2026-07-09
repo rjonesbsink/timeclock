@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 $self = $_SERVER['PHP_SELF'];
@@ -16,9 +17,7 @@ require_valid_user();
 require_once '../lib/csrf.php';
 
 if ($request == 'GET') {
-
     if (!isset($_GET['statusname'])) {
-
         echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
         echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Error!</td></tr>\n";
         echo "  <tr class=right_main_text>\n";
@@ -36,7 +35,6 @@ if ($request == 'GET') {
     $result = tc_select("*", "punchlist", WHERE_PUNCHITEMS, $get_status);
 
     while ($row = mysqli_fetch_array($result)) {
-
         $punchitem = "" . $row['punchitems'] . "";
         $color = "" . $row['color'] . "";
         $in_or_out = "" . $row['in_or_out'] . "";
@@ -125,7 +123,6 @@ if ($request == 'GET') {
     include '../footer.php';
     exit;
 } elseif ($request == 'POST') {
-
     require_csrf_token();
 
     $post_statusname = $_POST['post_statusname'];
@@ -243,4 +240,3 @@ if ($request == 'GET') {
     include '../footer.php';
     exit;
 }
-?>

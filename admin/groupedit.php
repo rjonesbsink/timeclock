@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 include_once '../config.inc.php';
@@ -27,9 +28,7 @@ require_valid_user();
 require_once '../lib/csrf.php';
 
 if ($request == 'GET') {
-
     if ((!isset($_GET['groupname'])) && (!isset($_GET['officename']))) {
-
         echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
         echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Error!</td></tr>\n";
         echo "  <tr class=right_main_text>\n";
@@ -102,7 +101,6 @@ if ($request == 'GET') {
     $result = tc_select("*", "groups, " . $db_prefix . "offices", "officename = ? and groupname = ?", array($get_office, $get_group));
 
     while ($row = mysqli_fetch_array($result)) {
-
         $officename = "" . $row['officename'] . "";
         $officeid = "" . $row['officeid'] . "";
         $groupname = "" . $row['groupname'] . "";
@@ -180,7 +178,6 @@ if ($request == 'GET') {
     @$reports_count_rows = mysqli_num_rows($reports_count);
 
     if ($user_count_rows > '0') {
-
         echo "            <br /><br /><br /><hr /><br />\n";
         echo "            <table width=90% align=center height=40 border=0 cellpadding=0 cellspacing=0>\n";
         echo "              <tr><th class=table_heading_no_color nowrap width=100% halign=left>Members of $h_get_group Group in $h_get_office Office</th></tr>\n";
@@ -213,7 +210,6 @@ if ($request == 'GET') {
         );
 
         while ($row = mysqli_fetch_array($result)) {
-
             $empfullname = stripslashes("" . $row['empfullname'] . "");
             $displayname = stripslashes("" . $row['displayname'] . "");
 
@@ -252,7 +248,6 @@ if ($request == 'GET') {
             }
 
             if ((strpos($user_agent, MSIE6)) || (strpos($user_agent, MSIE5)) || (strpos($user_agent, MSIE4)) || (strpos($user_agent, MSIE3))) {
-
                 echo "                <td class=table_rows width=3% align=center><a style='color:#27408b;text-decoration:underline;'
                     title=\"Edit User: $empfullname\"
                     href=\"useredit.php?username=$empfullname&officename=" . $row["office"] . "\">Edit</a></td>\n";
@@ -285,7 +280,6 @@ if ($request == 'GET') {
         exit;
     }
 } elseif ($request == 'POST') {
-
     require_csrf_token();
 
     $post_officename = $_POST['post_officename'];
@@ -389,7 +383,6 @@ if ($request == 'GET') {
     echo "      <table class=hide width=100% border=0 cellpadding=1 cellspacing=0>\n";
 
     if (empty($string)) {
-
         $result = tc_select("*", "groups", "groupname = ? and officeid = ?", array($post_groupname, $post_officeid));
 
         while ($row = mysqli_fetch_array($result)) {
@@ -425,14 +418,11 @@ if ($request == 'GET') {
                 <a class=admin_headings href='groupadmin.php'>Group Summary</a></td></tr>\n";
 
     if (isset($evil_group)) {
-
         echo "        <tr><td class=current_left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Edit Group' />
                 &nbsp;&nbsp;<a class=admin_headings href=\"groupedit.php?groupname=$h_get_group&officename=$h_get_office\">Edit Group</a></td></tr>\n";
         echo "        <tr><td class=left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Delete Group' />
                 &nbsp;&nbsp;<a class=admin_headings href=\"groupdelete.php?groupname=$h_get_group&officename=$h_get_office\">Delete Group</a></td></tr>\n";
-
     } else {
-
         echo "        <tr><td class=current_left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Edit Group' />
                 &nbsp;&nbsp;<a class=admin_headings href=\"groupedit.php?groupname=$post_groupname&officename=$post_officename\">Edit Group</a></td></tr>\n";
         echo "        <tr><td class=left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Delete Group' />
@@ -464,7 +454,6 @@ if ($request == 'GET') {
     echo "            <br />\n";
 
     if ((isset($evil_group)) || (isset($dupe))) {
-
         if (empty($post_groupname)) {
             echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
             echo "              <tr>\n";
@@ -558,7 +547,6 @@ if ($request == 'GET') {
         @$reports_count_rows = mysqli_num_rows($reports_count);
 
         if ($user_count_rows > '0') {
-
             echo "            <br /><br /><br /><hr /><br />\n";
             echo "            <table width=90% align=center height=40 border=0 cellpadding=0 cellspacing=0>\n";
             echo "              <tr><th class=table_heading_no_color nowrap width=100% halign=left>Members of $h_get_group Group in $h_get_office Office</th></tr>\n";
@@ -591,7 +579,6 @@ if ($request == 'GET') {
             );
 
             while ($row = mysqli_fetch_array($result)) {
-
                 $empfullname = stripslashes("" . $row['empfullname'] . "");
                 $displayname = stripslashes("" . $row['displayname'] . "");
 
@@ -630,7 +617,6 @@ if ($request == 'GET') {
                 }
 
                 if ((strpos($user_agent, MSIE6)) || (strpos($user_agent, MSIE5)) || (strpos($user_agent, MSIE4)) || (strpos($user_agent, MSIE3))) {
-
                     echo "                <td class=table_rows width=3% align=center><a style='color:#27408b;text-decoration:underline;'
                     title=\"Edit User: $empfullname\"
                     href=\"useredit.php?username=$empfullname&officename=" . $row["office"] . "\">Edit</a></td>\n";
@@ -662,9 +648,7 @@ if ($request == 'GET') {
             include_once FOOTER_PHP;
             exit;
         }
-
     } else {
-
         tc_update_strings(
             "employees",
             array("groups" => $post_groupname, "office" => $post_officename),
@@ -720,7 +704,6 @@ if ($request == 'GET') {
         @$reports_count_rows = mysqli_num_rows($reports_count);
 
         if ($user_count_rows > '0') {
-
             echo "            <br /><br /><br /><hr /><br />\n";
             echo "            <table width=90% align=center height=40 border=0 cellpadding=0 cellspacing=0>\n";
             echo "              <tr><th class=table_heading_no_color nowrap width=100% halign=left>Members of $h_post_groupname Group in $h_post_officename
@@ -754,7 +737,6 @@ if ($request == 'GET') {
             );
 
             while ($row = mysqli_fetch_array($result)) {
-
                 $empfullname = stripslashes("" . $row['empfullname'] . "");
                 $displayname = stripslashes("" . $row['displayname'] . "");
 
@@ -793,7 +775,6 @@ if ($request == 'GET') {
                 }
 
                 if ((strpos($user_agent, MSIE6)) || (strpos($user_agent, MSIE5)) || (strpos($user_agent, MSIE4)) || (strpos($user_agent, MSIE3))) {
-
                     echo "                <td class=table_rows width=3% align=center><a style='color:#27408b;text-decoration:underline;'
                     title=\"Edit User: $empfullname\"
                     href=\"useredit.php?username=$empfullname&officename=" . $row["office"] . "\">Edit</a></td>\n";
@@ -827,4 +808,3 @@ if ($request == 'GET') {
         }
     }
 }
-?>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Current employee punch-in/out status for entry.php
  */

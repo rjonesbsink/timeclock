@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 include_once '../config.inc.php';
@@ -17,9 +18,7 @@ require_valid_user();
 require_once '../lib/csrf.php';
 
 if ($request == 'GET') {
-
     if (!isset($_GET['username'])) {
-
         echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
         echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Error!</td></tr>\n";
         echo "  <tr class=right_main_text>\n";
@@ -134,7 +133,6 @@ if ($request == 'GET') {
     include_once FOOTER_PHP;
     exit;
 } elseif ($request == 'POST') {
-
     require_csrf_token();
 
     $post_username = stripslashes($_POST['post_username']);
@@ -239,7 +237,6 @@ if ($request == 'GET') {
     // end post validation //
 
     if (isset($evil_password)) {
-
         echo "            <br />\n";
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
         echo "            <form name='form' action='$self' method='post'>\n";
@@ -264,9 +261,7 @@ if ($request == 'GET') {
                       <img src='../images/buttons/cancel_button.png' border='0'></td></tr></table></form></td></tr>\n";
         include_once FOOTER_PHP;
         exit;
-
     } else {
-
         $new_password = tc_hash_password($new_password);
 
         tc_update_strings("employees", array("employee_passwd" => $new_password), WHERE_EMPFULLNAME, $post_username);
@@ -294,4 +289,3 @@ if ($request == 'GET') {
         exit;
     }
 }
-?>

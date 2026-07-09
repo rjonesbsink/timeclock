@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 include_once '../config.inc.php';
@@ -15,7 +16,6 @@ require_valid_user();
 require_once '../lib/csrf.php';
 
 if ($request == 'GET') {
-
     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
     echo "  <tr valign=top>\n";
     echo "    <td class=left_main width=180 align=left scope=col>\n";
@@ -80,7 +80,7 @@ if ($request == 'GET') {
                       <input checked type='radio' name='create_status' value='0'>Out</td></tr>\n";
     echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>On Punch Become:</td><td colspan=2 width=80%
                       style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'><select name='punchnext'>\n";
-    echo "            <option value =''>...</option>" . html_options(tc_select("punchitems",  "punchlist")) . "</select></td></tr>\n";
+    echo "            <option value =''>...</option>" . html_options(tc_select("punchitems", "punchlist")) . "</select></td></tr>\n";
     echo "              <tr><td class=table_rows align=right colspan=3 style='color:red;font-family:Tahoma;font-size:10px;'>*&nbsp;required&nbsp;</td></tr>\n";
     echo "            </table>\n";
     echo "            <script language=\"javascript\">cp.writeDiv()</script>\n";
@@ -93,7 +93,6 @@ if ($request == 'GET') {
     include_once FOOTER_PHP;
     exit;
 } elseif ($request == 'POST') {
-
     require_csrf_token();
 
     $post_statusname = $_POST['post_statusname'];
@@ -167,11 +166,17 @@ if ($request == 'GET') {
         $punchnext_ok = ($punchnext == tc_select_value("punchitems", "punchlist", "punchitems = ?", $punchnext));
     }
 
-    if ((empty($post_statusname)) || (empty($post_color)) || (!preg_match('/' . "^([[:alnum:]]| |-|_|\.)+$" . '/i', $post_statusname)) || (isset($dupe)) ||
-        ((!preg_match('/' . "^(#[a-fA-F0-9]{6})+$" . '/i', $post_color)) && (!preg_match('/' . "^([a-fA-F0-9]{6})+$" . '/i', $post_color))) || (!empty($string)) || (!empty($string2))
-        || !$punchnext_ok
+    if (
+        (empty($post_statusname)) ||
+        (empty($post_color)) ||
+        (!preg_match('/' . "^([[:alnum:]]| |-|_|\.)+$" . '/i', $post_statusname)) ||
+        (isset($dupe)) ||
+        ((!preg_match('/' . "^(#[a-fA-F0-9]{6})+$" . '/i', $post_color)) &&
+        (!preg_match('/' . "^([a-fA-F0-9]{6})+$" . '/i', $post_color))) ||
+        (!empty($string)) ||
+        (!empty($string2)) ||
+        !$punchnext_ok
     ) {
-
         if (empty($post_statusname)) {
             echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
             echo "              <tr>\n";
@@ -248,7 +253,7 @@ if ($request == 'GET') {
 
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>On Punch Become:</td><td colspan=2 width=80%
                           style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'><select name='punchnext'>\n";
-        echo "            <option value =''>...</option>" . html_options(tc_select("punchitems",  "punchlist"), $punchnext) . "</select></td></tr>\n";
+        echo "            <option value =''>...</option>" . html_options(tc_select("punchitems", "punchlist"), $punchnext) . "</select></td></tr>\n";
 
         echo "              <tr><td class=table_rows align=right colspan=3 style='color:red;font-family:Tahoma;font-size:10px;'>*&nbsp;required&nbsp;</td></tr>\n";
         echo "            </table>\n";
@@ -261,7 +266,6 @@ if ($request == 'GET') {
                   <td><a href='statusadmin.php'><img src='../images/buttons/cancel_button.png' border='0'></td></tr></table></form></td></tr>\n";
         include_once FOOTER_PHP;
         exit;
-
     } else {
         $result = tc_insert_strings(
             "punchlist",
@@ -312,4 +316,3 @@ if ($request == 'GET') {
     include_once FOOTER_PHP;
     exit;
 }
-?>

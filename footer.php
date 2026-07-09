@@ -15,4 +15,3 @@ echo "  </tr>\n";
 echo "</table>\n";
 echo "</body>\n";
 echo "</html>\n";
-?>

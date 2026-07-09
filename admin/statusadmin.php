@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 $self = $_SERVER['PHP_SELF'];
@@ -73,7 +74,6 @@ $row_count = 0;
 $result = tc_select("*", "punchlist");
 
 while ($row = mysqli_fetch_array($result)) {
-
     $punchitem = "" . $row['punchitems'] . "";
     $punchnext = "" . $row['punchnext'] . "";
     $color = "" . $row['color'] . "";
@@ -97,7 +97,6 @@ while ($row = mysqli_fetch_array($result)) {
     echo "                <td nowrap class=table_rows width=4% align=center>$in_or_out_tmp</td>\n";
 
     if ((strpos($user_agent, "MSIE 6")) || (strpos($user_agent, "MSIE 5")) || (strpos($user_agent, "MSIE 4")) || (strpos($user_agent, "MSIE 3"))) {
-
         echo "                <td class=table_rows width=3% align=center><a style='color:#27408b;text-decoration:underline;' title=\"Edit Status: $punchitem\"
                     href=\"statusedit.php?statusname=$punchitem\">Edit</a></td>\n";
         echo "                <td class=table_rows width=3% align=center><a style='color:#27408b;text-decoration:underline;' title=\"Delete Status: $punchitem\"
@@ -111,4 +110,3 @@ while ($row = mysqli_fetch_array($result)) {
 }
 echo "          </table></td></tr>\n";
 include '../footer.php';
-?>

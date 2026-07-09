@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 $self = $_SERVER['PHP_SELF'];
@@ -21,9 +22,7 @@ require_valid_user();
 require_once '../lib/csrf.php';
 
 if ($request == 'GET') {
-
     if ((!isset($_GET['groupname'])) && (!isset($_GET['officename']))) {
-
         echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
         echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Error!</td></tr>\n";
         echo "  <tr class=right_main_text>\n";
@@ -94,7 +93,6 @@ if ($request == 'GET') {
     $result = tc_select("*", "groups, " . $db_prefix . "offices", "officename = ? and groupname = ?", array($get_office, $get_group));
 
     while ($row = mysqli_fetch_array($result)) {
-
         $officename = "" . $row['officename'] . "";
         $officeid = "" . $row['officeid'] . "";
         $groupname = "" . $row['groupname'] . "";
@@ -171,7 +169,6 @@ if ($request == 'GET') {
     include_once FOOTER_PHP;
     exit;
 } elseif ($request == 'POST') {
-
     require_csrf_token();
 
     include_once 'header_post.php';
@@ -289,18 +286,16 @@ if ($request == 'GET') {
     echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/group.png' alt='Group Summary' />&nbsp;&nbsp;
                 <a class=admin_headings href='groupadmin.php'>Group Summary</a></td></tr>\n";
 
-    if (((isset($office_name)) && (empty($office_name))) || ((isset($group_name)) && (empty($group_name))) ||
+    if (
+        ((isset($office_name)) && (empty($office_name))) || ((isset($group_name)) && (empty($group_name))) ||
         (($group_name == $post_groupname) && ($office_name == $post_officename))
     ) {
-
         echo "        <tr><td class=left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Edit Group' />&nbsp;&nbsp;
                 <a class=admin_headings href=\"groupedit.php?groupname=$post_groupname&officename=$post_officename\">Edit Group</a></td></tr>\n";
         echo "        <tr><td class=current_left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Delete Group' />
                 &nbsp;&nbsp;<a class=admin_headings href=\"groupdelete.php?groupname=$post_groupname&officename=$post_officename\">Delete Group</a></td>
                 </tr>\n";
-
     } else {
-
         echo "        <tr><td class=left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Edit Group' />&nbsp;&nbsp;
                 Edit Group</td></tr>\n";
         echo "        <tr><td class=current_left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Delete Group' />
@@ -332,7 +327,8 @@ if ($request == 'GET') {
     echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
     echo "              <tr>\n";
 
-    if (((isset($office_name)) && (empty($office_name))) || ((isset($group_name)) && (empty($group_name))) ||
+    if (
+        ((isset($office_name)) && (empty($office_name))) || ((isset($group_name)) && (empty($group_name))) ||
         (($group_name == $post_groupname) && ($office_name == $post_officename))
     ) {
         echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td>\n";
@@ -359,10 +355,10 @@ if ($request == 'GET') {
     echo "              </tr>\n";
     echo "              <tr><td height=15></td></tr>\n";
 
-    if (((isset($office_name)) && (empty($office_name))) || ((isset($group_name)) && (empty($group_name))) ||
+    if (
+        ((isset($office_name)) && (empty($office_name))) || ((isset($group_name)) && (empty($group_name))) ||
         (($group_name == $post_groupname) && ($office_name == $post_officename))
     ) {
-
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Group Name:</td><td align=left width=80%
                       style='padding-left:20px;' class=table_rows><input type='hidden' name='post_groupname' 
                       value=\"$post_groupname\">$post_groupname</td></tr>\n";
@@ -400,7 +396,6 @@ if ($request == 'GET') {
         include_once FOOTER_PHP;
         exit;
     } else {
-
         if ($user_cnt > '0') {
             tc_update_strings(
                 "employees",
@@ -427,4 +422,3 @@ if ($request == 'GET') {
         exit;
     }
 }
-?>

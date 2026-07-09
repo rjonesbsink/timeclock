@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 include_once '../config.inc.php';
@@ -28,9 +29,7 @@ require_time_admin();
 require_once '../lib/csrf.php';
 
 if ($request == 'GET') {
-
     if (!isset($_GET['username'])) {
-
         echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
         echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Error!</td></tr>\n";
         echo "  <tr class=right_main_text>\n";
@@ -98,7 +97,6 @@ if ($request == 'GET') {
     $result = tc_select("*", "employees", "empfullname = ? order by empfullname", $get_user);
 
     while ($row = mysqli_fetch_array($result)) {
-
         $username = stripslashes("" . $row['empfullname'] . "");
         $displayname = stripslashes("" . $row['displayname'] . "");
     }
@@ -144,7 +142,6 @@ if ($request == 'GET') {
     include_once FOOTER_PHP;
     exit;
 } elseif ($request == 'POST') {
-
     require_csrf_token();
 
     $get_user = stripslashes($_POST['get_user']);
@@ -347,11 +344,8 @@ if ($request == 'GET') {
         exit;
 
         // end post validation //
-
     } else {
-
         if (isset($_POST['tmp_var'])) {
-
             // begin post validation //
 
             if ($_POST['tmp_var'] != '1') {
@@ -375,7 +369,6 @@ if ($request == 'GET') {
             // end post validation //
 
             for ($x = 0; $x < $final_num_rows; $x++) {
-
                 $final_username[$x] = stripslashes($final_username[$x]);
                 $tmp_username = stripslashes($tmp_username);
 
@@ -416,7 +409,6 @@ if ($request == 'GET') {
                 }
 
                 if (!empty($edit_time_textbox[$x])) {
-
                     // configure timestamp to insert/update //
 
                     if ($calendar_style == "euro") {
@@ -437,7 +429,6 @@ if ($request == 'GET') {
                     // end post validation //
 
                     if ($timefmt_24hr == '0') {
-                        
                         // 12 Hour with or without leading zeros with upper or lower case AM or PM //
                         // Regex was /^([0-9]?[0-9])+:+([0-9]+[0-9])+([a|p]+m)$/i                  //
                         // Now       /^([0-1]?[0-9])+:+([0-5]+[0-9])+([a|p]+m)$/i                  //
@@ -447,7 +438,6 @@ if ($request == 'GET') {
                         if ((!preg_match('/' . "^([0-9]?[0-9])+:+([0-9]+[0-9])+([a|p]+m)$" . '/i', $edit_time_textbox[$x], $time_regs)) && (!preg_match('/' . "^([0-9]?[0-9])+:+([0-9]+[0-9])+( [a|p]+m)$" . '/i', $edit_time_textbox[$x], $time_regs))) {
                             $evil_time = '1';
                         } else {
-
                             if (isset($time_regs)) {
                                 $h = $time_regs[1];
                                 $m = $time_regs[2];
@@ -459,19 +449,16 @@ if ($request == 'GET') {
                             }
                         }
                     } elseif ($timefmt_24hr == '1') {
-                        
                         // 24 Hour with or without leading zeros with upper or lower case AM or PM //
                         // Regex was /^([0-9]?[0-9])+:+([0-9]+[0-9])+([a|p]+m)$/i                  //
                         // Now       /^([0-2]?[0-9])+:+([0-5]+[0-9])+$/                            //
                         //    First digit of hours in 24 hour format can not be > 2.               //
                         //    First digit of minutes can not be > 5 any time.                      //
                         //    No am/pm in 24 hour format.  No need for case indifferent /i.        //
-                        
+
                         if (!preg_match('/' . "^([0-2]?[0-9])+:+([0-5]+[0-9])+$" . '/', $edit_time_textbox[$x], $time_regs)) {
                             $evil_time = '1';
-
                         } else {
-
                             if (isset($time_regs)) {
                                 $h = $time_regs[1];
                                 $m = $time_regs[2];
@@ -523,7 +510,6 @@ if ($request == 'GET') {
                 echo "                  <td style='padding-left:25px;' class=column_headings><u>Notes</u></td></tr>\n";
 
                 for ($x = 0; $x < $final_num_rows; $x++) {
-
                     $row_color = ($row_count % 2) ? $color1 : $color2;
                     $final_username[$x] = stripslashes($final_username[$x]);
 
@@ -559,7 +545,6 @@ if ($request == 'GET') {
                 include_once FOOTER_PHP;
                 exit;
             } elseif (!isset($evil_time)) {
-
                 echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
                 echo "              <tr>\n";
                 echo "              <td class=table_rows width=20 align=center><img src='../images/icons/accept.png' /></td><td class=table_rows_green>
@@ -608,7 +593,6 @@ if ($request == 'GET') {
 
                 for ($x = 0; $x < $final_num_rows; $x++) {
                     if ($edit_time_textbox[$x] != '') {
-
                         $row_color = ($row_count % 2) ? $color1 : $color2;
 
                         $result = tc_select("*", "employees", WHERE_EMPFULLNAME, $final_username[$x]);
@@ -630,9 +614,7 @@ if ($request == 'GET') {
 
                         if ($new_tstamp[$x] > $tmp_tstamp) {
                             tc_update_strings("employees", array("tstamp" => $new_tstamp[$x]), WHERE_EMPFULLNAME, $final_username[$x]);
-
                         } elseif ($new_tstamp[$x] < $tmp_tstamp) {
-
                             $result2 = tc_select("*", "info", "fullname = ? order by timestamp desc limit 1,1", $final_username[$x]);
 
                             while ($row2 = mysqli_fetch_array($result2)) {
@@ -693,9 +675,7 @@ if ($request == 'GET') {
                 include_once FOOTER_PHP;
                 exit;
             }
-
         } else {
-
             // configure timestamp to insert/update //
 
             if ($calendar_style == "euro") {
@@ -726,7 +706,6 @@ if ($request == 'GET') {
             $mysql_timestamp = array();
 
             while ($row = mysqli_fetch_array($result)) {
-
                 $time_set = '1';
                 $username[] = "" . $row['fullname'] . "";
                 $inout[] = "" . $row['inout'] . "";
@@ -740,7 +719,6 @@ if ($request == 'GET') {
         $post_displayname = stripslashes($post_displayname);
 
         if (!isset($time_set)) {
-
             // configure date to display correctly //
 
             if ($calendar_style == "euro") {
@@ -815,7 +793,6 @@ if ($request == 'GET') {
 
 
             for ($x = 0; $x < $num_rows; $x++) {
-
                 $row_color = ($row_count % 2) ? $color1 : $color2;
                 $time[$x] = date("$timefmt", $mysql_timestamp[$x] + $tzo);
                 $username[$x] = stripslashes($username[$x]);
@@ -855,4 +832,3 @@ if ($request == 'GET') {
         }
     }
 }
-?>

@@ -11,7 +11,8 @@
  * before login can't be replayed against the authenticated session.
  */
 
-function csrf_token() {
+function csrf_token()
+{
     if (empty($_SESSION['csrf_token'])) {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
@@ -19,19 +20,22 @@ function csrf_token() {
     return $_SESSION['csrf_token'];
 }
 
-function csrf_field() {
+function csrf_field()
+{
     $token = htmlentities(csrf_token());
 
     return "<input type='hidden' name='csrf_token' value='$token'>";
 }
 
-function regenerate_csrf_token() {
+function regenerate_csrf_token()
+{
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 
     return $_SESSION['csrf_token'];
 }
 
-function verify_csrf_token() {
+function verify_csrf_token()
+{
     return isset($_SESSION['csrf_token'])
         && isset($_POST['csrf_token'])
         && hash_equals($_SESSION['csrf_token'], $_POST['csrf_token']);
@@ -41,7 +45,8 @@ function verify_csrf_token() {
 // error and stop. AJAX/fragment callers should call verify_csrf_token()
 // directly and render their own failure using their existing convention
 // (e.g. die(error_msg(...))) instead of this.
-function require_csrf_token() {
+function require_csrf_token()
+{
     if (!verify_csrf_token()) {
         echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
         echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Error!</td></tr>\n";

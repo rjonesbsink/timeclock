@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 include 'config.inc.php';
@@ -16,7 +17,6 @@ if (isset($_POST['login_userid']) && (isset($_POST['login_password'])) && verify
     $result = tc_select("empfullname, employee_passwd, reports", "employees", "empfullname = ?", $login_userid);
 
     while ($row = mysqli_fetch_array($result)) {
-
         $reports_username = "" . $row['empfullname'] . "";
         $reports_password = "" . $row['employee_passwd'] . "";
         $reports_auth = "" . $row['reports'] . "";
@@ -29,15 +29,12 @@ if (isset($_POST['login_userid']) && (isset($_POST['login_password'])) && verify
         tc_maybe_upgrade_password($reports_username, $login_password, $reports_password);
         regenerate_csrf_token();
     }
-
 }
 
 if (isset($_SESSION['valid_reports_user'])) {
     echo "<script type='text/javascript' language='javascript'> window.location.href = 'reports/index.php';</script>";
     exit;
-
 } else {
-
     // build form
 
     echo "<form name='auth' method='post' action='$self'>\n";
@@ -58,4 +55,3 @@ if (isset($_SESSION['valid_reports_user'])) {
 
 echo "</body>\n";
 echo "</html>\n";
-?>

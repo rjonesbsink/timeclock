@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 include '../config.inc.php';
@@ -16,9 +17,7 @@ require_valid_user();
 require_once '../lib/csrf.php';
 
 if ($request == 'GET') {
-
     if (!isset($_GET['username'])) {
-
         echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
         echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Error!</td></tr>\n";
         echo "  <tr class=right_main_text>\n";
@@ -87,7 +86,6 @@ if ($request == 'GET') {
     $result = tc_select("*", "employees", "empfullname = ? ORDER BY empfullname", $get_user);
 
     while ($row = mysqli_fetch_array($result)) {
-
         $username = "" . $row['empfullname'] . "";
         $displayname = "" . $row['displayname'] . "";
         $user_email = "" . $row['email'] . "";
@@ -181,7 +179,6 @@ if ($request == 'GET') {
     include '../footer.php';
     exit;
 } elseif ($request == 'POST') {
-
     require_csrf_token();
 
     $post_username = $_POST['post_username'];
@@ -197,35 +194,40 @@ if ($request == 'GET') {
 
     // begin post validation //
 
-    if (!empty($post_username)
+    if (
+        !empty($post_username)
          and is_null(tc_select_value("empfullname", "employees", "empfullname = ?", $post_username))
     ) {
         echo MSG_SOMETHING_FISHY;
         exit;
     }
 
-    if (!empty($display_name)
+    if (
+        !empty($display_name)
          and is_null(tc_select_value("displayname", "employees", "empfullname = ? AND displayname = ?", array($post_username, $display_name)))
     ) {
         echo MSG_SOMETHING_FISHY;
         exit;
     }
 
-    if (!empty($email_addy)
+    if (
+        !empty($email_addy)
          and is_null(tc_select_value("email", "employees", "empfullname = ? AND email = ?", array($post_username, $email_addy)))
     ) {
         echo MSG_SOMETHING_FISHY;
         exit;
     }
 
-    if (!empty($office_name)
+    if (
+        !empty($office_name)
          and is_null(tc_select_value("office", "employees", "empfullname = ? AND office = ?", array($post_username, $office_name)))
     ) {
         echo MSG_SOMETHING_FISHY;
         exit;
     }
 
-    if (!empty($group_name)
+    if (
+        !empty($group_name)
          and is_null(tc_select_value("groups", "employees", "empfullname = ? AND groups = ?", array($post_username, $group_name)))
     ) {
         echo MSG_SOMETHING_FISHY;
@@ -366,4 +368,3 @@ if ($request == 'GET') {
     include '../footer.php';
     exit;
 }
-?>

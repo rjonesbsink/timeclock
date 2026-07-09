@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 include '../config.inc.php';
@@ -60,4 +61,3 @@ echo "          <td valign=top>\n";
 
 include '../templates/admin_index_tpl.php';
 include '../footer.php';
-?>

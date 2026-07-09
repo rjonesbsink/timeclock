@@ -12,18 +12,18 @@
 
         @$office_name = $_POST['office_name'];
 
-        $query = "select * from ".$db_prefix."offices";
+        $query = "select * from " . $db_prefix . "offices";
         $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
 
-        $cnt=1;
-        while ($row=mysqli_fetch_array($result)) {
-          if ("".$row['officename']."" == stripslashes($office_name)) {
-          echo "select.options[$cnt] = new Option(\"".$row['officename']."\",\"".$row['officename']."\", true, true);\n";
-          } else {
-          echo "select.options[$cnt] = new Option(\"".$row['officename']."\");\n";
-          echo "select.options[$cnt].value = \"".$row['officename']."\";\n";
-          }
-          $cnt++;
+        $cnt = 1;
+        while ($row = mysqli_fetch_array($result)) {
+            if ("" . $row['officename'] . "" == stripslashes($office_name)) {
+                echo "select.options[$cnt] = new Option(\"" . $row['officename'] . "\",\"" . $row['officename'] . "\", true, true);\n";
+            } else {
+                echo "select.options[$cnt] = new Option(\"" . $row['officename'] . "\");\n";
+                echo "select.options[$cnt].value = \"" . $row['officename'] . "\";\n";
+            }
+            $cnt++;
         }
         ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
         ?>
@@ -46,32 +46,32 @@
         <?php
         @$group_name = $_POST['group_name'];
 
-        $query = "select * from ".$db_prefix."offices";
+        $query = "select * from " . $db_prefix . "offices";
         $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
 
-        while ($row=mysqli_fetch_array($result)) {
-        $office_row = addslashes("".$row['officename']."");
-        ?>
+        while ($row = mysqli_fetch_array($result)) {
+            $office_row = addslashes("" . $row['officename'] . "");
+            ?>
 
         if (offices_select.options[offices_select.selectedIndex].text == "<?php echo $office_row; ?>") {
             <?php
-            $query2 = "select * from ".$db_prefix."offices, ".$db_prefix."groups where ".$db_prefix."groups.officeid = ".$db_prefix."offices.officeid
-                       and ".$db_prefix."offices.officename = '".$office_row."'";
+            $query2 = "select * from " . $db_prefix . "offices, " . $db_prefix . "groups where " . $db_prefix . "groups.officeid = " . $db_prefix . "offices.officeid
+                       and " . $db_prefix . "offices.officename = '" . $office_row . "'";
             $result2 = mysqli_query($GLOBALS["___mysqli_ston"], $query2);
             echo "groups_select.options[0] = new Option(\"All\");\n";
             echo "groups_select.options[0].value = 'All';\n";
             $cnt = 1;
 
-            while ($row2=mysqli_fetch_array($result2)) {
-              $groups = "".$row2['groupname']."";
-              echo "groups_select.options[$cnt] = new Option(\"$groups\");\n";
-              echo "groups_select.options[$cnt].value = \"$groups\";\n";
-              $cnt++;
+            while ($row2 = mysqli_fetch_array($result2)) {
+                $groups = "" . $row2['groupname'] . "";
+                echo "groups_select.options[$cnt] = new Option(\"$groups\");\n";
+                echo "groups_select.options[$cnt].value = \"$groups\";\n";
+                $cnt++;
             }
 
             ?>
         }
-        <?php
+            <?php
         }
         ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
         ((mysqli_free_result($result2) || (is_object($result2) && (get_class($result2) == "mysqli_result"))) ? true : false);
@@ -109,25 +109,25 @@
 
         <?php
 
-        $query = "select * from ".$db_prefix."offices order by officename asc";
+        $query = "select * from " . $db_prefix . "offices order by officename asc";
         $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
 
-        while ($row=mysqli_fetch_array($result)) {
-        $office_row = addslashes("".$row['officename']."");
-        ?>
+        while ($row = mysqli_fetch_array($result)) {
+            $office_row = addslashes("" . $row['officename'] . "");
+            ?>
         if (offices_select.options[offices_select.selectedIndex].text == "<?php echo $office_row; ?>") {
             <?php
-            $query2 = "select * from ".$db_prefix."offices, ".$db_prefix."groups where ".$db_prefix."groups.officeid = ".$db_prefix."offices.officeid
-                       and ".$db_prefix."offices.officename = '".$office_row."'
-                       order by ".$db_prefix."groups.groupname asc";
+            $query2 = "select * from " . $db_prefix . "offices, " . $db_prefix . "groups where " . $db_prefix . "groups.officeid = " . $db_prefix . "offices.officeid
+                       and " . $db_prefix . "offices.officename = '" . $office_row . "'
+                       order by " . $db_prefix . "groups.groupname asc";
             $result2 = mysqli_query($GLOBALS["___mysqli_ston"], $query2);
-            while ($row2=mysqli_fetch_array($result2)) {
-            $groups = "".$row2['groupname']."";
-            ?>
+            while ($row2 = mysqli_fetch_array($result2)) {
+                $groups = "" . $row2['groupname'] . "";
+                ?>
 
             if (groups_select.options[groups_select.selectedIndex].text == "<?php echo $groups; ?>") {
                 <?php
-                $query3 = "select * from ".$db_prefix."employees where office = '".$office_row."' and groups = '".$groups."' and empfullname <> 'admin'
+                $query3 = "select * from " . $db_prefix . "employees where office = '" . $office_row . "' and groups = '" . $groups . "' and empfullname <> 'admin'
                            order by empfullname asc";
                 $result3 = mysqli_query($GLOBALS["___mysqli_ston"], $query3);
 
@@ -135,19 +135,19 @@
                 echo "users_select.options[0].value = 'All';\n";
                 $usercnt = 1;
 
-                while ($row3=mysqli_fetch_array($result3)) {
-                $users = "".$row3['empfullname']."";
-                echo "users_select.options[$usercnt] = new Option(\"$users\");\n";
-                echo "users_select.options[$usercnt].value = \"$users\";\n";
-                $usercnt++;
+                while ($row3 = mysqli_fetch_array($result3)) {
+                    $users = "" . $row3['empfullname'] . "";
+                    echo "users_select.options[$usercnt] = new Option(\"$users\");\n";
+                    echo "users_select.options[$usercnt].value = \"$users\";\n";
+                    $usercnt++;
                 } // ends while $row3 for users
                 ?>
             }
-            <?php
+                <?php
             } // ends while $row2 for groups
             ?>
         }
-        <?php
+            <?php
         }// ends while $row for offices
         ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
         ((mysqli_free_result($result2) || (is_object($result2) && (get_class($result2) == "mysqli_result"))) ? true : false);

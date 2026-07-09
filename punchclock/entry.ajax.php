@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Punchclock entry form.
  *
@@ -64,7 +65,7 @@ if ($authorized_to_post_time && isset($_POST['inout'])) {
 
     // Validate and get inout display color.
     $punchlist_result = tc_select("color", "punchlist", "punchitems = ?", $inout);
-    $inout_color = mysqli_result($punchlist_result,  0,  0);
+    $inout_color = mysqli_result($punchlist_result, 0, 0);
     if (!$inout_color) {
         #print error_msg("In/Out Status is not in the database.");
         trigger_error('In/Out Status is not in the database.', E_USER_WARNING);
@@ -124,7 +125,6 @@ if ($use_passwd == 'yes') {
     }
 
     if ((!$authenticated || !$authorized_to_enter_time) && $password) {
-
         // Validate password
         if (!verify_csrf_token()) {
             print error_msg("Your session has expired. Please try again.");
@@ -139,7 +139,6 @@ if ($use_passwd == 'yes') {
     }
 
     if (!$authenticated || !$authorized_to_enter_time) {
-
         // Security: make sure no one is already authenticated before displaying password screen.
         unset($_SESSION['authenticated']);
         unset($_SESSION['authorized_to_enter_time']);
@@ -195,7 +194,6 @@ if (isset($_SESSION['authorized_to_enter_time'])) {
 }
 
 if ($punchclock_display_timecard == 'yes') {
-
     // Summarize employee hours for the current week.
     list ($today_hours, $week_hours, $overtime_hours) = current_week_hours($empfullname);
     if ($timecard_display_hours_minutes == 'yes') {

@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 include_once '../config.inc.php';
@@ -17,9 +18,7 @@ require_valid_user();
 require_once '../lib/csrf.php';
 
 if ($request == 'GET') {
-
     if (!isset($_GET['statusname'])) {
-
         echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
         echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Error!</td></tr>\n";
         echo "  <tr class=right_main_text>\n";
@@ -122,7 +121,7 @@ if ($request == 'GET') {
 
     echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>On Punch Become:</td><td colspan=2 width=80%
                       style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'><select name='punchnext'>\n";
-    echo "            <option value =''>...</option>" . html_options(tc_select("punchitems",  "punchlist"), $punchnext) . "</select></td></tr>\n";
+    echo "            <option value =''>...</option>" . html_options(tc_select("punchitems", "punchlist"), $punchnext) . "</select></td></tr>\n";
 
     echo "              <tr><td class=table_rows align=right colspan=3 style='color:red;font-family:Tahoma;font-size:10px;'>*&nbsp;required&nbsp;</td></tr>\n";
     echo "            </table>\n";
@@ -137,7 +136,6 @@ if ($request == 'GET') {
     include_once FOOTER_PHP;
     exit;
 } elseif ($request == 'POST') {
-
     require_csrf_token();
 
     $get_status = $_POST['get_status'];
@@ -170,11 +168,16 @@ if ($request == 'GET') {
     $string  = strstr($post_statusname, "'");
     $string2 = strstr($post_statusname, "\"");
 
-    if ((empty($post_statusname)) || (empty($post_color)) || (!preg_match('/' . "^([[:alnum:]]| |-|_|.)+$" . '/i', $post_statusname)) ||
-        ((!preg_match('/' . "^(#[a-fA-F0-9]{6})+$" . '/i', $post_color)) && (!preg_match('/' . "^([a-fA-F0-9]{6})+$" . '/i', $post_color))) || (!empty($string)) || (!empty($string2))
-        || !$punchnext_ok
+    if (
+        (empty($post_statusname)) ||
+        (empty($post_color)) ||
+        (!preg_match('/' . "^([[:alnum:]]| |-|_|.)+$" . '/i', $post_statusname)) ||
+        ((!preg_match('/' . "^(#[a-fA-F0-9]{6})+$" . '/i', $post_color)) &&
+        (!preg_match('/' . "^([a-fA-F0-9]{6})+$" . '/i', $post_color))) ||
+        (!empty($string)) ||
+        (!empty($string2)) ||
+        !$punchnext_ok
     ) {
-
         echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
         echo "  <tr valign=top>\n";
         echo "    <td class=left_main width=180 align=left scope=col>\n";
@@ -299,7 +302,7 @@ if ($request == 'GET') {
 
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>On Punch Become:</td><td colspan=2 width=80%
                           style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'><select name='punchnext'>\n";
-        echo "            <option value =''>...</option>" . html_options(tc_select("punchitems",  "punchlist"), $punchnext) . "</select></td></tr>\n";
+        echo "            <option value =''>...</option>" . html_options(tc_select("punchitems", "punchlist"), $punchnext) . "</select></td></tr>\n";
 
         echo "              <tr><td class=table_rows align=right colspan=3 style='color:red;font-family:Tahoma;font-size:10px;'>*&nbsp;required&nbsp;</td></tr>\n";
         echo "            </table>\n";
@@ -313,9 +316,7 @@ if ($request == 'GET') {
                   <td><a href='statusadmin.php'><img src='../images/buttons/cancel_button.png' border='0'></td></tr></table></form></td></tr>\n";
         include_once FOOTER_PHP;
         exit;
-
     } else {
-
         tc_update_strings(
             "punchlist",
             array(
@@ -324,14 +325,16 @@ if ($request == 'GET') {
                 "in_or_out"  => $create_status,
                 "punchnext"  => $punchnext
             ),
-            WHERE_PUNCHITEMS, $get_status
+            WHERE_PUNCHITEMS,
+            $get_status
         );
 
         if ($post_statusname != $get_status) {
             tc_update_strings(
                 "info",
                 array("inout" => $post_statusname),
-                "`inout` = ?", $get_status
+                "`inout` = ?",
+                $get_status
             );
         }
 
@@ -422,4 +425,3 @@ if ($request == 'GET') {
     }
     include_once FOOTER_PHP;
 }
-?>

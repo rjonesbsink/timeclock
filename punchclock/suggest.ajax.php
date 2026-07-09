@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Supply suggestions for employee names.
  *
@@ -31,4 +32,3 @@ if (!$result) {
 while ($row = mysqli_fetch_assoc($result)) {
     print $row['displayname'] . "\n";
 }
-?>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Timecard functions.
  */
@@ -10,7 +11,8 @@ require_once 'class.Timecard.php';
 const HOURS_FORMAT = "%01.02f";
 
 ////////////////////////////////////////
-function current_week_hours($empfullname) {
+function current_week_hours($empfullname)
+{
     global $one_week;
     $begin_local_timestamp = work_week_begin();
     $end_local_timestamp = $begin_local_timestamp + $one_week;
@@ -21,7 +23,8 @@ function current_week_hours($empfullname) {
 }
 
 ////////////////////////////////////////
-function timecard_html($empfullname, $local_timestamp_in_week) {
+function timecard_html($empfullname, $local_timestamp_in_week)
+{
     // Return html of employee's timecard.
     global $show_display_name, $one_week;
 
@@ -30,7 +33,8 @@ function timecard_html($empfullname, $local_timestamp_in_week) {
     $end_local_timestamp = $begin_local_timestamp + $one_week;
 
     // Define helper functions for printing timecard header, footer, and for printing every row.
-    function print_header($tc) {
+    function print_header($tc)
+    {
         // Print timecard html header.
         global $overtime_week_limit, $timecard_display_running_total;
 
@@ -52,7 +56,8 @@ function timecard_html($empfullname, $local_timestamp_in_week) {
 End_Of_HTML;
     }
 
-    function print_row($tc) {
+    function print_row($tc)
+    {
         // Configuration variables.
         global $timefmt, $datefmt;
         global $overtime_week_limit, $timecard_list_punch_outs, $timecard_display_hours_minutes;
@@ -99,7 +104,8 @@ End_Of_HTML;
         }
     }
 
-    function print_footer($tc) {
+    function print_footer($tc)
+    {
         global $timecard_display_running_total, $timecard_hours_include_overtime;
         global $timecard_display_hours_minutes, $overtime_week_limit;
 
@@ -174,5 +180,3 @@ End_Of_HTML;
 
 End_Of_HTML;
 }
-
-?>

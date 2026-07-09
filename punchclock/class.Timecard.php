@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Timecard object for an employee for one work week (or less).
  */
@@ -6,36 +7,40 @@
 require_once 'config.inc.php';
 require_once 'lib.common.php';
 
-class Timecard {
-    var $empfullname; // employee id of timecard
-    var $begin_local_timestamp; // beginning of timecard week
-    var $end_local_timestamp; // end of timecard week
+class Timecard
+{
+    public $empfullname; // employee id of timecard
+    public $begin_local_timestamp; // beginning of timecard week
+    public $end_local_timestamp; // end of timecard week
 
-    var $row; // current database row values
-    var $next_row; // previous database row values
+    public $row; // current database row values
+    public $next_row; // previous database row values
 
-    var $in_or_out; // 1: in, 0: out
-    var $start_time; // start time of individual time records
-    var $end_time; // end time of individual time records
-    var $hours; // regular hours of current record
-    var $overtime; // overtime hours of current record
+    public $in_or_out; // 1: in, 0: out
+    public $start_time; // start time of individual time records
+    public $end_time; // end time of individual time records
+    public $hours; // regular hours of current record
+    public $overtime; // overtime hours of current record
 
-    var $today_hours; // number of hours worked today
-    var $week_hours; // sum of regular hours
-    var $overtime_hours; // sum of overtime hours
-    var $total_hours; // total of regular hours and overtime hours
+    public $today_hours; // number of hours worked today
+    public $week_hours; // sum of regular hours
+    public $overtime_hours; // sum of overtime hours
+    public $total_hours; // total of regular hours and overtime hours
 
-    function __construct($empfullname, $begin_local_timestamp, $end_local_timestamp) {
+    public function __construct($empfullname, $begin_local_timestamp, $end_local_timestamp)
+    {
         $this->empfullname = $empfullname;
         $this->begin_local_timestamp = $begin_local_timestamp;
         $this->end_local_timestamp = $end_local_timestamp;
     }
 
-    function tally() {
+    public function tally()
+    {
         return $this->walk();
     }
 
-    function walk($onBefore = null, $onEveryRow = null, $onAfter = null) {
+    public function walk($onBefore = null, $onEveryRow = null, $onAfter = null)
+    {
 
         // Search employee time records and walk through them.
         // The beginning time $begin_local_timestamp, a local timestamp, must be set
@@ -75,7 +80,7 @@ class Timecard {
 
         if ($this->begin_local_timestamp < $local_timestamp) {
             // Get previous record to timecard to see if employee is already signed in at beginning of the period.
-            $result = tc_query($this->_query_prev_record($begin_utm_timestamp), $this->empfullname)
+            $result = tc_query($this->queryPrevRecord($begin_utm_timestamp), $this->empfullname)
             or trigger_error('Timecard->walk: no previous result: ' . mysqli_error($GLOBALS["___mysqli_ston"]), E_USER_WARNING);
 
             if ($result && mysqli_num_rows($result) > 0) {
@@ -84,7 +89,8 @@ class Timecard {
                     $row_count++;
 
                     // Initialize
-                    $this->start_time = day_timestamp($this->begin_local_timestamp);;
+                    $this->start_time = day_timestamp($this->begin_local_timestamp);
+                    ;
                     $this->in_or_out = $this->row['in_or_out'];
                     $this->row['notes'] = "(cont.)"; // add note
 
@@ -98,7 +104,7 @@ class Timecard {
         }
 
         // Get timecard entries.
-        $query = $this->_query($begin_utm_timestamp, $end_utm_timestamp);
+        $query = $this->query($begin_utm_timestamp, $end_utm_timestamp);
         $result = tc_query($query, $this->empfullname)
         or trigger_error('Timecard->walk: no result: ' . mysqli_error($GLOBALS["___mysqli_ston"]), E_USER_WARNING);
 
@@ -195,7 +201,8 @@ class Timecard {
     }
 
     // Private methods.
-    function _query($begin_utm_timestamp, $end_utm_timestamp) {
+    private function query($begin_utm_timestamp, $end_utm_timestamp)
+    {
         // Find records on an employee's timecard
         global $db_prefix, $default_in_or_out;
 
@@ -217,7 +224,8 @@ order by {$db_prefix}info.timestamp
 End_Of_SQL;
     }
 
-    function _query_prev_record($begin_utm_timestamp) {
+    private function queryPrevRecord($begin_utm_timestamp)
+    {
         // Find previous record to those selelected for an employee's timecard
         global $db_prefix, $default_in_or_out;
 
@@ -239,5 +247,3 @@ limit 1
 End_Of_SQL;
     }
 }
-
-?>

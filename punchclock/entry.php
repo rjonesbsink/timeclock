@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Enter punch-in/out time.
  *
@@ -81,7 +82,7 @@ if ($authorized && isset($_POST['inout'])) {
 
         // Validate and get inout display color.
         $punchlist_result = tc_select("color", "punchlist", "punchitems = ?", $inout);
-        $inout_color = mysqli_result($punchlist_result,  0,  0);
+        $inout_color = mysqli_result($punchlist_result, 0, 0);
         if (!$inout_color) {
             #print error_msg("In/Out Status is not in the database.");
             trigger_error('In/Out Status is not in the database.', E_USER_WARNING);
@@ -113,7 +114,6 @@ if ($authorized && isset($_POST['inout'])) {
 $PAGE_TITLE = "My Time Entry - $title";
 
 if ($entry_display_timecard == 'yes') {
-
     // Summarize employee hours for the current week.
     list ($today_hours, $week_hours, $overtime_hours) = current_week_hours($empfullname);
     if ($timecard_display_hours_minutes == 'yes') {

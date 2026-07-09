@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<ruleset name="Timeclock">
+    <description>PSR-12 coding style for the PHP Timeclock codebase.</description>
+
+    <!--
+    This is a procedural, namespace-free codebase; punchclock/class.Timecard.php
+    is its only class. Namespacing that one class would mean introducing
+    namespacing conventions nowhere else in the app, so this sniff is
+    excluded rather than fixed.
+    -->
+    <rule ref="PSR12">
+        <exclude name="PSR1.Classes.ClassDeclaration.MissingNamespace"/>
+    </rule>
+
+    <file>.</file>
+
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+    <exclude-pattern>*/timeclock/timeclock/*</exclude-pattern>
+
+    <arg name="extensions" value="php"/>
+    <arg value="p"/>
+</ruleset>

@@ -19,7 +19,7 @@ Add to timeclock configuration variables.
 $TIMECLOCK_PATH = isset($ENV['TIMECLOCK_PATH']) ? $ENV['TIMECLOCK_PATH'] : '..';
 
 /* The $TIMECLOCK_URL needs to be set to the url of the timeclock.php
- * program. The $TIMECLOCK_URL is used by browser to display images and such. 
+ * program. The $TIMECLOCK_URL is used by browser to display images and such.
  * The default is "..", the directory just above this punchclock program directory. */
 
 $TIMECLOCK_URL = isset($ENV['TIMECLOCK_URL']) ? $ENV['TIMECLOCK_URL'] : '..';
@@ -33,7 +33,7 @@ $TIMECLOCK_URL = isset($ENV['TIMECLOCK_URL']) ? $ENV['TIMECLOCK_URL'] : '..';
 
 $punchclock_refresh = "60";
 
-/* Allow users to select the offices from a drop-down menu on the punchclock screen. 
+/* Allow users to select the offices from a drop-down menu on the punchclock screen.
    The default value is "yes". */
 
 $punchclock_select_offices = "yes";
@@ -81,7 +81,7 @@ $begin_week_day = 0;
 
 $timecard_list_punch_outs = "yes";
 
-/* Time can be displayed as a decimal hours (e.g. 1.50) or as hours and minutes (e.g. 1:30) 
+/* Time can be displayed as a decimal hours (e.g. 1.50) or as hours and minutes (e.g. 1:30)
    depending upon the setting of $timecard_display_hours_minutes. If it is set to "yes",
    time is shown as hours and minutes like 12:45. The default is "yes". */
 
@@ -121,5 +121,3 @@ include "$TIMECLOCK_PATH/config.inc.php";
 // Time constants
 $one_day = (24 * 60 * 60); // number of timestamp units (seconds) in a day
 $one_week = (7 * 24 * 60 * 60); // number of timestamp units (seconds) in a week
-
-?>

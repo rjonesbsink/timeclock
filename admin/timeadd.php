@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 include_once '../config.inc.php';
@@ -31,9 +32,7 @@ require_time_admin();
 require_once '../lib/csrf.php';
 
 if ($request == 'GET') {
-
     if (!isset($_GET['username'])) {
-
         echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
         echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Error!</td></tr>\n";
         echo "  <tr class=right_main_text>\n";
@@ -101,7 +100,6 @@ if ($request == 'GET') {
     $result = tc_select("*", "employees", "empfullname = ? order by empfullname", $get_user);
 
     while ($row = mysqli_fetch_array($result)) {
-
         $username = stripslashes("" . $row['empfullname'] . "");
         $displayname = stripslashes("" . $row['displayname'] . "");
     }
@@ -172,7 +170,6 @@ if ($request == 'GET') {
     include_once FOOTER_PHP;
     exit;
 } elseif ($request == 'POST') {
-
     require_csrf_token();
 
     $get_user = stripslashes($_POST['get_user']);
@@ -228,7 +225,6 @@ if ($request == 'GET') {
 
     if (!empty($post_statusname)) {
         if ($post_statusname != '1') {
-
             $result = tc_select("*", "punchlist", "punchitems = ?", $post_statusname);
 
             while ($row = mysqli_fetch_array($result)) {
@@ -329,7 +325,8 @@ if ($request == 'GET') {
     echo "        <tr class=right_main_text>\n";
     echo "          <td valign=top>\n";
     echo "            <br />\n";
-    if ((empty($post_date)) || (empty($post_time)) || ($post_statusname == '1') || (!preg_match('/' . "^([[:alnum:]]| |-|_|\.)+$" . '/i', $post_statusname)) ||
+    if (
+        (empty($post_date)) || (empty($post_time)) || ($post_statusname == '1') || (!preg_match('/' . "^([[:alnum:]]| |-|_|\.)+$" . '/i', $post_statusname)) ||
         (!preg_match(DATE_PATTERN, $post_date))
     ) {
         $evil_post = '1';
@@ -358,12 +355,13 @@ if ($request == 'GET') {
                     Alphanumeric characters, hyphens, underscores, spaces, and periods are allowed in a Status Name.</td></tr>\n";
             echo "            </table>\n";
         }
-    } // end if
-
-    elseif ($timefmt_24hr == '0') {
-
-        if ((!preg_match('/' . "^([0-9]?[0-9])+:+([0-9]+[0-9])+([a|p]+m)$" . '/i', $post_time, $time_regs)) && (!preg_match('/' . "^([0-9]?[0-9])+:+([0-9]+[0-9])+( [a|p]+m)$" . '/i', $post_time,
-                                                                                                     $time_regs))
+    } elseif ($timefmt_24hr == '0') {
+        if (
+            (!preg_match('/' . "^([0-9]?[0-9])+:+([0-9]+[0-9])+([a|p]+m)$" . '/i', $post_time, $time_regs)) && (!preg_match(
+                '/' . "^([0-9]?[0-9])+:+([0-9]+[0-9])+( [a|p]+m)$" . '/i',
+                $post_time,
+                $time_regs
+            ))
         ) {
             $evil_time = '1';
             echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
@@ -371,9 +369,7 @@ if ($request == 'GET') {
             echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
                     A valid Time is required.</td></tr>\n";
             echo "            </table>\n";
-
         } else {
-
             if (isset($time_regs)) {
                 $h = $time_regs[1];
                 $m = $time_regs[2];
@@ -397,9 +393,7 @@ if ($request == 'GET') {
             echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
                     A valid Time is required.</td></tr>\n";
             echo "            </table>\n";
-
         } else {
-
             if (isset($time_regs)) {
                 $h = $time_regs[1];
                 $m = $time_regs[2];
@@ -517,9 +511,7 @@ if ($request == 'GET') {
                       border='0'></td></tr></table></form></td></tr>\n";
         include_once FOOTER_PHP;
         exit;
-
     } else {
-
         $post_username = addslashes($post_username);
         $post_displayname = addslashes($post_displayname);
 
@@ -542,7 +534,6 @@ if ($request == 'GET') {
         $post_displayname = stripslashes($post_displayname);
 
         while ($row = mysqli_fetch_array($result)) {
-
             $info_table_timestamp = "" . $row['timestamp'] . "";
             if ($timestamp == $info_table_timestamp) {
                 echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
@@ -720,4 +711,3 @@ colspan=2 width=80% style='padding-left:20px;'>$post_notes</td></tr>\n";
         exit;
     }
 }
-?>
