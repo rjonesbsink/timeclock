@@ -9,6 +9,8 @@ echo "<title>$title - Edit Time</title>\n";
 $self = $_SERVER['PHP_SELF'];
 $request = $_SERVER['REQUEST_METHOD'];
 
+const WHERE_EMPFULLNAME = "empfullname = ?";
+
 if (($timefmt == "G:i") || ($timefmt == "H:i")) {
     $timefmt_24hr = '1';
     $timefmt_24hr_text = '24 hr format';
@@ -172,7 +174,7 @@ if ($request == 'GET') {
     // begin post validation //
 
     if (!empty($get_user)) {
-        $result = tc_select("*", "employees", "empfullname = ?", $get_user);
+        $result = tc_select("*", "employees", WHERE_EMPFULLNAME, $get_user);
         while ($row = mysqli_fetch_array($result)) {
             $tmp_get_user = "" . $row['empfullname'] . "";
         }
@@ -183,7 +185,7 @@ if ($request == 'GET') {
     }
 
     if (!empty($post_username)) {
-        $result = tc_select("*", "employees", "empfullname = ?", $post_username);
+        $result = tc_select("*", "employees", WHERE_EMPFULLNAME, $post_username);
         while ($row = mysqli_fetch_array($result)) {
             $tmp_username = "" . $row['empfullname'] . "";
         }
@@ -616,7 +618,7 @@ if ($request == 'GET') {
 
                         $row_color = ($row_count % 2) ? $color1 : $color2;
 
-                        $result = tc_select("*", "employees", "empfullname = ?", $final_username[$x]);
+                        $result = tc_select("*", "employees", WHERE_EMPFULLNAME, $final_username[$x]);
 
                         while ($row = mysqli_fetch_array($result)) {
                             $tmp_tstamp = "" . $row['tstamp'] . "";
@@ -634,7 +636,7 @@ if ($request == 'GET') {
                         $new_tstamp[$x] = strtotime($post_date . " " . $edit_time_textbox[$x]) - $tzo;
 
                         if ($new_tstamp[$x] > $tmp_tstamp) {
-                            tc_update_strings("employees", array("tstamp" => $new_tstamp[$x]), "empfullname = ?", $final_username[$x]);
+                            tc_update_strings("employees", array("tstamp" => $new_tstamp[$x]), WHERE_EMPFULLNAME, $final_username[$x]);
 
                         } elseif ($new_tstamp[$x] < $tmp_tstamp) {
 
@@ -645,9 +647,9 @@ if ($request == 'GET') {
                             }
 
                             if ($new_tstamp[$x] > @$tmp_tstamp_2) {
-                                tc_update_strings("employees", array("tstamp" => $new_tstamp[$x]), "empfullname = ?", $final_username[$x]);
+                                tc_update_strings("employees", array("tstamp" => $new_tstamp[$x]), WHERE_EMPFULLNAME, $final_username[$x]);
                             } elseif ($new_tstamp[$x] < @$tmp_tstamp_2) {
-                                tc_update_strings("employees", array("tstamp" => $tmp_tstamp_2), "empfullname = ?", $final_username[$x]);
+                                tc_update_strings("employees", array("tstamp" => $tmp_tstamp_2), WHERE_EMPFULLNAME, $final_username[$x]);
                             }
                         }
 

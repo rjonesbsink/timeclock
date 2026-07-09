@@ -4,6 +4,8 @@ session_start();
 $self = $_SERVER['PHP_SELF'];
 $request = $_SERVER['REQUEST_METHOD'];
 
+const WHERE_OFFICE_AND_GROUPS = "office = ? and groups = ?";
+
 include '../config.inc.php';
 if ($request !== 'POST') {
     include 'header_get.php';
@@ -114,7 +116,7 @@ if ($request == 'GET') {
         exit;
     }
 
-    $result2 = tc_select("*", "employees", "office = ? and groups = ?", array($get_office, $get_group));
+    $result2 = tc_select("*", "employees", WHERE_OFFICE_AND_GROUPS, array($get_office, $get_group));
     @$user_cnt = mysqli_num_rows($result2);
 
     if ($user_cnt > 0) {
@@ -251,7 +253,7 @@ if ($request == 'GET') {
         }
     }
 
-    $result = tc_select("*", "employees", "office = ? and groups = ?", array($post_officename, $post_groupname));
+    $result = tc_select("*", "employees", WHERE_OFFICE_AND_GROUPS, array($post_officename, $post_groupname));
     @$tmp_user_cnt = mysqli_num_rows($result);
 
     if ($user_cnt != $tmp_user_cnt) {
@@ -402,7 +404,7 @@ if ($request == 'GET') {
             tc_update_strings(
                 "employees",
                 array("office" => $office_name, "groups" => $group_name),
-                "office = ? and groups = ?",
+                WHERE_OFFICE_AND_GROUPS,
                 array($post_officename, $post_groupname)
             );
         }

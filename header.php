@@ -30,7 +30,7 @@ if ($restrict_ips == "yes") {
 
 // connect to db anc check for correct db version //
 
-require 'lib/db.php';
+require_once 'lib/db.php';
 
 $table = "dbversion";
 $result = mysqli_query($GLOBALS["___mysqli_ston"], "SHOW TABLES LIKE '" . $db_prefix . $table . "'");

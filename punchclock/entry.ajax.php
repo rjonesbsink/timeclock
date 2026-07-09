@@ -16,7 +16,7 @@ require_once "$TIMECLOCK_PATH/functions.php";
 //turn_off_magic_quotes();
 
 // Connect to db.
-require "$TIMECLOCK_PATH/lib/db.php";
+require_once "$TIMECLOCK_PATH/lib/db.php";
 
 // Parse arguments.
 $emp = isset($_GET['emp']) ? $_GET['emp'] : null;

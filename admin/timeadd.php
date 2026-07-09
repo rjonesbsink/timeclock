@@ -9,6 +9,10 @@ echo "<title>$title - Add Time</title>\n";
 $self = $_SERVER['PHP_SELF'];
 $request = $_SERVER['REQUEST_METHOD'];
 
+const WHERE_EMPFULLNAME = "empfullname = ?";
+const SELECT_ALL_FROM = "select * from ";
+const PUNCHLIST_ORDER_BY_PUNCHITEMS = "punchlist order by punchitems asc";
+
 if (($timefmt == "G:i") || ($timefmt == "H:i")) {
     $timefmt_24hr = '1';
     $timefmt_24hr_text = '24 hr format';
@@ -145,7 +149,7 @@ if ($request == 'GET') {
 
     // query to populate dropdown with statuses //
 
-    $query2 = "select * from " . $db_prefix . "punchlist order by punchitems asc";
+    $query2 = SELECT_ALL_FROM . $db_prefix . PUNCHLIST_ORDER_BY_PUNCHITEMS;
     $result2 = mysqli_query($GLOBALS["___mysqli_ston"], $query2);
 
     echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Status:</td><td colspan=2 width=80%
@@ -193,7 +197,7 @@ if ($request == 'GET') {
     // begin post validation //
 
     if (!empty($get_user)) {
-        $result = tc_select("*", "employees", "empfullname = ?", $get_user);
+        $result = tc_select("*", "employees", WHERE_EMPFULLNAME, $get_user);
         while ($row = mysqli_fetch_array($result)) {
             $tmp_get_user = "" . $row['empfullname'] . "";
         }
@@ -204,7 +208,7 @@ if ($request == 'GET') {
     }
 
     if (!empty($post_username)) {
-        $result = tc_select("*", "employees", "empfullname = ?", $post_username);
+        $result = tc_select("*", "employees", WHERE_EMPFULLNAME, $post_username);
         while ($row = mysqli_fetch_array($result)) {
             $tmp_username = "" . $row['empfullname'] . "";
         }
@@ -490,7 +494,7 @@ if ($request == 'GET') {
 
         // query to populate dropdown with statuses //
 
-        $query2 = "select * from " . $db_prefix . "punchlist order by punchitems asc";
+        $query2 = SELECT_ALL_FROM . $db_prefix . PUNCHLIST_ORDER_BY_PUNCHITEMS;
         $result2 = mysqli_query($GLOBALS["___mysqli_ston"], $query2);
 
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Status:</td><td colspan=2 width=80%
@@ -585,7 +589,7 @@ if ($request == 'GET') {
 
                 // query to populate dropdown with statuses //
 
-                $query2 = "select * from " . $db_prefix . "punchlist order by punchitems asc";
+                $query2 = SELECT_ALL_FROM . $db_prefix . PUNCHLIST_ORDER_BY_PUNCHITEMS;
                 $result2 = mysqli_query($GLOBALS["___mysqli_ston"], $query2);
 
                 echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Status:</td><td colspan=2 width=80%
@@ -624,14 +628,14 @@ if ($request == 'GET') {
         $post_username = addslashes($post_username);
         $post_displayname = addslashes($post_displayname);
 
-        $result = tc_select("*", "employees", "empfullname = ?", $post_username);
+        $result = tc_select("*", "employees", WHERE_EMPFULLNAME, $post_username);
 
         while ($row = mysqli_fetch_array($result)) {
             $employees_table_timestamp = "" . $row['tstamp'] . "";
         }
 
         if ($timestamp > $employees_table_timestamp) {
-            tc_update_strings("employees", array("tstamp" => $timestamp), "empfullname = ?", $post_username);
+            tc_update_strings("employees", array("tstamp" => $timestamp), WHERE_EMPFULLNAME, $post_username);
         }
 
         // determine who the authenticated user is for audit log

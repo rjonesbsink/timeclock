@@ -3,7 +3,7 @@
 include '../config.inc.php';
 include_once '../functions.php';
 
-require '../lib/db.php';
+require_once '../lib/db.php';
 
 if (($_GET['rpt'] == 'timerpt') && (isset($_GET['display_ip'])) && (isset($_GET['csv'])) && (isset($_GET['office'])) && (isset($_GET['group'])) &&
     (isset($_GET['fullname'])) && (isset($_GET['from'])) && (isset($_GET['to'])) && (isset($_GET['tzo']))

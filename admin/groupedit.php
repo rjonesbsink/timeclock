@@ -10,6 +10,12 @@ $self = $_SERVER['PHP_SELF'];
 $request = $_SERVER['REQUEST_METHOD'];
 $user_agent = $_SERVER['HTTP_USER_AGENT'];
 
+const WHERE_GROUP_AND_OFFICE_ORDER_BY_EMPFULLNAME = "groups = ? and office = ? order by empfullname";
+const WHERE_ADMIN_GROUP_AND_OFFICE = "admin = '1' and groups = ? and office = ?";
+const WHERE_TIME_ADMIN_GROUP_AND_OFFICE = "time_admin = '1' and groups = ? and office = ?";
+const WHERE_REPORTS_GROUP_AND_OFFICE = "reports = '1' and groups = ? and office = ?";
+const EMPLOYEE_COLUMNS = "empfullname, displayname, email, groups, office, admin, reports, time_admin, disabled";
+
 if (!isset($_SESSION['valid_user'])) {
 
     echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
@@ -161,16 +167,16 @@ if ($request == 'GET') {
     echo "              <tr><td width=30><input type='image' name='submit' value='Edit Group' src='../images/buttons/next_button.png'></td>
                   <td><a href='groupadmin.php'><img src='../images/buttons/cancel_button.png' border='0'></td></tr></table></form>\n";
 
-    $user_count = tc_select("empfullname", "employees", "groups = ? and office = ? order by empfullname", array($get_group, $get_office));
+    $user_count = tc_select("empfullname", "employees", WHERE_GROUP_AND_OFFICE_ORDER_BY_EMPFULLNAME, array($get_group, $get_office));
     @$user_count_rows = mysqli_num_rows($user_count);
 
-    $admin_count = tc_select("empfullname", "employees", "admin = '1' and groups = ? and office = ?", array($get_group, $get_office));
+    $admin_count = tc_select("empfullname", "employees", WHERE_ADMIN_GROUP_AND_OFFICE, array($get_group, $get_office));
     @$admin_count_rows = mysqli_num_rows($admin_count);
 
-    $time_admin_count = tc_select("empfullname", "employees", "time_admin = '1' and groups = ? and office = ?", array($get_group, $get_office));
+    $time_admin_count = tc_select("empfullname", "employees", WHERE_TIME_ADMIN_GROUP_AND_OFFICE, array($get_group, $get_office));
     @$time_admin_count_rows = mysqli_num_rows($time_admin_count);
 
-    $reports_count = tc_select("empfullname", "employees", "reports = '1' and groups = ? and office = ?", array($get_group, $get_office));
+    $reports_count = tc_select("empfullname", "employees", WHERE_REPORTS_GROUP_AND_OFFICE, array($get_group, $get_office));
     @$reports_count_rows = mysqli_num_rows($reports_count);
 
     if ($user_count_rows > '0') {
@@ -200,9 +206,9 @@ if ($request == 'GET') {
         $row_count = 0;
 
         $result = tc_select(
-            "empfullname, displayname, email, groups, office, admin, reports, time_admin, disabled",
+            EMPLOYEE_COLUMNS,
             "employees",
-            "groups = ? and office = ? order by empfullname",
+            WHERE_GROUP_AND_OFFICE_ORDER_BY_EMPFULLNAME,
             array($get_group, $get_office)
         );
 
@@ -534,16 +540,16 @@ if ($request == 'GET') {
         echo "              <tr><td width=30><input type='image' name='submit' value='Edit Group' src='../images/buttons/next_button.png'></td>
                   <td><a href='groupadmin.php'><img src='../images/buttons/cancel_button.png' border='0'></td></tr></table></form>\n";
 
-        $user_count = tc_select("empfullname", "employees", "groups = ? and office = ? order by empfullname", array($get_group, $get_office));
+        $user_count = tc_select("empfullname", "employees", WHERE_GROUP_AND_OFFICE_ORDER_BY_EMPFULLNAME, array($get_group, $get_office));
         @$user_count_rows = mysqli_num_rows($user_count);
 
-        $admin_count = tc_select("empfullname", "employees", "admin = '1' and groups = ? and office = ?", array($get_group, $get_office));
+        $admin_count = tc_select("empfullname", "employees", WHERE_ADMIN_GROUP_AND_OFFICE, array($get_group, $get_office));
         @$admin_count_rows = mysqli_num_rows($admin_count);
 
-        $time_admin_count = tc_select("empfullname", "employees", "time_admin = '1' and groups = ? and office = ?", array($get_group, $get_office));
+        $time_admin_count = tc_select("empfullname", "employees", WHERE_TIME_ADMIN_GROUP_AND_OFFICE, array($get_group, $get_office));
         @$time_admin_count_rows = mysqli_num_rows($time_admin_count);
 
-        $reports_count = tc_select("empfullname", "employees", "reports = '1' and groups = ? and office = ?", array($get_group, $get_office));
+        $reports_count = tc_select("empfullname", "employees", WHERE_REPORTS_GROUP_AND_OFFICE, array($get_group, $get_office));
         @$reports_count_rows = mysqli_num_rows($reports_count);
 
         if ($user_count_rows > '0') {
@@ -573,9 +579,9 @@ if ($request == 'GET') {
             $row_count = 0;
 
             $result = tc_select(
-                "empfullname, displayname, email, groups, office, admin, reports, time_admin, disabled",
+                EMPLOYEE_COLUMNS,
                 "employees",
-                "groups = ? and office = ? order by empfullname",
+                WHERE_GROUP_AND_OFFICE_ORDER_BY_EMPFULLNAME,
                 array($get_group, $get_office)
             );
 
@@ -693,16 +699,16 @@ if ($request == 'GET') {
         echo "              <tr><td><a href='groupadmin.php'><img src='../images/buttons/done_button.png'
                       border='0'></a></td></tr></table>\n";
 
-        $user_count = tc_select("empfullname", "employees", "groups = ? and office = ? order by empfullname", array($post_groupname, $post_officename));
+        $user_count = tc_select("empfullname", "employees", WHERE_GROUP_AND_OFFICE_ORDER_BY_EMPFULLNAME, array($post_groupname, $post_officename));
         @$user_count_rows = mysqli_num_rows($user_count);
 
-        $admin_count = tc_select("empfullname", "employees", "admin = '1' and groups = ? and office = ?", array($post_groupname, $post_officename));
+        $admin_count = tc_select("empfullname", "employees", WHERE_ADMIN_GROUP_AND_OFFICE, array($post_groupname, $post_officename));
         @$admin_count_rows = mysqli_num_rows($admin_count);
 
-        $time_admin_count = tc_select("empfullname", "employees", "time_admin = '1' and groups = ? and office = ?", array($post_groupname, $post_officename));
+        $time_admin_count = tc_select("empfullname", "employees", WHERE_TIME_ADMIN_GROUP_AND_OFFICE, array($post_groupname, $post_officename));
         @$time_admin_count_rows = mysqli_num_rows($time_admin_count);
 
-        $reports_count = tc_select("empfullname", "employees", "reports = '1' and groups = ? and office = ?", array($post_groupname, $post_officename));
+        $reports_count = tc_select("empfullname", "employees", WHERE_REPORTS_GROUP_AND_OFFICE, array($post_groupname, $post_officename));
         @$reports_count_rows = mysqli_num_rows($reports_count);
 
         if ($user_count_rows > '0') {
@@ -733,7 +739,7 @@ if ($request == 'GET') {
             $row_count = 0;
 
             $result = tc_select(
-                "empfullname, displayname, email, groups, office, admin, reports, time_admin, disabled",
+                EMPLOYEE_COLUMNS,
                 "employees",
                 "groups = ? order by empfullname",
                 $post_groupname

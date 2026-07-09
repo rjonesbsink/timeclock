@@ -17,7 +17,7 @@ if (!$search)
     exit;
 
 // Connect to db.
-require "$TIMECLOCK_PATH/lib/db.php";
+require_once "$TIMECLOCK_PATH/lib/db.php";
 
 // Search for employee names beginning with query
 require_once "$TIMECLOCK_PATH/functions.php";

@@ -9,6 +9,8 @@ echo "<title>$title - Delete Time</title>\n";
 $self = $_SERVER['PHP_SELF'];
 $request = $_SERVER['REQUEST_METHOD'];
 
+const WHERE_EMPFULLNAME = "empfullname = ?";
+
 if (($timefmt == "G:i") || ($timefmt == "H:i")) {
     $timefmt_24hr = '1';
     $timefmt_24hr_text = '24 hr format';
@@ -174,7 +176,7 @@ if ($request == 'GET') {
     // begin post validation //
 
     if (!empty($get_user)) {
-        $result = tc_select("*", "employees", "empfullname = ?", $get_user);
+        $result = tc_select("*", "employees", WHERE_EMPFULLNAME, $get_user);
         while ($row = mysqli_fetch_array($result)) {
             $tmp_get_user = "" . $row['empfullname'] . "";
         }
@@ -185,7 +187,7 @@ if ($request == 'GET') {
     }
 
     if (!empty($post_username)) {
-        $result = tc_select("*", "employees", "empfullname = ?", $post_username);
+        $result = tc_select("*", "employees", WHERE_EMPFULLNAME, $post_username);
         while ($row = mysqli_fetch_array($result)) {
             $tmp_username = "" . $row['empfullname'] . "";
         }
@@ -465,7 +467,7 @@ if ($request == 'GET') {
 
                     //if (!get_magic_quotes_gpc()) {$final_username[$x] = addslashes($final_username[$x]);}
 
-                    $result = tc_select("*", "employees", "empfullname = ?", $final_username[$x]);
+                    $result = tc_select("*", "employees", WHERE_EMPFULLNAME, $final_username[$x]);
 
                     while ($row = mysqli_fetch_array($result)) {
                         $tmp_empfullname_1 = stripslashes("" . $row['empfullname'] . "");
@@ -487,7 +489,7 @@ if ($request == 'GET') {
                         tc_update_strings(
                             "employees",
                             array("empfullname" => $tmp_empfullname_2, "tstamp" => $tmp_tstamp_2),
-                            "empfullname = ?",
+                            WHERE_EMPFULLNAME,
                             $tmp_empfullname_2
                         );
                     }
