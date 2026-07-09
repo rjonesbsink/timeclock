@@ -23,11 +23,11 @@ function mysqli_result($res,$row=0,$col=0){
 function make_id($empfullname) {
     // Make an DOM ID string from the employee id
     // Add emp_ prefix and change spaces into underlines.
-    return 'emp_' . preg_replace('/ /', '_', $empfullname);
+    return 'emp_' . str_replace(' ', '_', $empfullname);
 }
 
 function unmake_id($id) {
-    return preg_replace('/_/', ' ', preg_replace('/^emp_/', '', $id));
+    return str_replace('_', ' ', preg_replace('/^emp_/', '', $id));
 }
 
 
@@ -79,7 +79,7 @@ function is_valid_password($empfullname, $password) {
     global $use_passwd;
     $employee_passwd = get_employee_password($empfullname);
     if (!$use_passwd) {
-        return ($password == $employee_passwd);
+        return $password == $employee_passwd;
     }
 
     $is_valid = tc_verify_password($password, $employee_passwd);
@@ -137,7 +137,7 @@ function compute_hours($start_time, $end_time) {
     // Compute number of hours between start and end time.
     $start_time -= $start_time % 60; // round down to full minute
     $end_time -= $end_time % 60; // round down to full minute
-    return ((($end_time - $start_time) / 60) / 60);
+    return (($end_time - $start_time) / 60) / 60;
 }
 
 function compute_overtime_hours($hours, $week_hours) {

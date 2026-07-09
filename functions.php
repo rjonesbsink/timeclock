@@ -171,11 +171,11 @@ function yes_no_bool($val, $default=false) {
 }
 
 function value_or_null($val) {
-    return ((strlen(trim(@$val)) == 0) ? null : $val);
+    return (strlen(trim(@$val)) == 0) ? null : $val;
 }
 
 function has_value($val) {
-    return (strlen(trim(@$val)) != 0);
+    return strlen(trim(@$val)) != 0;
 }
 
 function secsToHours($secs, $round_time) {

@@ -85,7 +85,7 @@ if ($c_reg_ot)
 
 $group_by_clause = $cols ? "group by " . substr($cols, 1) . "\n" : '';
 $order_by_clause = $cols ? "order by " . substr($cols, 1) . "\n" : '';
-$order_by_clause = preg_replace('/reg_ot/', 'reg_ot desc', $order_by_clause);
+$order_by_clause = str_replace('reg_ot', 'reg_ot desc', $order_by_clause);
 
 // Select hour records.
 $query = <<<End_Of_SQL
