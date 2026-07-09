@@ -3,10 +3,8 @@
  * Current employee punch-in/out status for entry.php
  */
 
-if (!isset($_SESSION['application'])) {
-    header('Location:entry.php');
-    exit;
-}
+require_once '../lib/auth.php';
+require_application_context('entry.php');
 
 require_once 'config.inc.php';
 require_once 'lib.common.php';

@@ -3,10 +3,8 @@
  * Export display of hours.
  */
 
-if (!isset($_SESSION['application'])) {
-    header('Location:export.php');
-    exit;
-}
+require_once '../lib/auth.php';
+require_application_context('export.php');
 
 require_once 'class.Timecard.php';
 

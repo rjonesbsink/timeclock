@@ -6,9 +6,8 @@
  */
 
 session_start();
-if (!isset($_SESSION['application'])) {
-    die("Invalid invocation."); // set in punchclock.php
-}
+require_once '../lib/auth.php';
+require_application_context();
 
 require_once 'config.inc.php';
 require_once 'lib.common.php';

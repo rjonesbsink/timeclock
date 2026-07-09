@@ -3,10 +3,8 @@
  * Punchclock display rows of employees.
  */
 
-if (!isset($_SESSION['application'])) {
-    header('Location:punchclock.php');
-    exit;
-}
+require_once '../lib/auth.php';
+require_application_context('punchclock.php');
 
 // Hardwire sortcolumn and sortdirection.
 $sortcolumn = $show_display_name == 'yes' ? 'displayname' : 'empfullname';

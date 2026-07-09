@@ -15,27 +15,14 @@ $_SESSION['application'] = $current_page; // security
 
 ////////////////////////////////////////
 // Authorize
-if ($use_reports_password == "yes") {
-    if (!isset($_SESSION['valid_reports_user']) && !isset($_SESSION['valid_user'])) {
-        include 'setup_timeclock.php'; // authorize and initialize like timeclock.php
-        $PAGE_TITLE = "Export - $title";
-        include 'header.php';
-        print <<<End_Of_HTML
-<table width=100% border=0 cellpadding=7 cellspacing=1 style="margin-top:12px;">
-  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Reports</td></tr>
-  <tr class=right_main_text>
-    <td align=center valign=top scope=row>
-      <table width=200 border=0 cellpadding=5 cellspacing=0>
-        <tr class=right_main_text><td align=center>You are not presently logged in, or do not have permission to view this page.</td></tr>
-        <tr class=right_main_text><td align=center>Click <a class=admin_headings href='$TIMECLOCK_URL/login_reports.php'><u>here</u></a> to login.</td></tr>
-      </table><br />
-    </td>
-  </tr>
-</table>
-End_Of_HTML;
-        include "footer.php";
-        exit;
-    }
+require_once "$TIMECLOCK_PATH/lib/auth.php";
+if (reports_or_admin_login_required()) {
+    include 'setup_timeclock.php'; // authorize and initialize like timeclock.php
+    $PAGE_TITLE = "Export - $title";
+    include 'header.php';
+    print_login_required_message("$TIMECLOCK_URL/login_reports.php", true, 'margin-top:12px;');
+    include "footer.php";
+    exit;
 }
 
 ////////////////////////////////////////
