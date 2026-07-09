@@ -455,8 +455,6 @@ if ($request == 'GET') {
 
                     // end post validation //
 
-                    //if (!get_magic_quotes_gpc()) {$final_username[$x] = addslashes($final_username[$x]);}
-
                     $result = tc_select("*", "employees", WHERE_EMPFULLNAME, $final_username[$x]);
 
                     while ($row = mysqli_fetch_array($result)) {

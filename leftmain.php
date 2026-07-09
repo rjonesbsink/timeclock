@@ -221,9 +221,9 @@ if ($request == 'POST') {
     if (!has_value($inout) and has_value($emp_name)) {
         $result = tc_query(<<<QUERY
    SELECT p.punchnext
-     FROM ${db_prefix}employees AS e
-LEFT JOIN ${db_prefix}info      AS i ON (e.empfullname = i.fullname AND e.tstamp = i.timestamp)
-LEFT JOIN ${db_prefix}punchlist AS p ON (i.inout = p.punchitems)
+     FROM {$db_prefix}employees AS e
+LEFT JOIN {$db_prefix}info      AS i ON (e.empfullname = i.fullname AND e.tstamp = i.timestamp)
+LEFT JOIN {$db_prefix}punchlist AS p ON (i.inout = p.punchitems)
     WHERE e.$emp_name_field = ?
 QUERY
         , $emp_name);
