@@ -62,12 +62,13 @@ End_Of_HTML;
 End_Of_HTML;
 }
 
-if ($row_count > 0)
+if ($row_count > 0) {
     print <<<End_Of_HTML
 
 </ul>
 
 End_Of_HTML;
+}
 
 ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
 

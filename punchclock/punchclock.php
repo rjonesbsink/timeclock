@@ -91,8 +91,9 @@ media print {
 }
 </style>
 End_Of_HTML;
-if ($punchclock_refresh != "none")
+if ($punchclock_refresh != "none") {
     $punchclock_refresh_script = "display.schedule_refresh($punchclock_refresh);";
+}
 $PAGE_SCRIPT = <<<End_Of_HTML
 <script type="text/javascript" src="scripts/jquery.scrollTo-1.3.3-min.js"></script>
 <script type="text/javascript" src="scripts/jquery.nyroModal-1.6.2.min.js"></script>

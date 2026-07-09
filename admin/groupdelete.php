@@ -5,11 +5,14 @@ $self = $_SERVER['PHP_SELF'];
 $request = $_SERVER['REQUEST_METHOD'];
 
 const WHERE_OFFICE_AND_GROUPS = "office = ? and groups = ?";
+const FOOTER_PHP = '../footer.php';
+const MSG_OFFICE_NOT_DEFINED = "Office name is not defined for this group.\n";
+const MSG_GROUP_NOT_DEFINED = "Group name is not defined for this group.\n";
 
-include '../config.inc.php';
+include_once '../config.inc.php';
 if ($request !== 'POST') {
-    include 'header_get.php';
-    include 'topmain.php';
+    include_once 'header_get.php';
+    include_once 'topmain.php';
 }
 echo "<title>$title - Delete Group</title>\n";
 
@@ -108,11 +111,11 @@ if ($request == 'GET') {
     }
 
     if (!isset($officename)) {
-        echo "Office name is not defined for this group.\n";
+        echo MSG_OFFICE_NOT_DEFINED;
         exit;
     }
     if (!isset($groupname)) {
-        echo "Group name is not defined for this group.\n";
+        echo MSG_GROUP_NOT_DEFINED;
         exit;
     }
 
@@ -173,12 +176,12 @@ if ($request == 'GET') {
     echo "              <input type='hidden' name='post_groupid' value=\"$groupid\">\n";
     echo "              <tr><td width=30><input type='image' name='submit' value='Delete Group' src='../images/buttons/next_button.png'></td>
                   <td><a href='groupadmin.php'><img src='../images/buttons/cancel_button.png' border='0'></td></tr></table></form></td></tr>\n";
-    include '../footer.php';
+    include_once FOOTER_PHP;
     exit;
 } elseif ($request == 'POST') {
 
-    include 'header_post.php';
-    include 'topmain.php';
+    include_once 'header_post.php';
+    include_once 'topmain.php';
 
     $post_officename = $_POST['post_officename'];
     $post_officeid = $_POST['post_officeid'];
@@ -200,7 +203,7 @@ if ($request == 'GET') {
         }
     }
     if ((!isset($officename)) || (!isset($officeid))) {
-        echo "Office name is not defined for this group.\n";
+        echo MSG_OFFICE_NOT_DEFINED;
         exit;
     }
 
@@ -212,7 +215,7 @@ if ($request == 'GET') {
         }
     }
     if ((!isset($groupname)) || (!isset($groupid))) {
-        echo "Group name is not defined for this group.\n";
+        echo MSG_GROUP_NOT_DEFINED;
         exit;
     }
 
@@ -223,7 +226,7 @@ if ($request == 'GET') {
             $tmp_officeid = "" . $row['officeid'] . "";
         }
         if ((!isset($tmp_officename)) || (!isset($tmp_officeid))) {
-            echo "Office name is not defined for this group.\n";
+            echo MSG_OFFICE_NOT_DEFINED;
             exit;
         }
     }
@@ -235,7 +238,7 @@ if ($request == 'GET') {
             $tmp_groupid = "" . $row['groupid'] . "";
         }
         if ((!isset($tmp_groupname)) || (!isset($tmp_groupid))) {
-            echo "Group name is not defined for this group.\n";
+            echo MSG_GROUP_NOT_DEFINED;
             exit;
         }
     }
@@ -396,7 +399,7 @@ if ($request == 'GET') {
         echo "              <input type='hidden' name='post_groupid' value=\"$post_groupid\">\n";
         echo "              <tr><td width=30><input type='image' name='submit' value='Delete Group' src='../images/buttons/next_button.png'></td>
                   <td><a href='groupadmin.php'><img src='../images/buttons/cancel_button.png' border='0'></td></tr></table></form></td></tr>\n";
-        include '../footer.php';
+        include_once FOOTER_PHP;
         exit;
     } else {
 
@@ -422,7 +425,7 @@ if ($request == 'GET') {
         echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
         echo "              <tr><td height=20 align=left>&nbsp;</td></tr>\n";
         echo "              <tr><td><a href='groupadmin.php'><img src='../images/buttons/done_button.png' border='0'></td></tr></table></td></tr>\n";
-        include '../footer.php';
+        include_once FOOTER_PHP;
         exit;
     }
 }

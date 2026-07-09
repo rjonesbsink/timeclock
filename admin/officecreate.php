@@ -1,13 +1,15 @@
 <?php
 session_start();
 
-include '../config.inc.php';
-include 'header.php';
-include 'topmain.php';
+include_once '../config.inc.php';
+include_once 'header.php';
+include_once 'topmain.php';
 echo "<title>$title - Create Office</title>\n";
 
 $self = $_SERVER['PHP_SELF'];
 $request = $_SERVER['REQUEST_METHOD'];
+const FOOTER_PHP = '../footer.php';
+const OFFICENAME_PATTERN = "^([[:alnum:]]| |-|_|\.)+$";
 
 if (!isset($_SESSION['valid_user'])) {
 
@@ -92,7 +94,7 @@ if ($request == 'GET') {
     echo "              <tr><td width=30><input type='image' name='submit' value='Create Office' align='middle'
                       src='../images/buttons/next_button.png'></td><td><a href='officeadmin.php'><img src='../images/buttons/cancel_button.png' 
                       border='0'></td></tr></table></form></td></tr>\n";
-    include '../footer.php';
+    include_once FOOTER_PHP;
     exit;
 } elseif ($request == 'POST') {
 
@@ -163,7 +165,7 @@ if ($request == 'GET') {
     $string = strstr($post_officename, "\'");
     $string2 = strstr($post_officename, "\"");
 
-    if ((@$tmp_officename == $post_officename) || (empty($post_officename)) || (!preg_match('/' . "^([[:alnum:]]| |-|_|\.)+$" . '/i', $post_officename)) ||
+    if ((@$tmp_officename == $post_officename) || (empty($post_officename)) || (!preg_match('/' . OFFICENAME_PATTERN . '/i', $post_officename)) ||
         ((!preg_match('/' . "^([0-9])$" . '/i', $how_many)) && (isset($how_many))) || (@$how_many == '0') || (($create_groups != '1') && (!empty($create_groups))) ||
         (!empty($string)) || (!empty($string2))
     ) {
@@ -192,7 +194,7 @@ if ($request == 'GET') {
             echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
                     Office already exists. Create another office.</td></tr>\n";
             echo "            </table>\n";
-        } elseif (!preg_match('/' . "^([[:alnum:]]| |-|_|\.)+$" . '/i', $post_officename)) {
+        } elseif (!preg_match('/' . OFFICENAME_PATTERN . '/i', $post_officename)) {
             echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
             echo "              <tr>\n";
             echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
@@ -281,7 +283,7 @@ if ($request == 'GET') {
         echo "              <tr><td width=30><input type='image' name='submit' value='Create Office' align='middle'
                       src='../images/buttons/next_button.png'></td><td><a href='officeadmin.php'><img src='../images/buttons/cancel_button.png' 
                       border='0'></td></tr></table></form></td></tr>\n";
-        include '../footer.php';
+        include_once FOOTER_PHP;
         exit;
     }
 
@@ -298,7 +300,7 @@ if ($request == 'GET') {
             if (empty($input_group_name[$z])) {
                 $empty_groupname = '1';
             }
-            if (!preg_match('/' . "^([[:alnum:]]| |-|_|\.)+$" . '/i', $input_group_name[$z])) {
+            if (!preg_match('/' . OFFICENAME_PATTERN . '/i', $input_group_name[$z])) {
                 $evil_groupname = '1';
             }
 
@@ -401,14 +403,14 @@ if ($request == 'GET') {
             echo "              <tr><td width=30><input type='image' name='submit' value='Create Office' align='middle'
                       src='../images/buttons/next_button.png'></td><td><a href='officeadmin.php'><img src='../images/buttons/cancel_button.png' 
                       border='0'></td></tr></table></form></td></tr>\n";
-            include '../footer.php';
+            include_once FOOTER_PHP;
             exit;
 
         } else {
 
             echo "              <tr><td height=20 align=left>&nbsp;</td></tr>\n";
             echo "              <tr><td><a href='officecreate.php'><img src='../images/buttons/done_button.png' border='0'></td></tr></table></td></tr>\n";
-            include '../footer.php';
+            include_once FOOTER_PHP;
             exit;
         }
 
@@ -452,7 +454,7 @@ if ($request == 'GET') {
             echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
             echo "              <tr><td height=20 align=left>&nbsp;</td></tr>\n";
             echo "              <tr><td><a href='officecreate.php'><img src='../images/buttons/done_button.png' border='0'></td></tr></table></td></tr>\n";
-            include '../footer.php';
+            include_once FOOTER_PHP;
             exit;
         }
 
@@ -485,7 +487,7 @@ if ($request == 'GET') {
         echo "              <tr><td width=30><input type='image' name='submit' value='Create Office' align='middle'
                       src='../images/buttons/next_button.png'></td><td><a href='officeadmin.php'><img src='../images/buttons/cancel_button.png' 
                       border='0'></td></tr></table></form></td></tr>\n";
-        include '../footer.php';
+        include_once FOOTER_PHP;
         exit;
     }
 }

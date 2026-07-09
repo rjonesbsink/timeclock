@@ -89,8 +89,9 @@ class Timecard {
                     $this->row['notes'] = "(cont.)"; // add note
 
                     // Trigger onBefore function.
-                    if ($onBefore)
+                    if ($onBefore) {
                         $onBefore($this);
+                    }
                 }
                 ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
             }
@@ -112,8 +113,9 @@ class Timecard {
                 $this->row = $this->next_row;
 
                 // Trigger onBefore function.
-                if ($onBefore)
+                if ($onBefore) {
                     $onBefore($this);
+                }
 
                 continue;
             }
@@ -121,16 +123,18 @@ class Timecard {
             // Is employee punched in?
             if ($this->in_or_out == 1) {
                 list ($this->hours, $this->overtime) = compute_work_hours($this->start_time, $this->end_time, $this->week_hours);
-                if ($do_today_hours)
+                if ($do_today_hours) {
                     $this->today_hours += compute_day_hours($today_date, $this->start_time, $this->end_time);
+                }
                 $this->week_hours += $this->hours;
                 $this->overtime_hours += $this->overtime;
                 $this->total_hours = $this->week_hours + $this->overtime_hours;
             }
 
             // Trigger onEveryRow function.
-            if ($onEveryRow)
+            if ($onEveryRow) {
                 $onEveryRow($this);
+            }
 
             // Re-initialize
             $this->start_time = $this->end_time;
@@ -146,8 +150,9 @@ class Timecard {
                 // Last record still has employee punched in.
                 $this->end_time = $this->end_local_timestamp > $local_timestamp ? $local_timestamp : $this->end_local_timestamp;
                 list ($this->hours, $this->overtime) = compute_work_hours($this->start_time, $this->end_time, $this->week_hours);
-                if ($do_today_hours)
+                if ($do_today_hours) {
                     $this->today_hours += compute_day_hours($today_date, $this->start_time, $this->end_time);
+                }
                 $this->week_hours += $this->hours;
                 $this->overtime_hours += $this->overtime;
                 $this->total_hours = $this->week_hours + $this->overtime_hours;
@@ -155,8 +160,9 @@ class Timecard {
                 // Add another record into timecard indicating pseudo punch-out at current time or end of week.
 
                 // Trigger onEveryRow function.
-                if ($onEveryRow)
+                if ($onEveryRow) {
                     $onEveryRow($this);
+                }
 
                 // Re-initialize
                 $this->start_time = $this->end_time;
@@ -173,12 +179,14 @@ class Timecard {
             }
 
             // Trigger onEveryRow function.
-            if ($onEveryRow)
+            if ($onEveryRow) {
                 $onEveryRow($this);
+            }
 
             // Trigger onAfter function.
-            if ($onAfter)
+            if ($onAfter) {
                 $onAfter($this);
+            }
         }
 
         ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);

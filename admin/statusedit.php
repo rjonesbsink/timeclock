@@ -1,13 +1,16 @@
 <?php
 session_start();
 
-include '../config.inc.php';
-include 'header_colorpick.php';
-include 'topmain.php';
+include_once '../config.inc.php';
+include_once 'header_colorpick.php';
+include_once 'topmain.php';
 echo "<title>$title - Edit Status</title>\n";
 
 $self = $_SERVER['PHP_SELF'];
 $request = $_SERVER['REQUEST_METHOD'];
+
+const WHERE_PUNCHITEMS = "punchitems = ?";
+const FOOTER_PHP = '../footer.php';
 
 if (!isset($_SESSION['valid_user'])) {
 
@@ -40,7 +43,7 @@ if ($request == 'GET') {
 
     $get_status = $_GET['statusname'];
 
-    $result = tc_select("*", "punchlist", "punchitems = ?", $get_status);
+    $result = tc_select("*", "punchlist", WHERE_PUNCHITEMS, $get_status);
 
     while ($row = mysqli_fetch_array($result)) {
         $punchitem = "" . $row['punchitems'] . "";
@@ -138,7 +141,7 @@ if ($request == 'GET') {
     echo "              <input type='hidden' name='get_status' value='$get_status'>\n";
     echo "              <tr><td width=30><input type='image' name='submit' value='Edit Status' src='../images/buttons/next_button.png'></td>
                   <td><a href='statusadmin.php'><img src='../images/buttons/cancel_button.png' border='0'></td></tr></table></form></td></tr>\n";
-    include '../footer.php';
+    include_once FOOTER_PHP;
     exit;
 } elseif ($request == 'POST') {
 
@@ -151,7 +154,7 @@ if ($request == 'GET') {
     // begin post validation //
 
     if (!empty($get_status)) {
-        $getstatus = tc_select_value("punchitems", "punchlist", "punchitems = ?", $get_status);
+        $getstatus = tc_select_value("punchitems", "punchlist", WHERE_PUNCHITEMS, $get_status);
         if (!isset($getstatus)) {
             echo "Status is not defined.\n";
             exit;
@@ -160,7 +163,7 @@ if ($request == 'GET') {
 
     $punchnext_ok = true;
     if (has_value($punchnext)) {
-        $punchnext_ok = ($punchnext == tc_select_value("punchitems", "punchlist", "punchitems = ?", $punchnext));
+        $punchnext_ok = ($punchnext == tc_select_value("punchitems", "punchlist", WHERE_PUNCHITEMS, $punchnext));
     }
 
 
@@ -308,7 +311,7 @@ if ($request == 'GET') {
         echo "              <input type='hidden' name='get_status' value='$get_status'>\n";
         echo "              <tr><td width=30><input type='image' name='submit' value='Edit Status' src='../images/buttons/next_button.png'></td>
                   <td><a href='statusadmin.php'><img src='../images/buttons/cancel_button.png' border='0'></td></tr></table></form></td></tr>\n";
-        include '../footer.php';
+        include_once FOOTER_PHP;
         exit;
 
     } else {
@@ -321,7 +324,7 @@ if ($request == 'GET') {
                 "in_or_out"  => $create_status,
                 "punchnext"  => $punchnext
             ),
-            "punchitems = ?", $get_status
+            WHERE_PUNCHITEMS, $get_status
         );
 
         if ($post_statusname != $get_status) {
@@ -414,6 +417,6 @@ if ($request == 'GET') {
         echo "              <tr><td><a href='statusadmin.php'><img src='../images/buttons/done_button.png'
                       border='0'></a></td></tr></table>\n";
     }
-    include '../footer.php';
+    include_once FOOTER_PHP;
 }
 ?>

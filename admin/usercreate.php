@@ -3,11 +3,13 @@ session_start();
 
 $self = $_SERVER['PHP_SELF'];
 $request = $_SERVER['REQUEST_METHOD'];
+const FOOTER_PHP = '../footer.php';
+const USERNAME_PATTERN = "^([[:alnum:]]| |-|'|,)+$";
 
-include '../config.inc.php';
+include_once '../config.inc.php';
 if ($request !== 'POST') {
-    include 'header_get.php';
-    include 'topmain.php';
+    include_once 'header_get.php';
+    include_once 'topmain.php';
 }
 echo "<title>$title - Create User</title>\n";
 
@@ -123,11 +125,11 @@ if ($request == 'GET') {
     echo "              <tr><td width=30><input type='image' name='submit' value='Create User' align='middle'
                       src='../images/buttons/next_button.png'></td><td><a href='useradmin.php'><img src='../images/buttons/cancel_button.png' 
                       border='0'></td></tr></table></form></td></tr>\n";
-    include '../footer.php';
+    include_once FOOTER_PHP;
 } elseif ($request == 'POST') {
 
-    include 'header_post.php';
-    include 'topmain.php';
+    include_once 'header_post.php';
+    include_once 'topmain.php';
 
     $post_username = $_POST['post_username'];
     $display_name = $_POST['display_name'];
@@ -149,7 +151,7 @@ if ($request == 'GET') {
     $string2 = strstr($display_name, "\"");
 
     if ((@$tmp_username == $post_username) || ($password !== $confirm_password) ||
-        (!preg_match('/' . "^([[:alnum:]]| |-|'|,)+$" . '/i', $post_username)) || (!preg_match('/' . "^([[:alnum:]]| |-|'|,)+$" . '/i', $display_name)) || (empty($post_username)) ||
+        (!preg_match('/' . USERNAME_PATTERN . '/i', $post_username)) || (!preg_match('/' . USERNAME_PATTERN . '/i', $display_name)) || (empty($post_username)) ||
         (empty($display_name)) || (empty($email_addy)) || (empty($office_name)) || (empty($group_name)) ||
         (!preg_match('/' . "^([[:alnum:]]|~|\!|@|#|\$|%|\^|&|\*|\(|\)|-|\+|`|_|\=|[{]|[}]|\[|\]|\||\:|\<|\>|\.|,|\?)+$" . '/i', $password)) ||
         (!preg_match('/' . "^([[:alnum:]]|_|\.|-)+@([[:alnum:]]|\.|-)+(\.)([a-z]{2,4})$" . '/i', $email_addy)) || (($admin_perms != '1') && (!empty($admin_perms))) ||
@@ -251,13 +253,13 @@ if ($request == 'GET') {
             echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
                     User already exists. Create another username.</td></tr>\n";
             echo "            </table>\n";
-        } elseif (!preg_match('/' . "^([[:alnum:]]| |-|'|,)+$" . '/i', $post_username)) {
+        } elseif (!preg_match('/' . USERNAME_PATTERN . '/i', $post_username)) {
             echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
             echo "              <tr>\n";
             echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
                     Alphanumeric characters, hyphens, apostrophes, commas, and spaces are allowed when creating a Username.</td></tr>\n";
             echo "            </table>\n";
-        } elseif (!preg_match('/' . "^([[:alnum:]]| |-|'|,)+$" . '/i', $display_name)) {
+        } elseif (!preg_match('/' . USERNAME_PATTERN . '/i', $display_name)) {
             echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
             echo "              <tr>\n";
             echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
@@ -402,7 +404,7 @@ if ($request == 'GET') {
         echo "              <tr><td width=30><input type='image' name='submit' value='Create User' align='middle'
                       src='../images/buttons/next_button.png'></td><td><a href='useradmin.php'><img src='../images/buttons/cancel_button.png' 
                       border='0'></td></tr></table></form></td></tr>\n";
-        include '../footer.php';
+        include_once FOOTER_PHP;
         exit;
     }
 
@@ -559,7 +561,7 @@ if ($request == 'GET') {
     echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
     echo "              <tr><td height=20 align=left>&nbsp;</td></tr>\n";
     echo "              <tr><td><a href='usercreate.php'><img src='../images/buttons/done_button.png' border='0'></td></tr></table></td></tr>\n";
-    include '../footer.php';
+    include_once FOOTER_PHP;
     exit;
 }
 ?>

@@ -1,9 +1,9 @@
 <?php
 session_start();
 
-include '../config.inc.php';
-include 'header.php';
-include 'topmain.php';
+include_once '../config.inc.php';
+include_once 'header.php';
+include_once 'topmain.php';
 echo "<title>$title - Edit Office</title>\n";
 
 $self = $_SERVER['PHP_SELF'];
@@ -15,6 +15,11 @@ const WHERE_OFFICE = "office = ?";
 const WHERE_OFFICEID = "officeid = ?";
 const WHERE_OFFICEID_ORDER_BY_GROUPNAME = "officeid = ? order by groupname";
 const WHERE_OFFICE_AND_GROUPS = "office = ? and groups = ?";
+const FOOTER_PHP = '../footer.php';
+const MSIE3 = "MSIE 3";
+const MSIE4 = "MSIE 4";
+const MSIE5 = "MSIE 5";
+const MSIE6 = "MSIE 6";
 
 if (!isset($_SESSION['valid_user'])) {
 
@@ -187,7 +192,7 @@ if ($request == 'GET') {
             echo "                <td class=table_rows width=4% align=center><input type='hidden' name='group_user_cnt'
                     value=\"$group_user_cnt\">$group_user_cnt</td>\n";
 
-            if ((strpos($user_agent, "MSIE 6")) || (strpos($user_agent, "MSIE 5")) || (strpos($user_agent, "MSIE 4")) || (strpos($user_agent, "MSIE 3"))) {
+            if ((strpos($user_agent, MSIE6)) || (strpos($user_agent, MSIE5)) || (strpos($user_agent, MSIE4)) || (strpos($user_agent, MSIE3))) {
 
                 echo "                <td class=table_rows width=3% align=center><a style='color:#27408b;text-decoration:underline;'
                     title=\"Edit Group: " . $row["groupname"] . "\" href=\"groupedit.php?groupname=$tmp_group&officename=$get_office\" >
@@ -206,7 +211,7 @@ if ($request == 'GET') {
         }
         echo "            </table></td></tr>\n";
     }
-    include '../footer.php';
+    include_once FOOTER_PHP;
     exit;
 } elseif ($request == 'POST') {
 
@@ -391,7 +396,7 @@ if ($request == 'GET') {
                     href=\"groupedit.php?groupname=" . $row["groupname"] . "&officename=$get_office\">$tmp_group</a></td>\n";
                 echo "                <td class=table_rows width=4% align=center>$group_user_cnt</td>\n";
 
-                if ((strpos($user_agent, "MSIE 6")) || (strpos($user_agent, "MSIE 5")) || (strpos($user_agent, "MSIE 4")) || (strpos($user_agent, "MSIE 3"))) {
+                if ((strpos($user_agent, MSIE6)) || (strpos($user_agent, MSIE5)) || (strpos($user_agent, MSIE4)) || (strpos($user_agent, MSIE3))) {
 
                     echo "                <td class=table_rows width=3% align=center><a style='color:#27408b;text-decoration:underline;'
                     title=\"Edit Group: " . $row["groupname"] . "\" href=\"groupedit.php?groupname=$tmp_group&officename=$get_office\" >
@@ -408,7 +413,7 @@ if ($request == 'GET') {
             }
             echo "            </table></td></tr>\n";
         }
-        include '../footer.php';
+        include_once FOOTER_PHP;
         exit;
 
     } else {
@@ -540,7 +545,7 @@ if ($request == 'GET') {
                     href=\"groupedit.php?groupname=" . $row["groupname"] . "&officename=$post_officename\">$tmp_group</a></td>\n";
                 echo "                <td class=table_rows width=4% align=center>$group_user_cnt</td>\n";
 
-                if ((strpos($user_agent, "MSIE 6")) || (strpos($user_agent, "MSIE 5")) || (strpos($user_agent, "MSIE 4")) || (strpos($user_agent, "MSIE 3"))) {
+                if ((strpos($user_agent, MSIE6)) || (strpos($user_agent, MSIE5)) || (strpos($user_agent, MSIE4)) || (strpos($user_agent, MSIE3))) {
 
                     echo "                <td class=table_rows width=3% align=center><a style='color:#27408b;text-decoration:underline;'
                     title=\"Edit Group: " . $row["groupname"] . "\" href=\"groupedit.php?groupname=$tmp_group&officename=$post_officename\" >
@@ -558,7 +563,7 @@ if ($request == 'GET') {
             echo "            </table></td></tr>\n";
         }
     }
-    include '../footer.php';
+    include_once FOOTER_PHP;
     exit;
 }
 ?>

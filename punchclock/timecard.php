@@ -27,8 +27,9 @@ include 'setup_timeclock.php'; // authorize and initialize
 $emp = isset($_GET['emp']) ? $_GET['emp'] : null;
 $empfullname = isset($_REQUEST['empfullname']) ? $_REQUEST['empfullname'] : null;
 
-if (!$empfullname)
+if (!$empfullname) {
     $empfullname = $emp; // from url or form entry
+}
 
 // Lookup valid employee
 if ($empfullname) {
@@ -41,10 +42,12 @@ if ($empfullname) {
 
 // Authorize employee
 $authorized = $empfullname && isset($_SESSION['authenticated']) ? ($_SESSION['authenticated'] == $empfullname) : false;
-if (!$authorized)
+if (!$authorized) {
     $authorized = ($empfullname && isset($_SESSION['valid_user'])) ? true : false; // check if administrator
-if (!$authorized)
+}
+if (!$authorized) {
     $authorized = ($empfullname && isset($_SESSION['time_admin_valid_user'])) ? true : false; // check if time administrator
+}
 if (!$authorized) {
     ##die(error_msg("Not authorized to run this report."));
     $_SESSION['login_error_msg'] = $error_msg;
@@ -55,10 +58,12 @@ if (!$authorized) {
 // Find which week to print timecard.
 $local_timestamp_in_week = isset($_REQUEST['t']) ? ($_REQUEST['t']) : local_timestamp();
 
-if (isset($_REQUEST['prev']))
+if (isset($_REQUEST['prev'])) {
     $local_timestamp_in_week -= $one_week;
-if (isset($_REQUEST['next']))
+}
+if (isset($_REQUEST['next'])) {
     $local_timestamp_in_week += $one_week;
+}
 
 // Display timecard.
 $PAGE_TITLE = "Timecard - $title";

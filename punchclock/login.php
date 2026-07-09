@@ -33,8 +33,9 @@ $emp = isset($_REQUEST['emp']) ? $_REQUEST['emp'] : null;
 $empfullname = isset($_REQUEST['empfullname']) ? $_REQUEST['empfullname'] : null;
 $password = isset($_REQUEST['password']) ? $_REQUEST['password'] : null;
 
-if (!$empfullname)
+if (!$empfullname) {
     $empfullname = $emp; // from url or form entry
+}
 
 if ($empfullname) {
     $empfullname = lookup_employee($empfullname);
@@ -67,10 +68,12 @@ $(function(){
 End_Of_HTML;
 
     include 'header.php';
-    if ($msg)
+    if ($msg) {
         print msg($msg);
-    if ($error_msg)
+    }
+    if ($error_msg) {
         print error_msg($error_msg);
+    }
     print <<<End_Of_HTML
 
 <div id="employee_entry_form">
@@ -135,10 +138,12 @@ if ($use_passwd == 'yes') {
 <script type="text/javascript">$(function(){ $('form input:first').focus(); });</script>
 End_Of_HTML;
         include 'header.php';
-        if ($msg)
+        if ($msg) {
             print msg($msg);
-        if ($error_msg)
+        }
+        if ($error_msg) {
             print error_msg($error_msg);
+        }
         print <<<End_Of_HTML
 <div id="password_entry_form">
 <form action="{$_SERVER['PHP_SELF']}" method="post">

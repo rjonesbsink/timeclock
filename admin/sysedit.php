@@ -4,14 +4,17 @@ session_start();
 $self = $_SERVER['PHP_SELF'];
 $request = $_SERVER['REQUEST_METHOD'];
 
-include '../config.inc.php';
+const CONFIG_INC_PHP = '../config.inc.php';
+const FOOTER_PHP = '../footer.php';
+
+include_once CONFIG_INC_PHP;
 if ($request == 'GET') {
-    include 'header_get_sysedit.php';
-    include 'topmain.php';
+    include_once 'header_get_sysedit.php';
+    include_once 'topmain.php';
 }
 echo "<title>$title - Edit System Settings</title>\n";
 
-$filename = '../config.inc.php';
+$filename = CONFIG_INC_PHP;
 $row_count = '0';
 $row_color = ($row_count % 2) ? $color2 : $color1;
 
@@ -34,7 +37,7 @@ if (!file_exists($filename)) {
     echo "                <td height=25 class=table_rows_red>config.inc.php does not exist!</td></tr>\n";
     echo "                <td height=25 class=table_rows_red>It has either been deleted, renamed, moved, or was never installed.</td></tr>\n";
     echo "            </table></td></tr>\n";
-    include '../footer.php';
+    include_once FOOTER_PHP;
     exit;
 }
 
@@ -55,7 +58,7 @@ if (!is_readable($filename)) {
         echo "&nbsp;&nbsp;(user.group).</td></tr>\n";
     }
     echo "            </table></td></tr>\n";
-    include '../footer.php';
+    include_once FOOTER_PHP;
 }
 
 if ($request == 'GET') {
@@ -109,7 +112,7 @@ if ($request == 'GET') {
         echo "            <table width=100% border=0 cellpadding=0 cellspacing=0>\n";
         echo "              <tr><td height=25 class=table_rows_red>This page has been <b>disabled</b> within config.inc.php.</td></tr>";
         echo "            </table></td></tr>\n";
-        include '../footer.php';
+        include_once FOOTER_PHP;
         exit;
     }
 
@@ -136,7 +139,7 @@ if ($request == 'GET') {
             echo $group["name"];
             echo "</b>&nbsp;&nbsp;(user.group).</td></tr>\n";
             echo "            </table></td></tr>\n";
-            include '../footer.php';
+            include_once FOOTER_PHP;
             exit;
 
         } else {
@@ -147,7 +150,7 @@ if ($request == 'GET') {
             echo "              <tr><td height=25 class=table_rows_red>To edit the System Settings within PHP Timeclock, either change the permissions
                       on config.inc.php for this user, or assign this file to another owner, preferably your webserver user.</td></tr>\n";
             echo "            </table></td></tr>\n";
-            include '../footer.php';
+            include_once FOOTER_PHP;
             exit;
         }
     }
@@ -1203,13 +1206,13 @@ if ($request == 'GET') {
     echo "              <tr><td width=62 valign=middle><input type='image' name='submit' value='Add Time' align='middle'
                       src='../images/buttons/next_button.png'></td><td><a href='index.php'><img src='../images/buttons/cancel_button.png' 
                       border='0'></td></tr></table></form></td></tr>\n";
-    include '../footer.php';
+    include_once FOOTER_PHP;
     exit;
 
 } elseif ($request == 'POST') {
 
-    include 'header_post_sysedit.php';
-    include 'topmain.php';
+    include_once 'header_post_sysedit.php';
+    include_once 'topmain.php';
 
     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
     echo "  <tr valign=top>\n";
@@ -2542,7 +2545,7 @@ if ($request == 'GET') {
         echo "              <tr><td width=62 valign=middle><input type='image' name='submit' value='Add Time' align='middle'
                       src='../images/buttons/next_button.png'></td><td><a href='index.php'><img src='../images/buttons/cancel_button.png' 
                       border='0'></td></tr></table></form></td></tr>\n";
-        include '../footer.php';
+        include_once FOOTER_PHP;
         exit;
 
     } else {
@@ -3095,7 +3098,7 @@ $username_dropdown_only = "' . $post_username_dropdown_only . '";
 $user_or_display = "' . $post_user_or_display . '";
 
 
-/* Choose whether to include in the reports the ip addresses of the systems that connect to 
+/* Choose whether to include in the reports the ip addresses of the systems that connect to
    sign-in/out into PHP Timeclock or not. This option is useful for auditing purposes. The 
    ip_logging option must be set to "yes" in order for this option to work as expected.
    Default is "yes". */
@@ -3184,7 +3187,7 @@ $dbversion = "' . $post_dbversion . '";
 
         // end writing the new config.inc.php file //
 
-        include '../config.inc.php';
+        include_once CONFIG_INC_PHP;
 
         echo "            <table align=center class=table_border width=100% border=0 cellpadding=0 cellspacing=3>\n";
         echo "              <tr><td width=20 align=center height=25 class=table_rows><img src='../images/icons/accept.png' /></td>
@@ -3192,8 +3195,8 @@ $dbversion = "' . $post_dbversion . '";
         echo "            </table>\n";
         echo "            <br />\n";
 
-        include '../templates/admin_index_tpl.php';
-        include '../footer.php';
+        include_once '../templates/admin_index_tpl.php';
+        include_once FOOTER_PHP;
         exit;
     }
 }

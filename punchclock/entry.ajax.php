@@ -6,8 +6,9 @@
  */
 
 session_start();
-if (!isset($_SESSION['application']))
+if (!isset($_SESSION['application'])) {
     die("Invalid invocation.");
+}
 
 require_once 'config.inc.php';
 require_once 'lib.common.php';
@@ -18,15 +19,20 @@ require_once "$TIMECLOCK_PATH/functions.php";
 // Connect to db.
 require_once "$TIMECLOCK_PATH/lib/db.php";
 
+const HRS_MIN_SUFFIX = " hrs:min";
+const HOURS_FORMAT_WITH_UNIT = "%01.02f hrs";
+
 // Parse arguments.
 $emp = isset($_GET['emp']) ? $_GET['emp'] : null;
 $empfullname = isset($_REQUEST['empfullname']) ? $_REQUEST['empfullname'] : null;
 $password = isset($_REQUEST['password']) ? $_REQUEST['password'] : null;
 
-if (!$empfullname)
+if (!$empfullname) {
     $empfullname = $emp; // from url or form entry
-if (!$empfullname)
+}
+if (!$empfullname) {
     die(error_msg("Unrecognized employee.")); // no employee specified
+}
 
 $h_empfullname = htmlentities($empfullname);
 $u_empfullname = rawurlencode($empfullname);
@@ -60,6 +66,7 @@ if ($authorized_to_post_time && isset($_POST['inout'])) {
         trigger_error('In/Out Status is not in the database.', E_USER_WARNING);
         exit;
     }
+    $h_inout_color = htmlentities($inout_color);
 
     // Record time.
     $tz_stamp = utm_timestamp();
@@ -74,6 +81,7 @@ if ($authorized_to_post_time && isset($_POST['inout'])) {
 
     // Update display line on punchclock list and close form.
     $id = make_id($empfullname);
+    $h_id = htmlentities($id);
     $display_stamp = local_timestamp($tz_stamp);
     $time = date($timefmt, $display_stamp);
     $date = date($datefmt, $display_stamp);
@@ -84,15 +92,15 @@ if ($authorized_to_post_time && isset($_POST['inout'])) {
 <script type="text/javascript">
 //<![CDATA[
 // Post results to main page employee list
-$('#$id td').each(function(index){
+$('#$h_id td').each(function(index){
 	if (index == 1) {
 		this.innerHTML = "$h_inout";
-		this.style.color = "$inout_color";
+		this.style.color = "$h_inout_color";
 	}
 	if (index == 2) this.innerHTML = "$time";
 	if (index == 3) this.innerHTML = "$date";
 });
-$('#$id td:last').each(function(){
+$('#$h_id td:last').each(function(){
 	this.innerHTML = "$h_notes";
 });
 $.nyroModalRemove();	// close form
@@ -174,21 +182,22 @@ End_Of_HTML;
 // A user is authorized for the display of the form only one time.
 // This prevents a user from displaying the form and then canceling out of
 // the form allowing the form to be displayed again without entering a password.
-if (isset($_SESSION['authorized_to_enter_time']))
+if (isset($_SESSION['authorized_to_enter_time'])) {
     unset($_SESSION['authorized_to_enter_time']);
+}
 
 if ($punchclock_display_timecard == 'yes') {
 
     // Summarize employee hours for the current week.
     list ($today_hours, $week_hours, $overtime_hours) = current_week_hours($empfullname);
     if ($timecard_display_hours_minutes == 'yes') {
-        $today_hours = hrs_min($today_hours) . " hrs:min";
-        $week_hours = hrs_min($week_hours) . " hrs:min";
-        $overtime_hours = hrs_min($overtime_hours) . " hrs:min";
+        $today_hours = hrs_min($today_hours) . HRS_MIN_SUFFIX;
+        $week_hours = hrs_min($week_hours) . HRS_MIN_SUFFIX;
+        $overtime_hours = hrs_min($overtime_hours) . HRS_MIN_SUFFIX;
     } else {
-        $today_hours = sprintf("%01.02f hrs", $today_hours);
-        $week_hours = sprintf("%01.02f hrs", $week_hours);
-        $overtime_hours = sprintf("%01.02f hrs", $overtime_hours);
+        $today_hours = sprintf(HOURS_FORMAT_WITH_UNIT, $today_hours);
+        $week_hours = sprintf(HOURS_FORMAT_WITH_UNIT, $week_hours);
+        $overtime_hours = sprintf(HOURS_FORMAT_WITH_UNIT, $overtime_hours);
     }
 
     $overtime_line = $overtime_hours > 0 ? "<tr><th>Overtime:</th><td>$overtime_hours</td></tr>\n" : '';

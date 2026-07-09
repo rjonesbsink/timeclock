@@ -6,15 +6,17 @@ $self = $_SERVER['PHP_SELF'];
 $request = $_SERVER['REQUEST_METHOD'];
 $current_page = "timerpt.php";
 
-include '../config.inc.php';
+const ADMIN_TOPMAIN_PHP = '../admin/topmain.php';
+
+include_once '../config.inc.php';
 
 if ($use_reports_password == "yes") {
 
     if (!isset($_SESSION['valid_reports_user'])) {
 
         echo "<title>$title</title>\n";
-        include '../admin/header.php';
-        include '../admin/topmain.php';
+        include_once '../admin/header.php';
+        include_once ADMIN_TOPMAIN_PHP;
 
         echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
         echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Reports</td></tr>\n";
@@ -32,12 +34,12 @@ echo "<title>$title - Daily Time Report</title>\n";
 
 if ($request == 'GET') {
 
-    include 'header_get_reports.php';
+    include_once 'header_get_reports.php';
 
     if ($use_reports_password == "yes") {
-        include '../admin/topmain.php';
+        include_once ADMIN_TOPMAIN_PHP;
     } else {
-        include 'topmain.php';
+        include_once 'topmain.php';
     }
 
     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
@@ -126,12 +128,12 @@ if ($request == 'GET') {
     echo "              <tr><td width=30><input type='image' name='submit' value='Edit Time' align='middle'
                       src='../images/buttons/next_button.png'></td><td><a href='index.php'><img src='../images/buttons/cancel_button.png'
                       border='0'></td></tr></table></form></td></tr>\n";
-    include '../footer.php';
+    include_once '../footer.php';
     exit;
 
 } else {
 
-    include 'header_post_reports.php';
+    include_once 'header_post_reports.php';
 
     @$office_name = $_POST['office_name'];
     @$group_name = $_POST['group_name'];
@@ -184,9 +186,9 @@ if ($request == 'GET') {
         if (($tmp_display_ip != '1') && (!empty($tmp_display_ip))) {
             $evil_post = '1';
             if ($use_reports_password == "yes") {
-                include '../admin/topmain.php';
+                include_once ADMIN_TOPMAIN_PHP;
             } else {
-                include 'topmain.php';
+                include_once 'topmain.php';
             }
             echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
             echo "  <tr valign=top>\n";
@@ -204,9 +206,9 @@ if ($request == 'GET') {
         if (($tmp_csv != '1') && (!empty($tmp_csv))) {
             $evil_post = '1';
             if ($use_reports_password == "yes") {
-                include '../admin/topmain.php';
+                include_once ADMIN_TOPMAIN_PHP;
             } else {
-                include 'topmain.php';
+                include_once 'topmain.php';
             }
             echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
             echo "  <tr valign=top>\n";
@@ -226,9 +228,9 @@ if ($request == 'GET') {
         if (empty($from_date)) {
             $evil_post = '1';
             if ($use_reports_password == "yes") {
-                include '../admin/topmain.php';
+                include_once ADMIN_TOPMAIN_PHP;
             } else {
-                include 'topmain.php';
+                include_once 'topmain.php';
             }
             echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
             echo "  <tr valign=top>\n";
@@ -244,9 +246,9 @@ if ($request == 'GET') {
         } elseif (!preg_match('/' . "^([0-9]?[0-9])+[-|\/|.]+([0-9]?[0-9])+[-|\/|.]+(([0-9]{2})|([0-9]{4}))$" . '/i', $from_date, $date_regs)) {
             $evil_post = '1';
             if ($use_reports_password == "yes") {
-                include '../admin/topmain.php';
+                include_once ADMIN_TOPMAIN_PHP;
             } else {
-                include 'topmain.php';
+                include_once 'topmain.php';
             }
             echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
             echo "  <tr valign=top>\n";
@@ -271,9 +273,9 @@ if ($request == 'GET') {
                 if ($from_month > 12 || $from_day > 31) {
                     $evil_post = '1';
                     if ($use_reports_password == "yes") {
-                        include '../admin/topmain.php';
+                        include_once ADMIN_TOPMAIN_PHP;
                     } else {
-                        include 'topmain.php';
+                        include_once 'topmain.php';
                     }
                     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
                     echo "  <tr valign=top>\n";
@@ -296,9 +298,9 @@ if ($request == 'GET') {
                 if ($from_month > 12 || $from_day > 31) {
                     $evil_post = '1';
                     if ($use_reports_password == "yes") {
-                        include '../admin/topmain.php';
+                        include_once ADMIN_TOPMAIN_PHP;
                     } else {
-                        include 'topmain.php';
+                        include_once 'topmain.php';
                     }
                     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
                     echo "  <tr valign=top>\n";
@@ -320,9 +322,9 @@ if ($request == 'GET') {
         if (empty($to_date)) {
             $evil_post = '1';
             if ($use_reports_password == "yes") {
-                include '../admin/topmain.php';
+                include_once ADMIN_TOPMAIN_PHP;
             } else {
-                include 'topmain.php';
+                include_once 'topmain.php';
             }
             echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
             echo "  <tr valign=top>\n";
@@ -338,9 +340,9 @@ if ($request == 'GET') {
         } elseif (!preg_match('/' . "^([0-9]?[0-9])+[-|\/|.]+([0-9]?[0-9])+[-|\/|.]+(([0-9]{2})|([0-9]{4}))$" . '/i', $to_date, $date_regs)) {
             $evil_post = '1';
             if ($use_reports_password == "yes") {
-                include '../admin/topmain.php';
+                include_once ADMIN_TOPMAIN_PHP;
             } else {
-                include 'topmain.php';
+                include_once 'topmain.php';
             }
             echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
             echo "  <tr valign=top>\n";
@@ -365,9 +367,9 @@ if ($request == 'GET') {
                 if ($to_month > 12 || $to_day > 31) {
                     $evil_post = '1';
                     if ($use_reports_password == "yes") {
-                        include '../admin/topmain.php';
+                        include_once ADMIN_TOPMAIN_PHP;
                     } else {
-                        include 'topmain.php';
+                        include_once 'topmain.php';
                     }
                     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
                     echo "  <tr valign=top>\n";
@@ -390,9 +392,9 @@ if ($request == 'GET') {
                 if ($to_month > 12 || $to_day > 31) {
                     $evil_post = '1';
                     if ($use_reports_password == "yes") {
-                        include '../admin/topmain.php';
+                        include_once ADMIN_TOPMAIN_PHP;
                     } else {
-                        include 'topmain.php';
+                        include_once 'topmain.php';
                     }
                     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
                     echo "  <tr valign=top>\n";
@@ -494,7 +496,7 @@ if ($request == 'GET') {
         echo "              <tr><td width=30><input type='image' name='submit' value='Edit Time' align='middle'
                       src='../images/buttons/next_button.png'></td><td><a href='index.php'><img src='../images/buttons/cancel_button.png'
                       border='0'></td></tr></table></form></td></tr>\n";
-        include '../footer.php';
+        include_once '../footer.php';
         exit;
     }
 

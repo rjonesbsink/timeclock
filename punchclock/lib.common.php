@@ -6,6 +6,8 @@
 require_once 'config.inc.php';
 require_once "$TIMECLOCK_PATH/functions.php";
 
+const WHERE_EMPFULLNAME = "empfullname = ?";
+
 ////////////////////////////////////////
 function mysqli_result($res,$row=0,$col=0){
     $numrows = mysqli_num_rows($res); 
@@ -23,11 +25,11 @@ function mysqli_result($res,$row=0,$col=0){
 function make_id($empfullname) {
     // Make an DOM ID string from the employee id
     // Add emp_ prefix and change spaces into underlines.
-    return 'emp_' . preg_replace('/ /', '_', $empfullname);
+    return 'emp_' . str_replace(' ', '_', $empfullname);
 }
 
 function unmake_id($id) {
-    return preg_replace('/_/', ' ', preg_replace('/^emp_/', '', $id));
+    return str_replace('_', ' ', preg_replace('/^emp_/', '', $id));
 }
 
 
@@ -35,7 +37,7 @@ function unmake_id($id) {
 function lookup_employee($empfullname) {
     // Return valid empfullname or null
     $name = null;
-    $result = tc_select("empfullname", "employees", "empfullname = ?", $empfullname);
+    $result = tc_select("empfullname", "employees", WHERE_EMPFULLNAME, $empfullname);
     if (!$result || mysqli_num_rows($result) == 0) {
         // Check if displayname was entered.
         $result = tc_select("empfullname", "employees", "lower(displayname) = ?", strtolower($empfullname))
@@ -50,7 +52,7 @@ function lookup_employee($empfullname) {
 
 ////////////////////////////////////////
 function get_employee_name($empfullname) {
-    $result = tc_select("displayname", "employees", "empfullname = ?", $empfullname);
+    $result = tc_select("displayname", "employees", WHERE_EMPFULLNAME, $empfullname);
     if (!$result) {
         trigger_error('get_employee_name: no result: ' . mysqli_error($GLOBALS["___mysqli_ston"]), E_USER_WARNING);
 
@@ -63,7 +65,7 @@ function get_employee_name($empfullname) {
 
 ////////////////////////////////////////
 function get_employee_password($empfullname) {
-    $result = tc_select("employee_passwd", "employees", "empfullname = ?", $empfullname);
+    $result = tc_select("employee_passwd", "employees", WHERE_EMPFULLNAME, $empfullname);
     if (!$result) {
         trigger_error('get_employee_password: no result: ' . mysqli_error($GLOBALS["___mysqli_ston"]), E_USER_WARNING);
 
@@ -79,7 +81,7 @@ function is_valid_password($empfullname, $password) {
     global $use_passwd;
     $employee_passwd = get_employee_password($empfullname);
     if (!$use_passwd) {
-        return ($password == $employee_passwd);
+        return $password == $employee_passwd;
     }
 
     $is_valid = tc_verify_password($password, $employee_passwd);
@@ -93,7 +95,7 @@ function is_valid_password($empfullname, $password) {
 ////////////////////////////////////////
 function save_employee_password($empfullname, $new_password) {
     $password = tc_hash_password($new_password);
-    tc_update_strings("employees", array("employee_passwd" => $password), "empfullname = ?", $empfullname);
+    tc_update_strings("employees", array("employee_passwd" => $password), WHERE_EMPFULLNAME, $empfullname);
 
     return true;
 }
@@ -137,7 +139,7 @@ function compute_hours($start_time, $end_time) {
     // Compute number of hours between start and end time.
     $start_time -= $start_time % 60; // round down to full minute
     $end_time -= $end_time % 60; // round down to full minute
-    return ((($end_time - $start_time) / 60) / 60);
+    return (($end_time - $start_time) / 60) / 60;
 }
 
 function compute_overtime_hours($hours, $week_hours) {
@@ -185,13 +187,15 @@ function hrs_min($hours) {
 function work_week_begin($local_timestamp = null) {
     // Return local timestamp of the beginning of the work week.
     global $begin_week_day, $one_day;
-    if ($local_timestamp == null)
+    if ($local_timestamp == null) {
         $local_timestamp = time() - server_timezone_offset() + timezone_offset();
+    }
     $local_daystamp = day_timestamp($local_timestamp);
     $local_day_of_week = date('w', $local_daystamp);
     $ndays = $local_day_of_week - $begin_week_day;
-    if ($ndays < 0)
+    if ($ndays < 0) {
         $ndays += 7;
+    }
 
     return $local_daystamp - ($ndays * $one_day);
 }
@@ -199,24 +203,27 @@ function work_week_begin($local_timestamp = null) {
 ////////////////////////////////////////
 function utm_timestamp($local_timestamp = null) {
     // UTM timestamp for time, default is current local time.
-    if ($local_timestamp == null)
+    if ($local_timestamp == null) {
         return time() - server_timezone_offset();
+    }
 
     return $local_timestamp - timezone_offset();
 }
 
 function local_timestamp($utm_timestamp = null) {
     // Local timestamp for time, default is current time.
-    if ($utm_timestamp == null)
+    if ($utm_timestamp == null) {
         $utm_timestamp = time() - server_timezone_offset();
+    }
 
     return $utm_timestamp + timezone_offset();
 }
 
 function day_timestamp($local_timestamp = null) {
     // Local timestamp for the beginning of the day, default is current local time.
-    if ($local_timestamp == null)
+    if ($local_timestamp == null) {
         $local_timestamp = time() - server_timezone_offset() + timezone_offset();
+    }
     $month = date('m', $local_timestamp);
     $day = date('d', $local_timestamp);
     $year = date('Y', $local_timestamp);
@@ -292,10 +299,12 @@ function session_stop() {
 ////////////////////////////////////////
 function bool($str = null) {
     // true/false or yes/no
-    if ($str && preg_match('/^\s*(no|false|0+)\s*$/i', $str))
+    if ($str && preg_match('/^\s*(no|false|0+)\s*$/i', $str)) {
         return false;
-    if ($str)
+    }
+    if ($str) {
         return true;
+    }
 
     return false;
 }
