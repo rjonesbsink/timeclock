@@ -25,7 +25,7 @@ class Timecard {
     var $overtime_hours; // sum of overtime hours
     var $total_hours; // total of regular hours and overtime hours
 
-    function Timecard($empfullname, $begin_local_timestamp, $end_local_timestamp) {
+    function __construct($empfullname, $begin_local_timestamp, $end_local_timestamp) {
         $this->empfullname = $empfullname;
         $this->begin_local_timestamp = $begin_local_timestamp;
         $this->end_local_timestamp = $end_local_timestamp;
@@ -75,7 +75,7 @@ class Timecard {
 
         if ($this->begin_local_timestamp < $local_timestamp) {
             // Get previous record to timecard to see if employee is already signed in at beginning of the period.
-            $result = mysqli_query($GLOBALS["___mysqli_ston"], $this->_query_prev_record($begin_utm_timestamp))
+            $result = tc_query($this->_query_prev_record($begin_utm_timestamp), $this->empfullname)
             or trigger_error('Timecard->walk: no previous result: ' . mysqli_error($GLOBALS["___mysqli_ston"]), E_USER_WARNING);
 
             if ($result && mysqli_num_rows($result) > 0) {
@@ -98,7 +98,7 @@ class Timecard {
 
         // Get timecard entries.
         $query = $this->_query($begin_utm_timestamp, $end_utm_timestamp);
-        $result = mysqli_query($GLOBALS["___mysqli_ston"], $query)
+        $result = tc_query($query, $this->empfullname)
         or trigger_error('Timecard->walk: no result: ' . mysqli_error($GLOBALS["___mysqli_ston"]), E_USER_WARNING);
 
         // Process timecard entries.
@@ -190,7 +190,6 @@ class Timecard {
     function _query($begin_utm_timestamp, $end_utm_timestamp) {
         // Find records on an employee's timecard
         global $db_prefix, $default_in_or_out;
-        $q_empfullname = mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $this->empfullname);
 
         return <<<End_Of_SQL
 select	{$db_prefix}info.*,
@@ -203,7 +202,7 @@ select	{$db_prefix}info.*,
 from {$db_prefix}info
 left join {$db_prefix}punchlist on {$db_prefix}info.inout = {$db_prefix}punchlist.punchitems
 left join {$db_prefix}employees on {$db_prefix}info.fullname = {$db_prefix}employees.empfullname
-where {$db_prefix}info.fullname = '$q_empfullname'
+where {$db_prefix}info.fullname = ?
   and {$db_prefix}info.timestamp >= $begin_utm_timestamp
   and {$db_prefix}info.timestamp <= $end_utm_timestamp
 order by {$db_prefix}info.timestamp
@@ -213,7 +212,6 @@ End_Of_SQL;
     function _query_prev_record($begin_utm_timestamp) {
         // Find previous record to those selelected for an employee's timecard
         global $db_prefix, $default_in_or_out;
-        $q_empfullname = mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $this->empfullname);
 
         return <<<End_Of_SQL
 select	{$db_prefix}info.*,
@@ -226,7 +224,7 @@ select	{$db_prefix}info.*,
 from {$db_prefix}info
 left join {$db_prefix}punchlist on {$db_prefix}info.inout = {$db_prefix}punchlist.punchitems
 left join {$db_prefix}employees on {$db_prefix}info.fullname = {$db_prefix}employees.empfullname
-where {$db_prefix}info.fullname = '$q_empfullname'
+where {$db_prefix}info.fullname = ?
   and {$db_prefix}info.timestamp < $begin_utm_timestamp
 order by {$db_prefix}info.timestamp desc
 limit 1

@@ -12,9 +12,18 @@ if (!isset($_SESSION['application'])) {
 $sortcolumn = $show_display_name == 'yes' ? 'displayname' : 'empfullname';
 $sortdirection = 'asc';
 
-// Construct query
-$office_clause = $display_office == 'all' ? '' : "   and {$db_prefix}employees.office = '" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $display_office) . "'\n";
-$groups_clause = $display_group == 'all' ? '' : "   and {$db_prefix}employees.groups = '" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $display_group) . "'\n";
+// Construct query. $sortcolumn/$sortdirection are hardwired above (not user input),
+// so they're safe to interpolate directly -- placeholders can't bind identifiers anyway.
+$office_clause = $display_office == 'all' ? '' : "   and {$db_prefix}employees.office = ?\n";
+$groups_clause = $display_group == 'all' ? '' : "   and {$db_prefix}employees.groups = ?\n";
+
+$params = array();
+if ($display_office != 'all') {
+    $params[] = $display_office;
+}
+if ($display_group != 'all') {
+    $params[] = $display_group;
+}
 
 $query = <<<End_Of_SQL
 select {$db_prefix}employees.*, {$db_prefix}info.*, {$db_prefix}punchlist.*
@@ -27,7 +36,7 @@ select {$db_prefix}employees.*, {$db_prefix}info.*, {$db_prefix}punchlist.*
 {$office_clause}{$groups_clause}order by $sortcolumn $sortdirection
 End_Of_SQL;
 
-$result = mysqli_query($GLOBALS["___mysqli_ston"], $query)
+$result = tc_query($query, $params)
 or trigger_error("punchclock_display: Cannot select employees. " . mysqli_error($GLOBALS["___mysqli_ston"]), E_USER_WARNING);
 
 $row_count = 0;
