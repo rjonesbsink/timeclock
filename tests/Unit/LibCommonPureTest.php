@@ -4,7 +4,9 @@ namespace Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 
-require_with_cwd(TIMECLOCK_ROOT . '/punchclock', TIMECLOCK_ROOT . '/punchclock/lib.common.php');
+$__cwd = chdir_for_require(TIMECLOCK_ROOT . '/punchclock');
+require_once TIMECLOCK_ROOT . '/punchclock/lib.common.php';
+chdir_restore($__cwd);
 
 final class LibCommonPureTest extends TestCase
 {
