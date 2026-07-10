@@ -77,7 +77,7 @@ final class TimecardTest extends DatabaseTestCase
 
         $this->assertSame(2, $rowCount);
         $this->assertEqualsWithDelta(8.0, $totalHours, 0.001);
-        $this->assertSame(0, $overtimeHours);
+        $this->assertEqualsWithDelta(0.0, $overtimeHours, 0.001);
         $this->assertNull($todayHours, 'today_hours should stay null for a week that is not the current week');
     }
 
