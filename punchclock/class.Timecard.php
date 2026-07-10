@@ -64,6 +64,7 @@ class Timecard
 
         // Set flag to tally today's hours if within current week.
         $local_timestamp = local_timestamp(); // current time
+        $do_today_hours = false;
         if ($local_timestamp >= $this->begin_local_timestamp && $local_timestamp <= $this->end_local_timestamp) {
             // In current work week, set flag to look for and sum today's hours too.
             $do_today_hours = true;
@@ -150,10 +151,15 @@ class Timecard
 
         // Complete processing of the last time record.
         if ($row_count > 0) {
-            $row_count++;
-
             if ($this->in_or_out == 1) {
-                // Last record still has employee punched in.
+                // Last record still has employee punched in: report the
+                // still-open segment's hours up through now/end-of-period,
+                // then synthesize an extra pseudo punch-out row (below) so
+                // the display has a closing entry -- this is a genuinely
+                // new row beyond the ones the main loop already reported,
+                // hence the extra $row_count.
+                $row_count++;
+
                 $this->end_time = $this->end_local_timestamp > $local_timestamp ? $local_timestamp : $this->end_local_timestamp;
                 list ($this->hours, $this->overtime) = compute_work_hours($this->start_time, $this->end_time, $this->week_hours);
                 if ($do_today_hours) {
@@ -163,9 +169,7 @@ class Timecard
                 $this->overtime_hours += $this->overtime;
                 $this->total_hours = $this->week_hours + $this->overtime_hours;
 
-                // Add another record into timecard indicating pseudo punch-out at current time or end of week.
-
-                // Trigger onEveryRow function.
+                // Trigger onEveryRow function for the still-open segment.
                 if ($onEveryRow) {
                     $onEveryRow($this);
                 }
@@ -184,7 +188,11 @@ class Timecard
                     : "(end of period) " . $this->row['notes']; // add note
             }
 
-            // Trigger onEveryRow function.
+            // Trigger onEveryRow function for the tail row: either the
+            // pseudo punch-out just built above, or -- if the period ended
+            // on a real, already-completed punch-out -- that last real row,
+            // which the main loop's own onEveryRow calls never reach since
+            // each of those reports the row *before* the one just fetched.
             if ($onEveryRow) {
                 $onEveryRow($this);
             }

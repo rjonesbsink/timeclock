@@ -12,14 +12,23 @@ define('TIMECLOCK_ROOT', dirname(__DIR__));
  * set to each script's own directory (PHP's built-in server behavior), so
  * anything requiring one of those files from a different CWD needs to
  * replicate that.
+ *
+ * The require itself must happen at the CALLER's top-level (file) scope,
+ * not inside a helper function -- otherwise any config globals the
+ * included chain sets (e.g. punchclock/config.inc.php's $default_in_or_out)
+ * end up scoped to that helper function instead of $GLOBALS, and vanish
+ * the moment it returns. So this only flips the CWD; call chdir_restore()
+ * with its return value once your own top-level require_once is done.
  */
-function require_with_cwd(string $dir, string $file): void
+function chdir_for_require(string $dir): string
 {
     $originalCwd = getcwd();
     chdir($dir);
-    try {
-        require_once $file;
-    } finally {
-        chdir($originalCwd);
-    }
+
+    return $originalCwd;
+}
+
+function chdir_restore(string $originalCwd): void
+{
+    chdir($originalCwd);
 }
