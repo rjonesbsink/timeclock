@@ -102,4 +102,34 @@ final class TimecardTest extends DatabaseTestCase
         $this->assertSame(0, $overtimeHours, 'overtime_hours is unconditionally initialized to 0 in walk()');
         $this->assertNull($todayHours);
     }
+
+    public function testStillPunchedInPseudoRowPreservesTheOriginalRowsFields(): void
+    {
+        // Regression test: walk()'s synthetic "still punched in" pseudo-row
+        // used to be built from $this->next_row, which is always null by
+        // the time the main loop exits (it's the sentinel that ended the
+        // while loop, not the last real row) -- silently dropping every
+        // field the pseudo-row didn't explicitly overwrite, including
+        // 'notes', 'fullname', and 'timestamp'.
+        $begin = mktime(0, 0, 0, 1, 6, 2020);
+        $end = mktime(23, 59, 59, 1, 12, 2020);
+        $punchTimestamp = mktime(9, 0, 0, 1, 6, 2020);
+
+        $this->insertPunch('in', $punchTimestamp, 'original punch note');
+
+        $rows = [];
+        $timecard = new \Timecard(self::EMPFULLNAME, $begin, $end);
+        $timecard->walk(null, function ($tc) use (&$rows) {
+            $rows[] = $tc->row;
+        }, null);
+
+        $pseudoRow = end($rows);
+
+        $this->assertArrayHasKey('notes', $pseudoRow);
+        $this->assertSame('(end of period) original punch note', $pseudoRow['notes']);
+        $this->assertSame(self::EMPFULLNAME, $pseudoRow['fullname'] ?? null);
+        $this->assertEquals($punchTimestamp, $pseudoRow['timestamp'] ?? null);
+        $this->assertSame('#333', $pseudoRow['color']);
+        $this->assertSame(0, $pseudoRow['in_or_out']);
+    }
 }

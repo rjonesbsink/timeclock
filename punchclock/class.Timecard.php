@@ -177,7 +177,13 @@ class Timecard
                 // Re-initialize
                 $this->start_time = $this->end_time;
                 $this->in_or_out = 0;
-                $this->row = $this->next_row;
+                // Note: NOT `$this->row = $this->next_row;` here -- by now
+                // the while loop above has already run $this->next_row's
+                // fetch one time too many to find out the result set was
+                // exhausted, so it's null, not the last real row. $this->row
+                // already holds that last real row correctly (the main loop
+                // reassigns it every iteration), so build the pseudo row by
+                // mutating it in place instead of overwriting it with null.
 
                 // Fill in pseudo row
                 $this->row['in_or_out'] = $this->in_or_out;
