@@ -49,14 +49,25 @@ final class TimecardTest extends DatabaseTestCase
         ]);
     }
 
+    /**
+     * A fixed week safely in the past, so none of walk()'s "is this the
+     * current week / still punched in as of now" branches can trigger --
+     * and with $_COOKIE['tzoffset'] unset (see setUp), timezone_offset() is
+     * always 0, so local and UTM timestamps match.
+     *
+     * @return array{0: int, 1: int} [$begin, $end]
+     */
+    private function fixedPastWeek(): array
+    {
+        return [
+            mktime(0, 0, 0, 1, 6, 2020),
+            mktime(23, 59, 59, 1, 12, 2020),
+        ];
+    }
+
     public function testTallyOverASingleEightHourShiftInThePast(): void
     {
-        // A fixed week safely in the past, so none of walk()'s "is this the
-        // current week / still punched in as of now" branches can trigger --
-        // and with $_COOKIE['tzoffset'] unset (see setUp), timezone_offset()
-        // is always 0, so local and UTM timestamps match.
-        $begin = mktime(0, 0, 0, 1, 6, 2020);
-        $end = mktime(23, 59, 59, 1, 12, 2020);
+        [$begin, $end] = $this->fixedPastWeek();
 
         $this->insertPunch('in', mktime(9, 0, 0, 1, 6, 2020));
         $this->insertPunch('out', mktime(17, 0, 0, 1, 6, 2020));
@@ -72,8 +83,7 @@ final class TimecardTest extends DatabaseTestCase
 
     public function testTallyAccumulatesOvertimePastTheWeeklyLimit(): void
     {
-        $begin = mktime(0, 0, 0, 1, 6, 2020);
-        $end = mktime(23, 59, 59, 1, 12, 2020);
+        [$begin, $end] = $this->fixedPastWeek();
 
         // Five 8-hour days (Mon-Fri) = 40 hours, 5 over the 35-hour limit.
         for ($day = 6; $day <= 10; $day++) {
@@ -91,8 +101,7 @@ final class TimecardTest extends DatabaseTestCase
 
     public function testTallyWithNoPunchesReturnsZeroedResult(): void
     {
-        $begin = mktime(0, 0, 0, 1, 6, 2020);
-        $end = mktime(23, 59, 59, 1, 12, 2020);
+        [$begin, $end] = $this->fixedPastWeek();
 
         $timecard = new \Timecard(self::EMPFULLNAME, $begin, $end);
         [$rowCount, $totalHours, $overtimeHours, $todayHours] = $timecard->tally();
@@ -111,8 +120,7 @@ final class TimecardTest extends DatabaseTestCase
         // while loop, not the last real row) -- silently dropping every
         // field the pseudo-row didn't explicitly overwrite, including
         // 'notes', 'fullname', and 'timestamp'.
-        $begin = mktime(0, 0, 0, 1, 6, 2020);
-        $end = mktime(23, 59, 59, 1, 12, 2020);
+        [$begin, $end] = $this->fixedPastWeek();
         $punchTimestamp = mktime(9, 0, 0, 1, 6, 2020);
 
         $this->insertPunch('in', $punchTimestamp, 'original punch note');
