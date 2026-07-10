@@ -23,7 +23,9 @@ define('TIMECLOCK_ROOT', dirname(__DIR__));
 function chdir_for_require(string $dir): string
 {
     $originalCwd = getcwd();
-    chdir($dir);
+    if (!chdir($dir)) {
+        throw new \RuntimeException("chdir_for_require: could not chdir to $dir");
+    }
 
     return $originalCwd;
 }

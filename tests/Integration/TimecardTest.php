@@ -119,9 +119,13 @@ final class TimecardTest extends DatabaseTestCase
 
         $rows = [];
         $timecard = new \Timecard(self::EMPFULLNAME, $begin, $end);
-        $timecard->walk(null, function ($tc) use (&$rows) {
+        [$rowCount] = $timecard->walk(null, function ($tc) use (&$rows) {
             $rows[] = $tc->row;
         }, null);
+
+        // 1 real row (the open "in" punch) + 1 synthesized pseudo punch-out.
+        $this->assertSame(2, $rowCount);
+        $this->assertCount(2, $rows);
 
         $pseudoRow = end($rows);
 

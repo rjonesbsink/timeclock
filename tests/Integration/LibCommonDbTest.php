@@ -17,6 +17,8 @@ final class LibCommonDbTest extends DatabaseTestCase
     protected function tearDown(): void
     {
         tc_delete('employees', 'empfullname = ?', self::EMPFULLNAME);
+        tc_delete('info', 'fullname = ?', self::EMPFULLNAME);
+        tc_delete('punchlist', 'punchitems = ?', 'ZZTestStatus');
         $GLOBALS['use_passwd'] = 'yes';
     }
 
@@ -122,8 +124,5 @@ final class LibCommonDbTest extends DatabaseTestCase
         $this->assertSame('ZZTestStatus', $inout);
         $this->assertEquals($timestamp, $rowTimestamp);
         $this->assertSame('a note', $notes);
-
-        tc_delete('info', 'fullname = ?', self::EMPFULLNAME);
-        tc_delete('punchlist', 'punchitems = ?', 'ZZTestStatus');
     }
 }
