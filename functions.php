@@ -179,10 +179,10 @@ function html_options($result, $selected = '')
 
 function yes_no_bool($val, $default = false)
 {
-    if (strtolower(@$val) == 'yes') {
+    if (strtolower((string) @$val) == 'yes') {
         return true;
     }
-    if (strtolower(@$val) == 'no') {
+    if (strtolower((string) @$val) == 'no') {
         return false;
     }
     return $default;
@@ -190,12 +190,12 @@ function yes_no_bool($val, $default = false)
 
 function value_or_null($val)
 {
-    return (strlen(trim(@$val)) == 0) ? null : $val;
+    return (strlen(trim((string) @$val)) == 0) ? null : $val;
 }
 
 function has_value($val)
 {
-    return strlen(trim(@$val)) != 0;
+    return strlen(trim((string) @$val)) != 0;
 }
 
 function secsToHours($secs, $round_time)
