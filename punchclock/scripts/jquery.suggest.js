@@ -185,11 +185,26 @@
                 return;
             }
 
-            var html = '';
-            for (var i = 0; i < items.length; i++)
-                html += '<li>' + items[i] + '</li>';
+            $results.empty();
+            for (var i = 0; i < items.length; i++) {
+                var $li = $(document.createElement('li'));
+                var parts = items[i];
 
-            $results.html(html).show();
+                for (var j = 0; j < parts.length; j++) {
+                    if (parts[j].match) {
+                        $(document.createElement('span'))
+                            .addClass(options.matchClass)
+                            .text(parts[j].text)
+                            .appendTo($li);
+                    } else {
+                        $li.append(document.createTextNode(parts[j].text));
+                    }
+                }
+
+                $results.append($li);
+            }
+
+            $results.show();
 
             $results
                 .children('li')
@@ -209,18 +224,30 @@
 
             var items = [];
             var tokens = txt.split(options.delimiter);
+            var re = q ? new RegExp(q, 'ig') : null;
 
             // parse returned data for non-empty items
             for (var i = 0; i < tokens.length; i++) {
                 var token = $.trim(tokens[i]);
                 if (token) {
-                    token = token.replace(
-                        new RegExp(q, 'ig'),
-                        function (q) {
-                            return '<span class="' + options.matchClass + '">' + q + '</span>'
+                    var parts = [];
+                    if (re) {
+                        var lastIndex = 0;
+                        token.replace(re, function (match, offset) {
+                            if (offset > lastIndex) {
+                                parts.push({text: token.substring(lastIndex, offset), match: false});
+                            }
+                            parts.push({text: match, match: true});
+                            lastIndex = offset + match.length;
+                            return match;
+                        });
+                        if (lastIndex < token.length) {
+                            parts.push({text: token.substring(lastIndex), match: false});
                         }
-                    );
-                    items[items.length] = token;
+                    } else {
+                        parts.push({text: token, match: false});
+                    }
+                    items[items.length] = parts;
                 }
             }
 
