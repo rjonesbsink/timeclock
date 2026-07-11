@@ -160,7 +160,7 @@ if ($request == 'GET') {
 
     if (
         (@$tmp_officename == $post_officename) || (empty($post_officename)) || (!preg_match('/' . OFFICENAME_PATTERN . '/i', $post_officename)) ||
-        ((!preg_match('/' . "^([0-9])$" . '/i', $how_many)) && (isset($how_many))) || (@$how_many == '0') || (($create_groups != '1') && (!empty($create_groups))) ||
+        ((isset($how_many)) && (!preg_match('/' . "^([0-9])$" . '/i', $how_many))) || (@$how_many == '0') || (($create_groups != '1') && (!empty($create_groups))) ||
         (!empty($string)) || (!empty($string2))
     ) {
         if (empty($post_officename)) {
