@@ -513,3 +513,73 @@ function setTimeZone()
         $tzo = 0;
     }
 }
+
+/*
+ * Shared left-nav sidebar for admin/timeadd.php, admin/timeedit.php, and
+ * admin/timedelete.php, which otherwise each duplicate this ~40-line block
+ * verbatim (and previously reflected $get_user into it unescaped). $current
+ * is 'add', 'edit', or 'delete', selecting which of the three links gets the
+ * "current page" highlight class.
+ */
+function admin_time_left_nav($get_user, $current)
+{
+    return "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n"
+        . "  <tr valign=top>\n"
+        . "    <td class=left_main width=180 align=left scope=col>\n"
+        . "      <table class=hide width=100% border=0 cellpadding=1 cellspacing=0>\n"
+        . "        <tr><td class=left_rows height=11></td></tr>\n"
+        . "        <tr><td class=left_rows_headings height=18 valign=middle>Users</td></tr>\n"
+        . "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/user.png' alt='User Summary' />&nbsp;&nbsp;\n"
+        . "                <a class=admin_headings href='useradmin.php'>User Summary</a></td></tr>\n"
+        . "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/user_add.png' alt='Create New User' />&nbsp;&nbsp;\n"
+        . "                <a class=admin_headings href='usercreate.php'>Create New User</a></td></tr>\n"
+        . "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/magnifier.png' alt='User Search' />&nbsp;&nbsp;\n"
+        . "                <a class=admin_headings href='usersearch.php'>User Search</a></td></tr>\n"
+        . "        <tr><td class=left_rows height=33></td></tr>\n"
+        . "        <tr><td class=left_rows_headings height=18 valign=middle>Offices</td></tr>\n"
+        . "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/brick.png' alt='Office Summary' />&nbsp;&nbsp;\n"
+        . "                <a class=admin_headings href='officeadmin.php'>Office Summary</a></td></tr>\n"
+        . "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/brick_add.png' alt='Create New Office' />&nbsp;&nbsp;\n"
+        . "                <a class=admin_headings href='officecreate.php'>Create New Office</a></td></tr>\n"
+        . "        <tr><td class=left_rows height=33></td></tr>\n"
+        . "        <tr><td class=left_rows_headings height=18 valign=middle>Groups</td></tr>\n"
+        . "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/group.png' alt='Group Summary' />&nbsp;&nbsp;\n"
+        . "                <a class=admin_headings href='groupadmin.php'>Group Summary</a></td></tr>\n"
+        . "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/group_add.png' alt='Create New Group' />&nbsp;&nbsp;\n"
+        . "                <a class=admin_headings href='groupcreate.php'>Create New Group</a></td></tr>\n"
+        . "        <tr><td class=left_rows height=33></td></tr>\n"
+        . "        <tr><td class=left_rows_headings height=18 valign=middle colspan=2>In/Out Status</td></tr>\n"
+        . "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application.png' alt='Status Summary' />\n"
+        . "                &nbsp;&nbsp;<a class=admin_headings href='statusadmin.php'>Status Summary</a></td></tr>\n"
+        . "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application_add.png' alt='Create Status' />&nbsp;&nbsp;\n"
+        . "                <a class=admin_headings href='statuscreate.php'>Create Status</a></td></tr>\n"
+        . "        <tr><td class=left_rows height=33></td></tr>\n"
+        . "        <tr><td class=left_rows_headings height=18 valign=middle colspan=2>Miscellaneous</td></tr>\n"
+        . "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/clock.png' alt='Add/Edit/Delete Time' />\n"
+        . "                &nbsp;&nbsp;<a class=admin_headings href='timeadmin.php'>Add/Edit/Delete Time</a></td></tr>\n"
+        . admin_time_sidebar_links($get_user, $current)
+        . "        <tr><td class=left_rows_border_top height=18 align=left valign=middle><img src='../images/icons/application_edit.png'\n"
+        . "                alt='Edit System Settings' /> &nbsp;&nbsp;<a class=admin_headings href='sysedit.php'>Edit System Settings</a></td></tr>\n"
+        . "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/database_go.png'\n"
+        . "                alt='Upgrade Database' />&nbsp;&nbsp;&nbsp;<a class=admin_headings href='dbupgrade.php'>Upgrade Database</a></td></tr>\n"
+        . "      </table></td>\n";
+}
+
+function admin_time_sidebar_links($get_user, $current)
+{
+    $u = htmlspecialchars(rawurlencode($get_user));
+    $pages = [
+        'add' => ['timeadd.php', 'Add Time'],
+        'edit' => ['timeedit.php', 'Edit Time'],
+        'delete' => ['timedelete.php', 'Delete Time'],
+    ];
+
+    $html = '';
+    foreach ($pages as $key => [$page, $label]) {
+        $class = $key === $current ? 'current_left_rows_indent' : 'left_rows_indent';
+        $html .= "        <tr><td class=$class height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='$label' />\n"
+            . "                &nbsp;&nbsp;<a class=admin_headings href=\"$page?username=$u\">$label</a></td></tr>\n";
+    }
+
+    return $html;
+}

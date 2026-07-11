@@ -25,65 +25,6 @@ function form_open($self, $with_onsubmit = false)
     return "            <form name='form' action='" . htmlspecialchars($self) . "' method='post'$onsubmit>\n";
 }
 
-function time_admin_sidebar_links($get_user)
-{
-    $u = htmlspecialchars(rawurlencode($get_user));
-    return "        <tr><td class=left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Add Time' />\n"
-        . "                &nbsp;&nbsp;<a class=admin_headings href=\"timeadd.php?username=$u\">Add Time</a></td></tr>\n"
-        . "        <tr><td class=current_left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Edit Time' />\n"
-        . "                &nbsp;&nbsp;<a class=admin_headings href=\"timeedit.php?username=$u\">Edit Time</a></td></tr>\n"
-        . "        <tr><td class=left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Delete Time' />\n"
-        . "                &nbsp;&nbsp;<a class=admin_headings href=\"timedelete.php?username=$u\">Delete Time</a></td></tr>\n";
-}
-
-// The GET and POST branches both render this exact left-nav column;
-// previously duplicated verbatim in both places (a pre-existing
-// SonarCloud new_duplicated_lines_density contributor once either
-// copy's lines were touched), now shared here.
-function admin_left_nav($get_user)
-{
-    return "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n"
-        . "  <tr valign=top>\n"
-        . "    <td class=left_main width=180 align=left scope=col>\n"
-        . "      <table class=hide width=100% border=0 cellpadding=1 cellspacing=0>\n"
-        . "        <tr><td class=left_rows height=11></td></tr>\n"
-        . "        <tr><td class=left_rows_headings height=18 valign=middle>Users</td></tr>\n"
-        . "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/user.png' alt='User Summary' />&nbsp;&nbsp;\n"
-        . "                <a class=admin_headings href='useradmin.php'>User Summary</a></td></tr>\n"
-        . "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/user_add.png' alt='Create New User' />&nbsp;&nbsp;\n"
-        . "                <a class=admin_headings href='usercreate.php'>Create New User</a></td></tr>\n"
-        . "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/magnifier.png' alt='User Search' />&nbsp;&nbsp;\n"
-        . "                <a class=admin_headings href='usersearch.php'>User Search</a></td></tr>\n"
-        . "        <tr><td class=left_rows height=33></td></tr>\n"
-        . "        <tr><td class=left_rows_headings height=18 valign=middle>Offices</td></tr>\n"
-        . "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/brick.png' alt='Office Summary' />&nbsp;&nbsp;\n"
-        . "                <a class=admin_headings href='officeadmin.php'>Office Summary</a></td></tr>\n"
-        . "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/brick_add.png' alt='Create New Office' />&nbsp;&nbsp;\n"
-        . "                <a class=admin_headings href='officecreate.php'>Create New Office</a></td></tr>\n"
-        . "        <tr><td class=left_rows height=33></td></tr>\n"
-        . "        <tr><td class=left_rows_headings height=18 valign=middle>Groups</td></tr>\n"
-        . "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/group.png' alt='Group Summary' />&nbsp;&nbsp;\n"
-        . "                <a class=admin_headings href='groupadmin.php'>Group Summary</a></td></tr>\n"
-        . "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/group_add.png' alt='Create New Group' />&nbsp;&nbsp;\n"
-        . "                <a class=admin_headings href='groupcreate.php'>Create New Group</a></td></tr>\n"
-        . "        <tr><td class=left_rows height=33></td></tr>\n"
-        . "        <tr><td class=left_rows_headings height=18 valign=middle colspan=2>In/Out Status</td></tr>\n"
-        . "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application.png' alt='Status Summary' />\n"
-        . "                &nbsp;&nbsp;<a class=admin_headings href='statusadmin.php'>Status Summary</a></td></tr>\n"
-        . "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application_add.png' alt='Create Status' />&nbsp;&nbsp;\n"
-        . "                <a class=admin_headings href='statuscreate.php'>Create Status</a></td></tr>\n"
-        . "        <tr><td class=left_rows height=33></td></tr>\n"
-        . "        <tr><td class=left_rows_headings height=18 valign=middle colspan=2>Miscellaneous</td></tr>\n"
-        . "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/clock.png' alt='Add/Edit/Delete Time' />\n"
-        . "                &nbsp;&nbsp;<a class=admin_headings href='timeadmin.php'>Add/Edit/Delete Time</a></td></tr>\n"
-        . time_admin_sidebar_links($get_user)
-        . "        <tr><td class=left_rows_border_top height=18 align=left valign=middle><img src='../images/icons/application_edit.png'\n"
-        . "                alt='Edit System Settings' /> &nbsp;&nbsp;<a class=admin_headings href='sysedit.php'>Edit System Settings</a></td></tr>\n"
-        . "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/database_go.png'\n"
-        . "                alt='Upgrade Database' />&nbsp;&nbsp;&nbsp;<a class=admin_headings href='dbupgrade.php'>Upgrade Database</a></td></tr>\n"
-        . "      </table></td>\n";
-}
-
 if (($timefmt == "G:i") || ($timefmt == "H:i")) {
     $timefmt_24hr = '1';
     $timefmt_24hr_text = '24 hr format';
@@ -116,7 +57,7 @@ if ($request == 'GET') {
 
     disabled_acct($get_user);
 
-    echo admin_left_nav($get_user);
+    echo admin_time_left_nav($get_user, 'edit');
 
     $get_user = addslashes($get_user);
 
@@ -239,7 +180,7 @@ if ($request == 'GET') {
 
     // end post validation //
 
-    echo admin_left_nav($get_user);
+    echo admin_time_left_nav($get_user, 'edit');
     echo "    <td align=left class=right_main scope=col>\n";
     echo "      <table width=100% height=100% border=0 cellpadding=10 cellspacing=1>\n";
     echo "        <tr class=right_main_text>\n";
