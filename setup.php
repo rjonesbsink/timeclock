@@ -69,14 +69,14 @@ function render_form($values, $errorHtml = '')
     return $html;
 }
 
-// Returns ['ok' => true, 'warning' => ?string] on success (the file was
-// written; 'warning' is set if a non-fatal problem -- currently just a
-// failed chmod -- means it's worth telling the admin about), or
-// ['ok' => false, 'error' => string] if config.inc.php was NOT written,
-// e.g. because the .dist template didn't match the expected shape (so we
-// never silently write a config file that still has the placeholder
-// "changeme" credentials in it) or the file couldn't be created at all.
-function write_config($dbHostname, $dbName, $dbUsername, $dbPassword)
+// Fills in config.inc.php.dist with the submitted DB values and returns the
+// resulting file content, without touching the database or filesystem.
+// Called before connecting so a template that doesn't match the expected
+// shape is caught before any tables get created -- otherwise a failure
+// here would leave the install half-finished (tables created, but no
+// config.inc.php, and no way to retry without unchecking "create tables").
+// Returns ['ok' => true, 'content' => string] or ['ok' => false, 'error' => string].
+function build_config($dbHostname, $dbName, $dbUsername, $dbPassword)
 {
     $template = file_get_contents(CONFIG_TEMPLATE);
 
@@ -100,7 +100,16 @@ function write_config($dbHostname, $dbName, $dbUsername, $dbPassword)
         }
     }
 
-    if (file_put_contents(CONFIG_FILE, $template) === false) {
+    return ['ok' => true, 'content' => $template];
+}
+
+// Returns ['ok' => true, 'warning' => ?string] on success ('warning' is set
+// if a non-fatal problem -- currently just a failed chmod -- means it's
+// worth telling the admin about), or ['ok' => false, 'error' => string] if
+// config.inc.php could not be written at all.
+function save_config($content)
+{
+    if (file_put_contents(CONFIG_FILE, $content) === false) {
         return ['ok' => false, 'error' => 'Could not write config.inc.php. Check the web server has permission to create files here.'];
     }
 
@@ -162,6 +171,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    $configBuild = build_config($values['db_hostname'], $values['db_name'], $values['db_username'], $dbPassword);
+
+    if (!$configBuild['ok']) {
+        $error = htmlspecialchars($configBuild['error']);
+        render_page(render_form($values, "<p class='error'>Could not finish setup: $error</p>"));
+        exit;
+    }
+
     try {
         $connection = mysqli_connect($values['db_hostname'], $values['db_username'], $dbPassword, $values['db_name']);
     } catch (mysqli_sql_exception $e) {
@@ -182,11 +199,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     mysqli_close($connection);
 
-    $configResult = write_config($values['db_hostname'], $values['db_name'], $values['db_username'], $dbPassword);
+    $configResult = save_config($configBuild['content']);
 
     if (!$configResult['ok']) {
         $error = htmlspecialchars($configResult['error']);
-        render_page(render_form($values, "<p class='error'>Connected, but could not finish setup: $error</p>"));
+        render_page(render_form($values, "<p class='error'>Database is ready, but could not finish setup: $error</p>"));
         exit;
     }
 
