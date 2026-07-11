@@ -130,12 +130,12 @@ if ($request == 'GET') {
     $confirm_password = $_POST['confirm_password'];
     $email_addy = $_POST['email_addy'];
     $user_barcode = value_or_null($_POST['barcode']);// UNIQUE constraint so no empty strings
-    $office_name = $_POST['office_name'];
+    $office_name = $_POST['office_name'] ?? '';
     @$group_name = $_POST['group_name'];
-    $admin_perms = $_POST['admin_perms'];
-    $reports_perms = $_POST['reports_perms'];
-    $time_admin_perms = $_POST['time_admin_perms'];
-    $post_disabled = $_POST['disabled'];
+    $admin_perms = $_POST['admin_perms'] ?? '';
+    $reports_perms = $_POST['reports_perms'] ?? '';
+    $time_admin_perms = $_POST['time_admin_perms'] ?? '';
+    $post_disabled = $_POST['disabled'] ?? '';
     $inout = $_POST['inout'];
 
     $tmp_username = tc_select_value("empfullname", "employees", "empfullname = ? ORDER by empfullname", $post_username);
@@ -200,7 +200,7 @@ if ($request == 'GET') {
         $h_post_username = htmlentities($post_username);
         $h_display_name = htmlentities($display_name);
         $h_email_addy = htmlentities($email_addy);
-        $h_user_barcode = htmlentities($user_barcode);
+        $h_user_barcode = htmlentities($user_barcode ?? '');
 
         // begin post validation //
 

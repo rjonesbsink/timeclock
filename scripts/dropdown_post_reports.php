@@ -10,7 +10,7 @@
 
         <?php
 
-        @$office_name = $_POST['office_name'];
+        @$office_name = $_POST['office_name'] ?? '';
 
         $query = "select * from " . $db_prefix . "offices";
         $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
