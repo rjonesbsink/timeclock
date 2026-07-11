@@ -12,9 +12,12 @@
  */
 
 if (!isset($db_hostname)) {
-    $appRoot = dirname(__DIR__);
+    $urlBase = '';
     $docRoot = rtrim($_SERVER['DOCUMENT_ROOT'] ?? '', '/');
-    $urlBase = str_starts_with($appRoot, $docRoot) ? substr($appRoot, strlen($docRoot)) : '';
+    $appRoot = dirname(__DIR__);
+    if ($docRoot !== '' && str_starts_with($appRoot, $docRoot)) {
+        $urlBase = substr($appRoot, strlen($docRoot));
+    }
     header('Location: ' . $urlBase . '/setup.php');
     exit;
 }

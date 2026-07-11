@@ -1,17 +1,25 @@
 <?php
 
+/*
+ * First-run setup wizard. Refuses to do anything once config.inc.php
+ * exists (below), but until an admin runs it, this is intentionally an
+ * unauthenticated page that accepts arbitrary DB host/credentials and
+ * reports back whether the connection succeeded -- the same shape every
+ * install wizard has (WordPress, etc.). Operators should restrict access
+ * to this file (IP allowlist, HTTP auth, or just deleting it) between
+ * deploying the code and actually running setup.
+ */
+
 session_start();
 
-require_once 'lib/csrf.php';
+require_once __DIR__ . '/lib/csrf.php';
 
-const CONFIG_FILE = 'config.inc.php';
-const CONFIG_TEMPLATE = 'config.inc.php.dist';
-const SCHEMA_FILE = 'sql/create_tables.sql';
+const CONFIG_FILE = __DIR__ . '/config.inc.php';
+const CONFIG_TEMPLATE = __DIR__ . '/config.inc.php.dist';
+const SCHEMA_FILE = __DIR__ . '/sql/create_tables.sql';
 
 if (file_exists(CONFIG_FILE)) {
-    echo "<!doctype html><html><head><title>PHP Timeclock Setup</title></head><body>";
-    echo "<p>PHP Timeclock is already configured. Delete <code>config.inc.php</code> on the server if you need to run setup again.</p>";
-    echo "</body></html>";
+    render_page("<p>PHP Timeclock is already configured. Delete <code>config.inc.php</code> on the server if you need to run setup again.</p>");
     exit;
 }
 
@@ -61,37 +69,50 @@ function render_form($values, $errorHtml = '')
     return $html;
 }
 
+// Returns ['ok' => true, 'warning' => ?string] on success (the file was
+// written; 'warning' is set if a non-fatal problem -- currently just a
+// failed chmod -- means it's worth telling the admin about), or
+// ['ok' => false, 'error' => string] if config.inc.php was NOT written,
+// e.g. because the .dist template didn't match the expected shape (so we
+// never silently write a config file that still has the placeholder
+// "changeme" credentials in it) or the file couldn't be created at all.
 function write_config($dbHostname, $dbName, $dbUsername, $dbPassword)
 {
     $template = file_get_contents(CONFIG_TEMPLATE);
 
-    $template = preg_replace(
-        '/^\$db_hostname\s*=\s*".*";$/m',
-        '$db_hostname = ' . var_export($dbHostname, true) . ';',
-        $template,
-        1
-    );
-    $template = preg_replace(
-        '/^\$db_username\s*=\s*".*";$/m',
-        '$db_username = ' . var_export($dbUsername, true) . ';',
-        $template,
-        1
-    );
-    $template = preg_replace(
-        '/^\$db_password\s*=\s*".*";$/m',
-        '$db_password = ' . var_export($dbPassword, true) . ';',
-        $template,
-        1
-    );
-    $template = preg_replace(
-        '/^\$db_name\s*=\s*".*";$/m',
-        '$db_name = ' . var_export($dbName, true) . ';',
-        $template,
-        1
-    );
+    $substitutions = [
+        'db_hostname' => $dbHostname,
+        'db_username' => $dbUsername,
+        'db_password' => $dbPassword,
+        'db_name' => $dbName,
+    ];
 
-    file_put_contents(CONFIG_FILE, $template);
-    @chmod(CONFIG_FILE, 0640);
+    foreach ($substitutions as $variable => $value) {
+        $template = preg_replace(
+            '/^\$' . $variable . '\s*=\s*".*";$/m',
+            '$' . $variable . ' = ' . var_export($value, true) . ';',
+            $template,
+            1,
+            $replacementCount
+        );
+        if ($replacementCount !== 1) {
+            return ['ok' => false, 'error' => "Could not find \$$variable in config.inc.php.dist -- the template may have changed."];
+        }
+    }
+
+    if (file_put_contents(CONFIG_FILE, $template) === false) {
+        return ['ok' => false, 'error' => 'Could not write config.inc.php. Check the web server has permission to create files here.'];
+    }
+
+    if (!chmod(CONFIG_FILE, 0640)) {
+        return [
+            'ok' => true,
+            'warning' => 'config.inc.php was created, but its file permissions could not be restricted to 0640'
+                . ' (it contains your database password). Please set this manually on the server.',
+        ];
+    }
+
+    return ['ok' => true, 'warning' => null];
 }
 
 function run_schema($connection)
@@ -161,10 +182,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     mysqli_close($connection);
 
-    write_config($values['db_hostname'], $values['db_name'], $values['db_username'], $dbPassword);
+    $configResult = write_config($values['db_hostname'], $values['db_name'], $values['db_username'], $dbPassword);
+
+    if (!$configResult['ok']) {
+        $error = htmlspecialchars($configResult['error']);
+        render_page(render_form($values, "<p class='error'>Connected, but could not finish setup: $error</p>"));
+        exit;
+    }
+
+    $warningHtml = $configResult['warning']
+        ? "<p class='error'>" . htmlspecialchars($configResult['warning']) . "</p>"
+        : '';
 
     render_page(
-        "<p class='success'>Setup complete. PHP Timeclock is now configured.</p>"
+        $warningHtml
+        . "<p class='success'>Setup complete. PHP Timeclock is now configured.</p>"
         . "<p><a href='login.php'>Continue to the admin login</a> or <a href='index.php'>go to the timeclock</a>.</p>"
     );
     exit;
