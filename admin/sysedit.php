@@ -252,6 +252,12 @@ if ($request == 'GET') {
             echo "            <br />\n";
         }
     } elseif (!isset($evil)) {
+        if ($links == "none") {
+            $links = array();
+        }
+        if ($display_links == "none") {
+            $display_links = array();
+        }
         for ($x = 0; $x < count($links); $x++) {
             $links[$x] = addslashes($links[$x]);
             if (strlen($links[$x]) > 100) {
@@ -1078,7 +1084,7 @@ if ($request == 'GET') {
     echo "              <tr><td bgcolor='$row_color' class=table_rows width=10% align=left style='padding-left:4px;' valign=top>links:</td>
                   <td bgcolor='$row_color' class=table_rows width=10% align=left valign=top>\n";
     if ($links == "none") {
-        $links = "0";
+        $links = array();
     }
     for ($x = 0; $x < count($links); $x++) {
         $links[$x] = htmlentities($links[$x]);
@@ -1105,7 +1111,7 @@ if ($request == 'GET') {
                   <td bgcolor='$row_color' class=table_rows width=10% align=left valign=top>\n";
 
     if ($display_links == "none") {
-        $display_links = "0";
+        $display_links = array();
     }
     for ($x = 0; $x < count($display_links); $x++) {
         $display_links[$x] = htmlentities($display_links[$x]);

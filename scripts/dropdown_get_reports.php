@@ -70,7 +70,9 @@
             <?php
         }
         ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
-        ((mysqli_free_result($result2) || (is_object($result2) && (get_class($result2) == "mysqli_result"))) ? true : false);
+        if (isset($result2) && $result2 instanceof mysqli_result) {
+            mysqli_free_result($result2);
+        }
         ?>
         if (users_select.options[users_select.selectedIndex].value != 'All') {
             users_select.length = 0;
@@ -148,8 +150,12 @@
             <?php
         }// ends while $row for offices
         ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
-        ((mysqli_free_result($result2) || (is_object($result2) && (get_class($result2) == "mysqli_result"))) ? true : false);
-        ((mysqli_free_result($result3) || (is_object($result3) && (get_class($result3) == "mysqli_result"))) ? true : false);
+        if (isset($result2) && $result2 instanceof mysqli_result) {
+            mysqli_free_result($result2);
+        }
+        if (isset($result3) && $result3 instanceof mysqli_result) {
+            mysqli_free_result($result3);
+        }
         ?>
         if (groups_select.options[groups_select.selectedIndex].value == 'All') {
             <?php
