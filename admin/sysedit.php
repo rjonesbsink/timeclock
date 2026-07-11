@@ -270,6 +270,9 @@ if ($request == 'GET') {
                 $evil_display_link = "1";
             }
         }
+        if (!isset($allowed_networks) || !is_array($allowed_networks)) {
+            $allowed_networks = array();
+        }
         for ($x = 0; $x < count($allowed_networks); $x++) {
             if (strlen($allowed_networks[$x]) > 21) {
                 $evil_allowed_network = "1";
@@ -444,8 +447,8 @@ if ($request == 'GET') {
     $row_color = ($row_count % 2) ? $color2 : $color1;
     echo "              <tr><td bgcolor='$row_color' class=table_rows width=10% align=left style='padding-left:4px;' valign=top>allowed_networks:</td>
                   <td bgcolor='$row_color' class=table_rows width=10% align=left valign=top>\n";
-    if ($allowed_networks == "none") {
-        $allowed_networks = "0";
+    if (!isset($allowed_networks) || !is_array($allowed_networks)) {
+        $allowed_networks = array();
     }
     for ($x = 0; $x < count($allowed_networks); $x++) {
         if (empty($allowed_networks[$x])) {
