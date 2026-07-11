@@ -227,10 +227,10 @@ if ($request == 'GET') {
     $office_name = $_POST['office_name'];
     @$get_office = htmlentities($_POST['get_office'] ?? '');
     @$group_name = $_POST['group_name'];
-    @$admin_perms = $_POST['admin_perms'];
-    $reports_perms = $_POST['reports_perms'];
-    $time_admin_perms = $_POST['time_admin_perms'];
-    $post_disabled = $_POST['disabled'];
+    $admin_perms = $_POST['admin_perms'] ?? '';
+    $reports_perms = $_POST['reports_perms'] ?? '';
+    $time_admin_perms = $_POST['time_admin_perms'] ?? '';
+    $post_disabled = $_POST['disabled'] ?? '';
     @$evil = $_POST['evil'];
 
     if (isset($evil)) {
@@ -404,7 +404,7 @@ if ($request == 'GET') {
         $h_post_username = htmlentities($post_username);
         $h_display_name = htmlentities($display_name);
         $h_email_addy = htmlentities($email_addy);
-        $h_user_barcode = htmlentities($user_barcode);
+        $h_user_barcode = htmlentities($user_barcode ?? '');
 
         echo "            <br />\n";
         echo "            <form name='form' action='$self' method='post'>\n";
