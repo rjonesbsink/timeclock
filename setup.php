@@ -88,9 +88,14 @@ function build_config($dbHostname, $dbName, $dbUsername, $dbPassword)
     ];
 
     foreach ($substitutions as $variable => $value) {
-        $template = preg_replace(
+        // preg_replace_callback, not preg_replace: the replacement here
+        // embeds a submitted value (most importantly the DB password),
+        // and preg_replace's replacement string treats $1/\1-style
+        // sequences as backreferences -- a password containing a literal
+        // "$1" would otherwise be silently mangled in the written file.
+        $template = preg_replace_callback(
             '/^\$' . $variable . '\s*=\s*".*";$/m',
-            '$' . $variable . ' = ' . var_export($value, true) . ';',
+            fn () => '$' . $variable . ' = ' . var_export($value, true) . ';',
             $template,
             1,
             $replacementCount
