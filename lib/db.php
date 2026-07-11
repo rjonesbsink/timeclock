@@ -18,7 +18,19 @@ if (!isset($db_hostname)) {
     if ($docRoot !== '' && str_starts_with($appRoot, $docRoot)) {
         $urlBase = substr($appRoot, strlen($docRoot));
     }
-    header('Location: ' . $urlBase . '/setup.php');
+    $setupUrl = $urlBase . '/setup.php';
+
+    if (headers_sent()) {
+        // A caller printed something (e.g. a literal <html> before its own
+        // <?php block) before reaching this point, so the HTTP redirect
+        // below can't be sent -- this is the only path to the setup wizard
+        // on a fresh install, so fall back to a client-side redirect rather
+        // than leaving the visitor stuck on a broken page.
+        echo '<meta http-equiv="refresh" content="0;url=' . htmlspecialchars($setupUrl) . '">';
+        echo '<p>PHP Timeclock needs to be configured. <a href="' . htmlspecialchars($setupUrl) . '">Continue to setup</a>.</p>';
+    } else {
+        header('Location: ' . $setupUrl);
+    }
     exit;
 }
 
