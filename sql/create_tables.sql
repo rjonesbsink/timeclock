@@ -123,10 +123,12 @@ CREATE TABLE `punchlist` (
 
 -- --------------------------------------------------------
 --
--- Insert default data. Version, admin login, etc.
+-- Insert default data. Version, etc.
 --
+-- The initial admin account is created by setup.php with an
+-- installer-chosen password, not seeded here with a fixed default
+-- credential.
 
-INSERT INTO employees VALUES ('admin', NULL, 'xy.RY2HT1QTc2', 'administrator', '', NULL, '', '', 1, 1, 1, 0);
 INSERT INTO dbversion VALUES ('1.5');
 INSERT INTO punchlist VALUES ('in', '', '#009900', 1);
 INSERT INTO punchlist VALUES ('out', '', '#FF0000', 0);
