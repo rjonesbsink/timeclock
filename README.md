@@ -6,14 +6,9 @@ This project is PHP Timeclock with the Punchclock add-on already installed.
 
 `config.inc.php` holds your database credentials and is git-ignored (an earlier version of this
 repo committed real credentials — treat any password that was ever in `config.inc.php` as
-compromised and rotate it). To configure a new install:
-
-```
-cp config.inc.php.dist config.inc.php
-```
-
-Then edit `config.inc.php` with your database host/username/password/name. See `docs/INSTALL`
-for full setup steps, including importing `sql/create_tables.sql`.
+compromised and rotate it). For a new install, open `setup.php` in your browser: it creates
+`config.inc.php`, the database tables, and the initial admin account (with a password you choose)
+for you. See `docs/INSTALL` for full setup steps and manual/advanced configuration.
 
 # This Fork
 
