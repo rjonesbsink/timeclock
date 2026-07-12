@@ -13,6 +13,7 @@
 session_start();
 
 require_once __DIR__ . '/lib/csrf.php';
+require_once __DIR__ . '/functions.php';
 
 const CONFIG_FILE = __DIR__ . '/config.inc.php';
 const CONFIG_TEMPLATE = __DIR__ . '/config.inc.php.dist';
@@ -160,13 +161,10 @@ $values = [
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // ?? '' only guards a missing key, not one submitted as an array
-    // (host[]=x etc.), which would otherwise reach trim()/mysqli_connect()
-    // as a fatal TypeError under PHP 8.
-    $values['db_hostname'] = trim(is_string($_POST['db_hostname'] ?? null) ? $_POST['db_hostname'] : '');
-    $values['db_name'] = trim(is_string($_POST['db_name'] ?? null) ? $_POST['db_name'] : '');
-    $values['db_username'] = trim(is_string($_POST['db_username'] ?? null) ? $_POST['db_username'] : '');
-    $dbPassword = is_string($_POST['db_password'] ?? null) ? $_POST['db_password'] : '';
+    $values['db_hostname'] = trim(post_string('db_hostname'));
+    $values['db_name'] = trim(post_string('db_name'));
+    $values['db_username'] = trim(post_string('db_username'));
+    $dbPassword = post_string('db_password');
     $values['create_tables'] = !empty($_POST['create_tables']);
 
     if (!verify_csrf_token()) {
