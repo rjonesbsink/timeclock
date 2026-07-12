@@ -96,6 +96,21 @@ if ($request == 'GET') {
     @$how_many = $_POST['how_many'];
     @$input_group_name = $_POST['input_group_name'];
 
+    // how_many is only ever a plain text field on the real form -- a crafted
+    // how_many[]=1 request would otherwise reach preg_match()/string
+    // interpolation below as an array, which is a fatal TypeError on the
+    // former and an "Array to string conversion" warning on the latter.
+    // Deliberately NOT the same as "not submitted" (the normal, expected
+    // case when create_groups is "No"): unsetting it would let a
+    // malformed how_many silently fall through to creating the office
+    // with no groups even when create_groups=1 was submitted, with no
+    // indication anything was wrong. Coerce to a value that's guaranteed
+    // to fail the "is this a single digit" checks below instead, so it's
+    // rejected the same way any other invalid how_many already is.
+    if (isset($how_many) && !is_string($how_many)) {
+        $how_many = '';
+    }
+
     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
     echo "  <tr valign=top>\n";
     echo "    <td class=left_main width=180 align=left scope=col>\n";
@@ -160,7 +175,7 @@ if ($request == 'GET') {
 
     if (
         (@$tmp_officename == $post_officename) || (empty($post_officename)) || (!preg_match('/' . OFFICENAME_PATTERN . '/i', $post_officename)) ||
-        ((!preg_match('/' . "^([0-9])$" . '/i', $how_many)) && (isset($how_many))) || (@$how_many == '0') || (($create_groups != '1') && (!empty($create_groups))) ||
+        ((isset($how_many)) && (!preg_match('/' . "^([0-9])$" . '/i', $how_many))) || (@$how_many == '0') || (($create_groups != '1') && (!empty($create_groups))) ||
         (!empty($string)) || (!empty($string2))
     ) {
         if (empty($post_officename)) {
