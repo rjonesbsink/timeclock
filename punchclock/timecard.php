@@ -28,8 +28,9 @@ include 'setup_timeclock.php';
 // authorize and initialize
 
 // Parse arguments.
-$emp = isset($_GET['emp']) ? $_GET['emp'] : null;
-$empfullname = isset($_REQUEST['empfullname']) ? $_REQUEST['empfullname'] : null;
+// Guard against ?emp[]=x / empfullname[]=x -- see entry.ajax.php.
+$emp = get_string('emp', null);
+$empfullname = request_string('empfullname', null);
 if (!$empfullname) {
     $empfullname = $emp;
 // from url or form entry

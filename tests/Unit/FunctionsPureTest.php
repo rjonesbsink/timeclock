@@ -107,7 +107,7 @@ final class FunctionsPureTest extends TestCase
 
     protected function tearDown(): void
     {
-        unset($_POST['zztest_key'], $_GET['zztest_key']);
+        unset($_POST['zztest_key'], $_GET['zztest_key'], $_REQUEST['zztest_key']);
     }
 
     public function testPostStringPassesThroughAStringValue(): void
@@ -154,6 +154,26 @@ final class FunctionsPureTest extends TestCase
         $_GET['zztest_key'] = ['1', '2'];
 
         $this->assertSame('', get_string('zztest_key'));
+    }
+
+    public function testRequestStringPassesThroughAStringValue(): void
+    {
+        $_REQUEST['zztest_key'] = 'hello';
+
+        $this->assertSame('hello', request_string('zztest_key'));
+    }
+
+    public function testRequestStringFallsBackToDefaultWhenMissing(): void
+    {
+        $this->assertSame('', request_string('zztest_key'));
+        $this->assertSame('fallback', request_string('zztest_key', 'fallback'));
+    }
+
+    public function testRequestStringFallsBackToDefaultWhenSubmittedAsAnArray(): void
+    {
+        $_REQUEST['zztest_key'] = ['1', '2'];
+
+        $this->assertSame('', request_string('zztest_key'));
     }
 
     public function testSecsToHoursWithNoRounding(): void

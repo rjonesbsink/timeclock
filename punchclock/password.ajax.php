@@ -21,12 +21,19 @@ require_once "$TIMECLOCK_PATH/lib/db.php";
 // Parse arguments
 $change_password = isset($_GET['change_password']) ? true : false;
 $forgot_password = isset($_GET['forgot_password']) ? true : false;
-$emp = isset($_GET['emp']) ? $_GET['emp'] : null;
+$emp = get_string('emp', null);
 
-$empfullname = isset($_POST['empfullname']) ? $_POST['empfullname'] : null;
-$old_password = isset($_POST['old_password']) ? $_POST['old_password'] : null;
-$new_password = isset($_POST['new_password']) ? $_POST['new_password'] : null;
-$confirm_password = isset($_POST['confirm_password']) ? $_POST['confirm_password'] : null;
+// Guard against an array payload for any of these: they otherwise flow
+// unguarded into htmlentities()/crypt()/password_verify()/password_hash()
+// or a tc_select()/tc_update_strings() bind param, which is a fatal
+// TypeError/ArgumentCountError under PHP 8. Note $new_password ===
+// $confirm_password is a strict comparison, so two array payloads (e.g.
+// new_password[]=1&confirm_password[]=1) would otherwise compare equal and
+// reach password_hash() as an array.
+$empfullname = post_string('empfullname', null);
+$old_password = post_string('old_password', null);
+$new_password = post_string('new_password', null);
+$confirm_password = post_string('confirm_password', null);
 
 if (!$empfullname) {
     $empfullname = $emp; // from url or form entry

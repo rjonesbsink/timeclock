@@ -35,8 +35,12 @@ $error_msg = '';
 include 'setup_timeclock.php'; // authorize and initialize
 
 // Parse arguments.
-$emp = isset($_GET['emp']) ? $_GET['emp'] : null;
-$empfullname = isset($_REQUEST['empfullname']) ? $_REQUEST['empfullname'] : null;
+// Guard against ?emp[]=x / empfullname[]=x: these otherwise flow unguarded
+// into lookup_employee()/htmlentities() or a tc_select() bind param, which
+// is a fatal TypeError/ArgumentCountError under PHP 8 if the value is an
+// array.
+$emp = get_string('emp', null);
+$empfullname = request_string('empfullname', null);
 
 if (!$empfullname) {
     $empfullname = $emp; // from url or form entry
@@ -74,10 +78,10 @@ if ($authorized && isset($_POST['inout'])) {
     } else {
         // Post employee time.
 
-        $inout = $_POST['inout'];
+        $inout = post_string('inout');
         $h_inout = htmlentities($inout);
 
-        $notes = isset($_POST['notes']) ? $_POST['notes'] : '';
+        $notes = post_string('notes');
         $h_notes = htmlentities($notes);
 
         // Validate and get inout display color.

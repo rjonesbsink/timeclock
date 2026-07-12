@@ -92,7 +92,10 @@ function tc_insert_strings($db, $keyvals)
         $keys .= "`$key`";
         $places .= "?";
         $types .= "s";
-        $values[] = "$value";
+        // Preserve an explicit null (e.g. value_or_null()) as a real SQL
+        // NULL -- "$value" would coerce it to '', defeating callers that
+        // rely on NULL to avoid colliding on a UNIQUE column.
+        $values[] = is_null($value) ? null : "$value";
     }
     tc_execute("INSERT INTO {$db_prefix}$db ($keys) VALUES ($places)", $values, $types);
     return mysqli_insert_id($GLOBALS["___mysqli_ston"]);
@@ -110,7 +113,9 @@ function tc_update_strings($db, $keyvals, $where = '1=1', $bind = array(), $type
         }
         $places .= "`$key` = ?";
         $set_types .= "s";
-        $values[] = "$value";
+        // See tc_insert_strings() -- keep an explicit null as a real SQL
+        // NULL instead of coercing it to ''.
+        $values[] = is_null($value) ? null : "$value";
     }
     if (!is_array($bind)) {
         $bind = array($bind);
@@ -219,6 +224,15 @@ function post_string($key, $default = '')
 function get_string($key, $default = '')
 {
     $value = $_GET[$key] ?? $default;
+
+    return is_string($value) ? $value : $default;
+}
+
+// Same as post_string()/get_string(), for the punchclock ajax endpoints that
+// accept a value via either GET or POST ($_REQUEST).
+function request_string($key, $default = '')
+{
+    $value = $_REQUEST[$key] ?? $default;
 
     return is_string($value) ? $value : $default;
 }

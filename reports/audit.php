@@ -87,9 +87,9 @@ if ($request == 'GET') {
 } else {
     include_once '../admin/header_date.php';
 
-    $from_date = $_POST['from_date'];
-    $to_date = $_POST['to_date'];
-    @$tmp_csv = $_POST['csv'];
+    $from_date = post_string('from_date');
+    $to_date = post_string('to_date');
+    $tmp_csv = post_string('csv');
 
     // begin post error checking //
 
@@ -348,12 +348,12 @@ if ($request == 'GET') {
     if (!empty($from_date)) {
         $from_date = "$from_month/$from_day/$from_year";
         $from_timestamp = strtotime($from_date) - @$tzo;
-        $from_date = $_POST['from_date'];
+        $from_date = post_string('from_date');
     }
     if (!empty($to_date)) {
         $to_date = "$to_month/$to_day/$to_year";
         $to_timestamp = strtotime($to_date) + 86400 - @$tzo;
-        $to_date = $_POST['to_date'];
+        $to_date = post_string('to_date');
     }
 
     $time = time();

@@ -177,21 +177,25 @@ End_Of_HTML;
 include 'setup_timeclock.php'; // authorize and initialize like timeclock.php
 
 // Program parameters.
-$from_date = isset($_POST['from_date']) ? $_POST['from_date'] : null;
-$to_date = isset($_POST['to_date']) ? $_POST['to_date'] : null;
-$date_fmt = isset($_POST['date_fmt']) ? $_POST['date_fmt'] : null;
-$user_name = isset($_POST['user_name']) ? $_POST['user_name'] : null;
-$group_name = isset($_POST['group_name']) ? $_POST['group_name'] : null;
-$office_name = isset($_POST['office_name']) ? $_POST['office_name'] : null;
+// Guard against an array payload for any of these: they otherwise flow
+// unguarded into make_timestamp() (preg_split()) / htmlentities() in
+// export_display.php, or as a tc_select() bind param, which is a fatal
+// TypeError under PHP 8 for an array argument.
+$from_date = post_string('from_date', null);
+$to_date = post_string('to_date', null);
+$date_fmt = post_string('date_fmt', null);
+$user_name = post_string('user_name', null);
+$group_name = post_string('group_name', null);
+$office_name = post_string('office_name', null);
 
 // Program options.
-$c_reg_ot   = isset($_POST['c_reg_ot']) ? bool($_POST['c_reg_ot']) : null;
-$c_inout    = isset($_POST['c_inout']) ? bool($_POST['c_inout']) : null;
-$c_date     = isset($_POST['c_date']) ? bool($_POST['c_date']) : null;
-$c_employee = isset($_POST['c_employee']) ? bool($_POST['c_employee']) : null;
-$c_name     = isset($_POST['c_name']) ? bool($_POST['c_name']) : null;
-$c_group    = isset($_POST['c_group']) ? bool($_POST['c_group']) : null;
-$c_office   = isset($_POST['c_office']) ? bool($_POST['c_office']) : null;
+$c_reg_ot   = isset($_POST['c_reg_ot']) ? bool(post_string('c_reg_ot')) : null;
+$c_inout    = isset($_POST['c_inout']) ? bool(post_string('c_inout')) : null;
+$c_date     = isset($_POST['c_date']) ? bool(post_string('c_date')) : null;
+$c_employee = isset($_POST['c_employee']) ? bool(post_string('c_employee')) : null;
+$c_name     = isset($_POST['c_name']) ? bool(post_string('c_name')) : null;
+$c_group    = isset($_POST['c_group']) ? bool(post_string('c_group')) : null;
+$c_office   = isset($_POST['c_office']) ? bool(post_string('c_office')) : null;
 
 ////////////////////////////////////////
 $PAGE_TITLE = "Export - $title";
