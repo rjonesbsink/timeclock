@@ -96,6 +96,15 @@ if ($request == 'GET') {
     @$how_many = $_POST['how_many'];
     @$input_group_name = $_POST['input_group_name'];
 
+    // how_many is only ever a plain text field on the real form -- a crafted
+    // how_many[]=1 request would otherwise reach preg_match()/string
+    // interpolation below as an array, which is a fatal TypeError on the
+    // former and an "Array to string conversion" warning on the latter.
+    // Treat it exactly like it was never submitted.
+    if (isset($how_many) && !is_string($how_many)) {
+        unset($how_many);
+    }
+
     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
     echo "  <tr valign=top>\n";
     echo "    <td class=left_main width=180 align=left scope=col>\n";
