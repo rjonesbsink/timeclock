@@ -116,6 +116,9 @@ function render_form($values, $errorHtml = '')
     $html .= "<p class='hint'>Shows current conditions from a nearby METAR weather station in the sidebar."
         . " Leave \"Show weather\" unchecked to skip this entirely.</p>\n";
     $html .= "<label><input type='checkbox' id='weather_enabled' name='weather_enabled' value='1' $weatherChecked> Show weather</label>\n";
+    $html .= "<label>Units</label>\n";
+    $html .= "<label><input type='radio' name='weather_units' value='f' $weatherUnitsF> Fahrenheit</label>\n";
+    $html .= "<label><input type='radio' name='weather_units' value='c' $weatherUnitsC> Celsius</label>\n";
     $html .= "<label for='weather_icao'>Station ICAO Code</label>\n";
     $html .= "<input type='text' id='weather_icao' name='weather_icao' value=\"$weatherIcao\" maxlength='4'>\n";
     $html .= "<p class='hint'>4-letter code, e.g. \"KTOP\". Find one near you at "
@@ -265,16 +268,19 @@ function run_schema($connection)
 function create_admin_account($connection, $username, $displayName, $email, $password)
 {
     $hash = tc_hash_password($password);
-    $stmt = $connection->prepare(
-        'INSERT INTO employees (empfullname, employee_passwd, displayname, email, groups, office, admin, reports, time_admin, disabled)'
-        . " VALUES (?, ?, ?, ?, '', '', 1, 1, 1, 0)"
-    );
-    $stmt->bind_param('ssss', $username, $hash, $displayName, $email);
+    $stmt = null;
 
     try {
+        $stmt = $connection->prepare(
+            'INSERT INTO employees (empfullname, employee_passwd, displayname, email, groups, office, admin, reports, time_admin, disabled)'
+            . " VALUES (?, ?, ?, ?, '', '', 1, 1, 1, 0)"
+        );
+        $stmt->bind_param('ssss', $username, $hash, $displayName, $email);
         $stmt->execute();
     } catch (mysqli_sql_exception $e) {
-        $stmt->close();
+        if ($stmt) {
+            $stmt->close();
+        }
 
         return ['ok' => false, 'error' => $e->getMessage()];
     }
