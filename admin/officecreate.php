@@ -92,7 +92,7 @@ if ($request == 'GET') {
     require_csrf_token();
 
     $post_officename = post_string('post_officename');
-    $create_groups = $_POST['create_groups'];
+    $create_groups = post_string('create_groups');
     @$how_many = $_POST['how_many'];
     // Genuinely absent (create_groups=0, or the first step of the
     // create_groups=1 wizard before group names are collected) must stay
