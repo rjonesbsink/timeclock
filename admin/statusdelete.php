@@ -30,7 +30,7 @@ if ($request == 'GET') {
         exit;
     }
 
-    $get_status = htmlentities($_GET['statusname']);
+    $get_status = htmlentities(get_string('statusname'));
 
     $result = tc_select("*", "punchlist", WHERE_PUNCHITEMS, $get_status);
 
@@ -125,9 +125,9 @@ if ($request == 'GET') {
 } elseif ($request == 'POST') {
     require_csrf_token();
 
-    $post_statusname = $_POST['post_statusname'];
-    $post_color = $_POST['post_color'];
-    $post_in_out = $_POST['post_in_out'];
+    $post_statusname = post_string('post_statusname');
+    $post_color = post_string('post_color');
+    $post_in_out = post_string('post_in_out');
 
     if ($post_in_out == 'In') {
         $post_in_out = '1';

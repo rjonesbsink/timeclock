@@ -124,11 +124,11 @@ if ($request == 'GET') {
 
     require_csrf_token();
 
-    $post_username = $_POST['post_username'];
-    $display_name = $_POST['display_name'];
-    $password = $_POST['password'];
-    $confirm_password = $_POST['confirm_password'];
-    $email_addy = $_POST['email_addy'];
+    $post_username = post_string('post_username');
+    $display_name = post_string('display_name');
+    $password = post_string('password');
+    $confirm_password = post_string('confirm_password');
+    $email_addy = post_string('email_addy');
     $user_barcode = value_or_null($_POST['barcode']);// UNIQUE constraint so no empty strings
     $office_name = $_POST['office_name'] ?? '';
     @$group_name = $_POST['group_name'];

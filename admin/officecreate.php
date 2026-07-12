@@ -91,10 +91,15 @@ if ($request == 'GET') {
 } elseif ($request == 'POST') {
     require_csrf_token();
 
-    $post_officename = $_POST['post_officename'];
-    $create_groups = $_POST['create_groups'];
+    $post_officename = post_string('post_officename');
+    $create_groups = post_string('create_groups');
     @$how_many = $_POST['how_many'];
-    @$input_group_name = $_POST['input_group_name'];
+    // Genuinely absent (create_groups=0, or the first step of the
+    // create_groups=1 wizard before group names are collected) must stay
+    // distinguishable from "submitted" via isset() below -- default to null
+    // rather than [] so a scalar/array-confusion attack is treated the same
+    // as "not submitted yet" instead of skipping straight to validation.
+    $input_group_name = post_array('input_group_name', null);
 
     // how_many is only ever a plain text field on the real form -- a crafted
     // how_many[]=1 request would otherwise reach preg_match()/string

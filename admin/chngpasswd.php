@@ -31,8 +31,8 @@ if ($request == 'GET') {
         exit;
     }
 
-    $get_user = $_GET['username'];
-    @$get_office = $_GET['officename'];
+    $get_user = get_string('username');
+    $get_office = get_string('officename');
 
 
     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
@@ -135,10 +135,10 @@ if ($request == 'GET') {
 } elseif ($request == 'POST') {
     require_csrf_token();
 
-    $post_username = stripslashes($_POST['post_username']);
-    $new_password = $_POST['new_password'];
-    $confirm_password = $_POST['confirm_password'];
-    $get_office = $_POST['get_office'];
+    $post_username = stripslashes(post_string('post_username'));
+    $new_password = post_string('new_password');
+    $confirm_password = post_string('confirm_password');
+    $get_office = post_string('get_office');
 
     // begin post validation //
 

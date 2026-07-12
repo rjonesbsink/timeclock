@@ -30,8 +30,8 @@ if ($request == 'GET') {
         exit;
     }
 
-    $get_user = htmlentities($_GET['username']);
-    @$get_office = htmlentities($_GET['officename'] ?? '');
+    $get_user = htmlentities(get_string('username'));
+    $get_office = htmlentities(get_string('officename'));
 
     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
     echo "  <tr valign=top>\n";
@@ -181,15 +181,15 @@ if ($request == 'GET') {
 } elseif ($request == 'POST') {
     require_csrf_token();
 
-    $post_username = $_POST['post_username'];
-    $display_name = $_POST['display_name'];
-    $email_addy = $_POST['email_addy'];
-    $user_barcode = $_POST['barcode'];
-    $office_name = $_POST['office_name'];
-    $group_name = $_POST['group_name'];
-    $admin_perms = $_POST['admin_perms'];
-    $reports_perms = $_POST['reports_perms'];
-    $time_admin_perms = $_POST['time_admin_perms'];
+    $post_username = post_string('post_username');
+    $display_name = post_string('display_name');
+    $email_addy = post_string('email_addy');
+    $user_barcode = post_string('barcode');
+    $office_name = post_string('office_name');
+    $group_name = post_string('group_name');
+    $admin_perms = post_string('admin_perms');
+    $reports_perms = post_string('reports_perms');
+    $time_admin_perms = post_string('time_admin_perms');
     @$delete_data = $_POST['delete_all_user_data'];
 
     // begin post validation //

@@ -35,7 +35,7 @@ if ($request == 'GET') {
         exit;
     }
 
-    $get_office = htmlentities($_GET['officename']);
+    $get_office = htmlentities(get_string('officename'));
 
     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
     echo "  <tr valign=top>\n";
@@ -189,10 +189,10 @@ if ($request == 'GET') {
     include_once 'header_post.php';
     include_once 'topmain.php';
 
-    $post_officename = $_POST['post_officename'];
-    @$office_name = $_POST['office_name'];
-    @$group_name = $_POST['group_name'];
-    $post_officeid = $_POST['post_officeid'];
+    $post_officename = post_string('post_officename');
+    $office_name = post_string('office_name');
+    $group_name = post_string('group_name');
+    $post_officeid = post_string('post_officeid');
     $group_cnt = $_POST['group_cnt'];
     $user_cnt = $_POST['user_cnt'];
 

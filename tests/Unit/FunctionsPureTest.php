@@ -105,6 +105,57 @@ final class FunctionsPureTest extends TestCase
         $this->assertTrue(has_value('0'));
     }
 
+    protected function tearDown(): void
+    {
+        unset($_POST['zztest_key'], $_GET['zztest_key']);
+    }
+
+    public function testPostStringPassesThroughAStringValue(): void
+    {
+        $_POST['zztest_key'] = 'hello';
+
+        $this->assertSame('hello', post_string('zztest_key'));
+    }
+
+    public function testPostStringFallsBackToDefaultWhenMissing(): void
+    {
+        $this->assertSame('', post_string('zztest_key'));
+        $this->assertSame('fallback', post_string('zztest_key', 'fallback'));
+    }
+
+    public function testPostStringFallsBackToDefaultWhenSubmittedAsAnArray(): void
+    {
+        // The actual bug this exists to prevent: a request can send
+        // zztest_key[]=1 instead of zztest_key=1, and PHP happily
+        // populates $_POST['zztest_key'] with an array. Passing that into
+        // any string-only function (preg_match, stripslashes, etc.) is a
+        // fatal TypeError under PHP 8.
+        $_POST['zztest_key'] = ['1', '2'];
+
+        $this->assertSame('', post_string('zztest_key'));
+        $this->assertSame('fallback', post_string('zztest_key', 'fallback'));
+    }
+
+    public function testGetStringPassesThroughAStringValue(): void
+    {
+        $_GET['zztest_key'] = 'hello';
+
+        $this->assertSame('hello', get_string('zztest_key'));
+    }
+
+    public function testGetStringFallsBackToDefaultWhenMissing(): void
+    {
+        $this->assertSame('', get_string('zztest_key'));
+        $this->assertSame('fallback', get_string('zztest_key', 'fallback'));
+    }
+
+    public function testGetStringFallsBackToDefaultWhenSubmittedAsAnArray(): void
+    {
+        $_GET['zztest_key'] = ['1', '2'];
+
+        $this->assertSame('', get_string('zztest_key'));
+    }
+
     public function testSecsToHoursWithNoRounding(): void
     {
         // 1 hour, 30 minutes -> 1.50
@@ -139,5 +190,30 @@ final class FunctionsPureTest extends TestCase
     {
         $this->assertTrue(ip_range('192.168.1.0/24', '192.168.1.200'));
         $this->assertFalse(ip_range('192.168.1.0/24', '192.168.2.200'));
+    }
+
+    public function testPostArrayPassesThroughAnArrayValue(): void
+    {
+        $_POST['zztest_key'] = ['a', 'b'];
+
+        $this->assertSame(['a', 'b'], post_array('zztest_key'));
+    }
+
+    public function testPostArrayFallsBackToDefaultWhenMissing(): void
+    {
+        $this->assertSame([], post_array('zztest_key'));
+        $this->assertSame(['x'], post_array('zztest_key', ['x']));
+    }
+
+    public function testPostArrayFallsBackToDefaultWhenSubmittedAsAScalar(): void
+    {
+        // The mirror-image bug: a field that's supposed to be array-shaped
+        // (name="links[]") submitted as a plain scalar instead (links=foo)
+        // would otherwise reach count()/array access downstream, which is
+        // just as fatal under PHP 8 as the reverse case post_string() guards
+        // against.
+        $_POST['zztest_key'] = 'not an array';
+
+        $this->assertSame([], post_array('zztest_key'));
     }
 }

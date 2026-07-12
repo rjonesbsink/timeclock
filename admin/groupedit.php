@@ -41,8 +41,8 @@ if ($request == 'GET') {
         exit;
     }
 
-    $get_group = $_GET['groupname'];
-    $get_office = $_GET['officename'];
+    $get_group = get_string('groupname');
+    $get_office = get_string('officename');
     $h_get_group = htmlentities($get_group);
     $h_get_office = htmlentities($get_office);
 
@@ -282,13 +282,13 @@ if ($request == 'GET') {
 } elseif ($request == 'POST') {
     require_csrf_token();
 
-    $post_officename = $_POST['post_officename'];
-    @$post_officeid = $_POST['post_officeid'];
-    $orig_officeid = $_POST['orig_officeid'];
-    $post_groupname = $_POST['post_groupname'];
-    @$post_groupid = $_POST['post_groupid'];
-    $get_group = $_POST['get_group'];
-    $get_office = $_POST['get_office'];
+    $post_officename = post_string('post_officename');
+    $post_officeid = post_string('post_officeid');
+    $orig_officeid = post_string('orig_officeid');
+    $post_groupname = post_string('post_groupname');
+    $post_groupid = post_string('post_groupid');
+    $get_group = post_string('get_group');
+    $get_office = post_string('get_office');
     $h_get_group = htmlentities($get_group);
     $h_get_office = htmlentities($get_office);
     $user_cnt = $_POST['user_cnt'];

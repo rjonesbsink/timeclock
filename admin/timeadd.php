@@ -45,7 +45,7 @@ if ($request == 'GET') {
         exit;
     }
 
-    $get_user = stripslashes($_GET['username']);
+    $get_user = stripslashes(get_string('username'));
 
     disabled_acct($get_user);
 
@@ -60,7 +60,7 @@ if ($request == 'GET') {
         $displayname = stripslashes("" . $row['displayname'] . "");
     }
 
-    $get_user = stripslashes($_GET['username']);
+    $get_user = stripslashes(get_string('username'));
 
     echo "    <td align=left class=right_main scope=col>\n";
     echo "      <table width=100% height=100% border=0 cellpadding=10 cellspacing=1>\n";
@@ -128,13 +128,13 @@ if ($request == 'GET') {
 } elseif ($request == 'POST') {
     require_csrf_token();
 
-    $get_user = stripslashes($_POST['get_user']);
-    $post_username = stripslashes($_POST['post_username']);
-    $post_displayname = stripslashes($_POST['post_displayname']);
-    $post_date = $_POST['post_date'];
-    $post_time = $_POST['post_time'];
-    $post_statusname = $_POST['post_statusname'];
-    $post_notes = $_POST['post_notes'];
+    $get_user = stripslashes(post_string('get_user'));
+    $post_username = stripslashes(post_string('post_username'));
+    $post_displayname = stripslashes(post_string('post_displayname'));
+    $post_date = post_string('post_date');
+    $post_time = post_string('post_time');
+    $post_statusname = post_string('post_statusname');
+    $post_notes = post_string('post_notes');
     $timefmt_24hr = $_POST['timefmt_24hr'];
     $timefmt_24hr_text = $_POST['timefmt_24hr_text'];
     $timefmt_size = $_POST['timefmt_size'];

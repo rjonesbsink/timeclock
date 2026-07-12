@@ -95,10 +95,10 @@ if ($request == 'GET') {
 } elseif ($request == 'POST') {
     require_csrf_token();
 
-    $post_statusname = $_POST['post_statusname'];
-    $post_color = $_POST['post_color'];
+    $post_statusname = post_string('post_statusname');
+    $post_color = post_string('post_color');
     $create_status = $_POST['create_status'];
-    $punchnext = $_POST['punchnext'];
+    $punchnext = post_string('punchnext');
 
     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
     echo "  <tr valign=top>\n";

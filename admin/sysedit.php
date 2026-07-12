@@ -1262,35 +1262,46 @@ if ($request == 'GET') {
     echo "            <form name='form' action='$self' method='post'>\n";
     echo csrf_field() . "\n";
 
-    $post_db_hostname = $_POST['db_hostname'];
-    $post_db_name = $_POST['db_name'];
-    $post_db_username = $_POST['db_username'];
-    $post_db_password = $_POST['db_password'];
-    $post_db_prefix = $_POST['db_prefix'];
-    $post_dbversion = $_POST['dbversion'];
-    $post_use_passwd = $_POST['use_passwd'];
-    $post_use_reports_password = $_POST['use_reports_password'];
-    @$post_tmp_datefmt = $_POST['tmp_datefmt'];
-    @$post_timefmt = $_POST['timefmt'];
-    $post_use_client_tz = $_POST['use_client_tz'];
-    $post_use_server_tz = $_POST['use_server_tz'];
-    $post_color1 = $_POST['color1'];
-    $post_color2 = $_POST['color2'];
-    $post_office_name = $_POST['office_name'];
-    $post_group_name = $_POST['group_name'];
-    $post_display_current_users = $_POST['display_current_users'];
-    $post_display_weather = $_POST['display_weather'];
-    $post_weather_units = $_POST['weather_units'];
+    $post_db_hostname = post_string('db_hostname');
+    $post_db_name = post_string('db_name');
+    $post_db_username = post_string('db_username');
+    $post_db_password = post_string('db_password');
+    $post_db_prefix = post_string('db_prefix');
+    $post_dbversion = post_string('dbversion');
+    $post_use_passwd = post_string('use_passwd');
+    $post_use_reports_password = post_string('use_reports_password');
+    $post_tmp_datefmt = post_string('tmp_datefmt');
+    $post_timefmt = post_string('timefmt');
+    $post_use_client_tz = post_string('use_client_tz');
+    $post_use_server_tz = post_string('use_server_tz');
+    $post_color1 = post_string('color1');
+    $post_color2 = post_string('color2');
+    $post_office_name = post_string('office_name');
+    $post_group_name = post_string('group_name');
+    $post_display_current_users = post_string('display_current_users');
+    $post_display_weather = post_string('display_weather');
+    $post_weather_units = post_string('weather_units');
 
-    $post_show_display_name = $_POST['show_display_name'];
-    $post_display_office_name = $_POST['display_office_name'];
-    $post_display_group_name = $_POST['display_group_name'];
-    $post_metar = $_POST['metar'];
-    $post_city = addslashes($_POST['city']);
-    $post_links = $_POST['links'];
-    $post_display_links = $_POST['display_links'];
-    $post_logo = addslashes($_POST['logo']);
-    $post_refresh = $_POST['refresh'];
+    $post_show_display_name = post_string('show_display_name');
+    $post_display_office_name = post_string('display_office_name');
+    $post_display_group_name = post_string('display_group_name');
+    // metar is a config.inc.php-only setting -- there's no <input name="metar">
+    // on this form, so it's never actually submitted. isset($post_metar)
+    // below must stay false in that (universal, in practice) case; default
+    // to null rather than '' so the validation block isn't run against an
+    // empty string that would always fail the 4-letter METAR pattern.
+    $post_metar = post_string('metar', null);
+    $post_city = addslashes(post_string('city'));
+    // links/display_links/allowed_networks are genuinely array-shaped --
+    // name="links[]" style fields -- and consistently accessed per-element
+    // ($post_links[$x] etc.) and via count() throughout the rest of this
+    // file, not as a scalar. post_array(), not post_string(): submitting
+    // one of these as a plain scalar (links=foo instead of links[]=foo)
+    // is just as fatal at the count() calls below as the reverse case.
+    $post_links = post_array('links');
+    $post_display_links = post_array('display_links');
+    $post_logo = addslashes(post_string('logo'));
+    $post_refresh = post_string('refresh');
 
     if ($post_refresh != "none") {
         $tmp_refresh = intval($post_refresh);
@@ -1299,24 +1310,24 @@ if ($request == 'GET') {
         }
     }
 
-    $post_email = $_POST['email'];
-    $post_date_link = addslashes($_POST['date_link']);
-    $post_app_name = addslashes($_POST['app_name']);
-    $post_app_version = addslashes($_POST['app_version']);
-    $post_title = $_POST['title'];
-    @$post_round_time = $_POST['round_time'];
-    $post_paginate = $_POST['paginate'];
-    $post_show_details = $_POST['show_details'];
-    $post_username_dropdown_only = $_POST['username_dropdown_only'];
-    $post_disable_sysedit = $_POST['disable_sysedit'];
-    $post_user_or_display = $_POST['user_or_display'];
-    $post_report_start_time = $_POST['report_start_time'];
-    $post_report_end_time = $_POST['report_end_time'];
-    $post_display_ip = $_POST['display_ip'];
-    $post_ip_logging = $_POST['ip_logging'];
-    $post_export_csv = $_POST['export_csv'];
-    $post_restrict_ips = $_POST['restrict_ips'];
-    $post_allowed_networks = $_POST['allowed_networks'];
+    $post_email = post_string('email');
+    $post_date_link = addslashes(post_string('date_link'));
+    $post_app_name = addslashes(post_string('app_name'));
+    $post_app_version = addslashes(post_string('app_version'));
+    $post_title = post_string('title');
+    $post_round_time = post_string('round_time');
+    $post_paginate = post_string('paginate');
+    $post_show_details = post_string('show_details');
+    $post_username_dropdown_only = post_string('username_dropdown_only');
+    $post_disable_sysedit = post_string('disable_sysedit');
+    $post_user_or_display = post_string('user_or_display');
+    $post_report_start_time = post_string('report_start_time');
+    $post_report_end_time = post_string('report_end_time');
+    $post_display_ip = post_string('display_ip');
+    $post_ip_logging = post_string('ip_logging');
+    $post_export_csv = post_string('export_csv');
+    $post_restrict_ips = post_string('restrict_ips');
+    $post_allowed_networks = post_array('allowed_networks');
 
     // begin post validation //
 
