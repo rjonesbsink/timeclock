@@ -167,6 +167,7 @@ final class FunctionsPureTest extends TestCase
     {
         $this->assertSame('', request_string('zztest_key'));
         $this->assertSame('fallback', request_string('zztest_key', 'fallback'));
+        $this->assertNull(request_string('zztest_key', null));
     }
 
     public function testRequestStringFallsBackToDefaultWhenSubmittedAsAnArray(): void
@@ -174,6 +175,7 @@ final class FunctionsPureTest extends TestCase
         $_REQUEST['zztest_key'] = ['1', '2'];
 
         $this->assertSame('', request_string('zztest_key'));
+        $this->assertNull(request_string('zztest_key', null));
     }
 
     public function testSecsToHoursWithNoRounding(): void
