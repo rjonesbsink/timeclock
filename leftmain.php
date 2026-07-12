@@ -24,9 +24,9 @@ if ($request == 'POST') {
 
     @$remember_me = $_POST['remember_me'];
     @$reset_cookie = $_POST['reset_cookie'];
-    @$fullname = $_POST['left_fullname'];
-    @$displayname = $_POST['left_displayname'];
-    @$barcode = (yes_no_bool($barcode_clockin) ? $_POST['left_barcode'] : "");
+    $fullname = post_string('left_fullname');
+    $displayname = post_string('left_displayname');
+    $barcode = yes_no_bool($barcode_clockin) ? post_string('left_barcode') : "";
     if ((isset($remember_me)) && ($remember_me != '1')) {
         echo "Something is fishy here.\n";
         exit;
@@ -210,8 +210,8 @@ echo "      </table></td>\n";
 if ($request == 'POST') {
     // signin/signout data passed over from timeclock.php //
 
-    $inout = $_POST['left_inout'];
-    $notes = preg_replace('/[^[:alnum:] \,\.\?-]/', "", strtolower($_POST['left_notes']));
+    $inout = post_string('left_inout');
+    $notes = preg_replace('/[^[:alnum:] \,\.\?-]/', "", strtolower(post_string('left_notes')));
 
     // begin post validation //
 
@@ -237,7 +237,7 @@ QUERY
     }
 
     if ($use_passwd == "yes") {
-        $employee_passwd = $_POST['employee_passwd'];
+        $employee_passwd = post_string('employee_passwd');
     }
 
     // end post validation //

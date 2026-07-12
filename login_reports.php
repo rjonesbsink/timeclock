@@ -11,8 +11,9 @@ echo "<title>$title - Reports Login</title>\n";
 $self = $_SERVER['PHP_SELF'];
 
 if (isset($_POST['login_userid']) && (isset($_POST['login_password'])) && verify_csrf_token()) {
-    $login_userid = $_POST['login_userid'];
-    $login_password = $_POST['login_password'];
+    // Guard against an array payload -- see login.php.
+    $login_userid = post_string('login_userid');
+    $login_password = post_string('login_password');
 
     $result = tc_select("empfullname, employee_passwd, reports", "employees", "empfullname = ?", $login_userid);
 

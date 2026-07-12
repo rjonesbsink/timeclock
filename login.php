@@ -11,8 +11,12 @@ echo "<title>$title - Admin Login</title>\n";
 $self = $_SERVER['PHP_SELF'];
 
 if (isset($_POST['login_userid']) && (isset($_POST['login_password'])) && verify_csrf_token()) {
-    $login_userid = $_POST['login_userid'];
-    $login_password = $_POST['login_password'];
+    // Guard against an array payload: it otherwise flows unguarded into a
+    // tc_select() bind param and crypt()/password_verify() via
+    // tc_verify_password(), which is a fatal TypeError/ArgumentCountError
+    // under PHP 8.
+    $login_userid = post_string('login_userid');
+    $login_password = post_string('login_password');
 
     $result = tc_select("empfullname, employee_passwd, admin, time_admin", "employees", "empfullname = ?", $login_userid);
 
