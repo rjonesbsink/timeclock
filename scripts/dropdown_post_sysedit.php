@@ -9,7 +9,7 @@
         <?php
 
         //@$office_name = $post_office_name;
-        @$office_name = $_POST['office_name'] ?? '';
+        $office_name = post_string('office_name');
         ;
 
         $query = "select * from " . $db_prefix . "offices order by officename asc";

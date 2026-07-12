@@ -32,8 +32,8 @@ if ($request == 'GET') {
         exit;
     }
 
-    $get_user = htmlentities($_GET['username']);
-    @$get_office = htmlentities($_GET['officename'] ?? '');
+    $get_user = htmlentities(get_string('username'));
+    $get_office = htmlentities(get_string('officename'));
 
     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
     echo "  <tr valign=top>\n";
@@ -220,17 +220,17 @@ if ($request == 'GET') {
     include_once 'header_post.php';
     include_once 'topmain.php';
 
-    $post_username = $_POST['post_username'];
-    $display_name = $_POST['display_name'];
-    $email_addy = $_POST['email_addy'];
-    $user_barcode = value_or_null($_POST['barcode']);// UNIQUE constraint so no empty strings
-    $office_name = $_POST['office_name'];
-    @$get_office = htmlentities($_POST['get_office'] ?? '');
-    @$group_name = $_POST['group_name'];
-    $admin_perms = $_POST['admin_perms'] ?? '';
-    $reports_perms = $_POST['reports_perms'] ?? '';
-    $time_admin_perms = $_POST['time_admin_perms'] ?? '';
-    $post_disabled = $_POST['disabled'] ?? '';
+    $post_username = post_string('post_username');
+    $display_name = post_string('display_name');
+    $email_addy = post_string('email_addy');
+    $user_barcode = value_or_null(post_string('barcode'));// UNIQUE constraint so no empty strings
+    $office_name = post_string('office_name');
+    $get_office = htmlentities(post_string('get_office'));
+    $group_name = post_string('group_name');
+    $admin_perms = post_string('admin_perms');
+    $reports_perms = post_string('reports_perms');
+    $time_admin_perms = post_string('time_admin_perms');
+    $post_disabled = post_string('disabled');
     @$evil = $_POST['evil'];
 
     if (isset($evil)) {

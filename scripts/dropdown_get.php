@@ -8,7 +8,7 @@
 
         <?php
 
-        @$office_name = $_GET['officename'];
+        $office_name = get_string('officename');
 
         $query = "select * from " . $db_prefix . "offices";
         $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);

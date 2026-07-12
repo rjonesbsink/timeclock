@@ -103,8 +103,8 @@ if ($request == 'GET') {
 } elseif ($request == 'POST') {
     require_csrf_token();
 
-    $select_office_name = $_POST['select_office_name'];
-    $post_groupname = $_POST['post_groupname'];
+    $select_office_name = post_string('select_office_name');
+    $post_groupname = post_string('post_groupname');
 
     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
     echo "  <tr valign=top>\n";

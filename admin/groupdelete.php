@@ -35,8 +35,8 @@ if ($request == 'GET') {
         exit;
     }
 
-    $get_group = htmlentities($_GET['groupname']);
-    $get_office = htmlentities($_GET['officename']);
+    $get_group = htmlentities(get_string('groupname'));
+    $get_office = htmlentities(get_string('officename'));
 
     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
     echo "  <tr valign=top>\n";
@@ -174,14 +174,19 @@ if ($request == 'GET') {
     include_once 'header_post.php';
     include_once 'topmain.php';
 
-    $post_officename = $_POST['post_officename'];
-    $post_officeid = $_POST['post_officeid'];
-    @$group_name = $_POST['group_name'];
-    @$office_name = $_POST['office_name'];
+    $post_officename = post_string('post_officename');
+    $post_officeid = post_string('post_officeid');
+    // office_name/group_name are only present in the real form when the
+    // group has users to move; downstream isset() checks distinguish "not
+    // submitted" (0-user delete) from "submitted but empty" (user hasn't
+    // picked a destination yet), so default to null rather than '' to keep
+    // that distinction intact while still rejecting array-type-confusion.
+    $group_name = post_string('group_name', null);
+    $office_name = post_string('office_name', null);
     @$group_name_no_users = $_POST['group_name_no_users'];
     @$office_name_no_users = $_POST['office_name_no_users'];
-    $post_groupname = $_POST['post_groupname'];
-    $post_groupid = $_POST['post_groupid'];
+    $post_groupname = post_string('post_groupname');
+    $post_groupid = post_string('post_groupid');
     $user_cnt = $_POST['user_cnt'];
 
     // begin post validation //

@@ -40,7 +40,7 @@ if ($request == 'GET') {
         exit;
     }
 
-    $get_office = htmlentities($_GET['officename']);
+    $get_office = htmlentities(get_string('officename'));
 
     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
     echo "  <tr valign=top>\n";
@@ -203,9 +203,9 @@ if ($request == 'GET') {
 } elseif ($request == 'POST') {
     require_csrf_token();
 
-    $post_officename = $_POST['post_officename'];
-    $post_officeid = $_POST['post_officeid'];
-    $get_office = $_POST['get_office'];
+    $post_officename = post_string('post_officename');
+    $post_officeid = post_string('post_officeid');
+    $get_office = post_string('get_office');
     $group_cnt = $_POST['group_cnt'];
     $user_cnt = $_POST['user_cnt'];
     @$group_user_cnt = $_POST['group_user_cnt'];

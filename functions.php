@@ -198,6 +198,47 @@ function has_value($val)
     return strlen(trim((string) @$val)) != 0;
 }
 
+/*
+ * $_POST/$_GET are trusted throughout this codebase to hold plain scalar
+ * values (`$var = $_POST['x'];`), which then flow unguarded into
+ * string-only functions like preg_match()/stripslashes()/htmlentities().
+ * PHP happily accepts fieldname[]=x in a request body/query string and
+ * populates $_POST['fieldname']/$_GET['fieldname'] with an actual array
+ * instead -- isset() is still true, but the downstream string function
+ * throws a fatal TypeError. These normalize a superglobal read to always
+ * be a string, treating "submitted as something other than a string" the
+ * same as "not submitted at all".
+ */
+function post_string($key, $default = '')
+{
+    $value = $_POST[$key] ?? $default;
+
+    return is_string($value) ? $value : $default;
+}
+
+function get_string($key, $default = '')
+{
+    $value = $_GET[$key] ?? $default;
+
+    return is_string($value) ? $value : $default;
+}
+
+/*
+ * The mirror-image bug: a handful of fields (config settings like $links,
+ * name="links[]" style multi-value inputs) are expected to always be an
+ * array, and get passed straight to count()/array-index access. Submitting
+ * the field as a plain scalar (links=foo instead of links[]=foo) makes
+ * count() throw a fatal TypeError under PHP 8 for the same reason
+ * post_string()/get_string() exist -- the field's actual submitted type
+ * doesn't match what the code assumes.
+ */
+function post_array($key, $default = [])
+{
+    $value = $_POST[$key] ?? $default;
+
+    return is_array($value) ? $value : $default;
+}
+
 function secsToHours($secs, $round_time)
 {
 

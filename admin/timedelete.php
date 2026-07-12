@@ -43,7 +43,7 @@ if ($request == 'GET') {
         exit;
     }
 
-    $get_user = stripslashes($_GET['username']);
+    $get_user = stripslashes(get_string('username'));
 
     disabled_acct($get_user);
 
@@ -103,10 +103,10 @@ if ($request == 'GET') {
 } elseif ($request == 'POST') {
     require_csrf_token();
 
-    $get_user = stripslashes($_POST['get_user']);
-    $post_username = stripslashes($_POST['post_username']);
-    $post_displayname = stripslashes($_POST['post_displayname']);
-    $post_date = $_POST['post_date'];
+    $get_user = stripslashes(post_string('get_user'));
+    $post_username = stripslashes(post_string('post_username'));
+    $post_displayname = stripslashes(post_string('post_displayname'));
+    $post_date = post_string('post_date');
     @$final_username = $_POST['final_username'];
     @$final_inout = $_POST['final_inout'];
     @$final_notes = $_POST['final_notes'];

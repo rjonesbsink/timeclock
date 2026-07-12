@@ -31,7 +31,7 @@ if ($request == 'GET') {
         exit;
     }
 
-    $get_status = $_GET['statusname'];
+    $get_status = get_string('statusname');
     $h_get_status = htmlentities($get_status);
 
     $result = tc_select("*", "punchlist", WHERE_PUNCHITEMS, $get_status);
@@ -138,12 +138,12 @@ if ($request == 'GET') {
 } elseif ($request == 'POST') {
     require_csrf_token();
 
-    $get_status = $_POST['get_status'];
+    $get_status = post_string('get_status');
     $h_get_status = htmlentities($get_status);
-    $post_statusname = $_POST['post_statusname'];
-    $post_color = $_POST['post_color'];
+    $post_statusname = post_string('post_statusname');
+    $post_color = post_string('post_color');
     $create_status = $_POST['create_status'];
-    $punchnext = $_POST['punchnext'];
+    $punchnext = post_string('punchnext');
 
     // begin post validation //
 

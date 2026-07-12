@@ -104,12 +104,12 @@ if ($request !== 'POST') {
     include_once 'header_post.php';
     include_once 'topmain.php';
 
-    @$post_username = $_POST['post_username'];
-    @$display_name = $_POST['display_name'];
-    @$email_addy = $_POST['email_addy'];
-    @$barcode = $_POST['barcode'];
-    @$office_name = $_POST['office_name'];
-    @$group_name = $_POST['group_name'];
+    $post_username = post_string('post_username');
+    $display_name = post_string('display_name');
+    $email_addy = post_string('email_addy');
+    $barcode = post_string('barcode');
+    $office_name = post_string('office_name');
+    $group_name = post_string('group_name');
 
 // begin post validation //
 
