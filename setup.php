@@ -13,6 +13,7 @@
 session_start();
 
 require_once __DIR__ . '/lib/csrf.php';
+require_once __DIR__ . '/functions.php';
 
 const CONFIG_FILE = __DIR__ . '/config.inc.php';
 const CONFIG_TEMPLATE = __DIR__ . '/config.inc.php.dist';
@@ -302,10 +303,10 @@ $values = [
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $values['db_hostname'] = trim($_POST['db_hostname'] ?? '');
-    $values['db_name'] = trim($_POST['db_name'] ?? '');
-    $values['db_username'] = trim($_POST['db_username'] ?? '');
-    $dbPassword = $_POST['db_password'] ?? '';
+    $values['db_hostname'] = trim(post_string('db_hostname'));
+    $values['db_name'] = trim(post_string('db_name'));
+    $values['db_username'] = trim(post_string('db_username'));
+    $dbPassword = post_string('db_password');
     $values['create_tables'] = !empty($_POST['create_tables']);
 
     $values['admin_username'] = trim(post_string('admin_username'));
