@@ -100,9 +100,15 @@ if ($request == 'GET') {
     // how_many[]=1 request would otherwise reach preg_match()/string
     // interpolation below as an array, which is a fatal TypeError on the
     // former and an "Array to string conversion" warning on the latter.
-    // Treat it exactly like it was never submitted.
+    // Deliberately NOT the same as "not submitted" (the normal, expected
+    // case when create_groups is "No"): unsetting it would let a
+    // malformed how_many silently fall through to creating the office
+    // with no groups even when create_groups=1 was submitted, with no
+    // indication anything was wrong. Coerce to a value that's guaranteed
+    // to fail the "is this a single digit" checks below instead, so it's
+    // rejected the same way any other invalid how_many already is.
     if (isset($how_many) && !is_string($how_many)) {
-        unset($how_many);
+        $how_many = '';
     }
 
     echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
