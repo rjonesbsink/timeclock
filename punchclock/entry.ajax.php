@@ -24,9 +24,13 @@ const HRS_MIN_SUFFIX = " hrs:min";
 const HOURS_FORMAT_WITH_UNIT = "%01.02f hrs";
 
 // Parse arguments.
-$emp = isset($_GET['emp']) ? $_GET['emp'] : null;
-$empfullname = isset($_REQUEST['empfullname']) ? $_REQUEST['empfullname'] : null;
-$password = isset($_REQUEST['password']) ? $_REQUEST['password'] : null;
+// Guard against ?emp[]=x / empfullname[]=x / password[]=x: these otherwise
+// flow unguarded into htmlentities()/stripslashes()/crypt()/password_verify()
+// or into a tc_select()/tc_update_strings() bind param, which is a fatal
+// TypeError/ArgumentCountError under PHP 8 if the value is an array.
+$emp = get_string('emp', null);
+$empfullname = request_string('empfullname', null);
+$password = request_string('password', null);
 
 if (!$empfullname) {
     $empfullname = $emp; // from url or form entry
@@ -57,10 +61,10 @@ if ($authorized_to_post_time && isset($_POST['inout'])) {
 
     // Post employee time.
 
-    $inout = $_POST['inout'];
+    $inout = post_string('inout');
     $js_inout = json_encode($inout, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
 
-    $notes = isset($_POST['notes']) ? $_POST['notes'] : '';
+    $notes = post_string('notes');
     $js_notes = json_encode($notes, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
 
     // Validate and get inout display color.

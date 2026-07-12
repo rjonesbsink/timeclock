@@ -14,14 +14,18 @@ if (
     ($_GET['rpt'] == 'timerpt') && (isset($_GET['display_ip'])) && (isset($_GET['csv'])) && (isset($_GET['office'])) && (isset($_GET['group'])) &&
     (isset($_GET['fullname'])) && (isset($_GET['from'])) && (isset($_GET['to'])) && (isset($_GET['tzo']))
 ) {
-    $tmp_display_ip = $_GET['display_ip'];
-    $tmp_csv = $_GET['csv'];
-    $office_name = $_GET['office'];
-    $group_name = $_GET['group'];
-    $fullname = $_GET['fullname'];
-    $from_timestamp = $_GET['from'];
-    $to_timestamp = $_GET['to'];
-    $tzo = $_GET['tzo'];
+    // Every key here is already isset()-gated above; get_string() only
+    // changes behavior for the "submitted as an array" case, closing off a
+    // fatal TypeError/ArgumentCountError from a tc_select() bind param,
+    // stripslashes(), or an arithmetic operator on $from/$to/$tzo below.
+    $tmp_display_ip = get_string('display_ip');
+    $tmp_csv = get_string('csv');
+    $office_name = get_string('office');
+    $group_name = get_string('group');
+    $fullname = get_string('fullname');
+    $from_timestamp = get_string('from');
+    $to_timestamp = get_string('to');
+    $tzo = get_string('tzo');
 
     $employees_cnt = 0;
     $employees_empfullname = array();
@@ -125,20 +129,21 @@ if (
           (isset($_GET['fullname'])) && (isset($_GET['from'])) && (isset($_GET['to'])) && (isset($_GET['tzo'])) && (isset($_GET['paginate'])) &&
           (isset($_GET['round'])) && (isset($_GET['details'])) && (isset($_GET['rpt_run_on'])) && (isset($_GET['rpt_date'])) && (isset($_GET['from_date']))
 ) {
-    $tmp_display_ip = $_GET['display_ip'];
-    $tmp_csv = $_GET['csv'];
-    $office_name = $_GET['office'];
-    $group_name = $_GET['group'];
-    $fullname = $_GET['fullname'];
-    $from_timestamp = $_GET['from'];
-    $to_timestamp = $_GET['to'];
-    $tzo = $_GET['tzo'];
-    $tmp_paginate = $_GET['paginate'];
-    $tmp_round_time = $_GET['round'];
-    $tmp_show_details = $_GET['details'];
-    $rpt_stamp = $_GET['rpt_run_on'];
-    $rpt_date = $_GET['rpt_date'];
-    $from_date = $_GET['from_date'];
+    // See the timerpt block above -- every key is already isset()-gated.
+    $tmp_display_ip = get_string('display_ip');
+    $tmp_csv = get_string('csv');
+    $office_name = get_string('office');
+    $group_name = get_string('group');
+    $fullname = get_string('fullname');
+    $from_timestamp = get_string('from');
+    $to_timestamp = get_string('to');
+    $tzo = get_string('tzo');
+    $tmp_paginate = get_string('paginate');
+    $tmp_round_time = get_string('round');
+    $tmp_show_details = get_string('details');
+    $rpt_stamp = get_string('rpt_run_on');
+    $rpt_date = get_string('rpt_date');
+    $from_date = get_string('from_date');
 
     $employees_cnt = 0;
     $employees_empfullname = array();
@@ -756,10 +761,11 @@ if (
     header(CSV_HEADER_EXPIRES);
     echo "$headings$string";
 } elseif (($_GET['rpt'] == 'auditlog') && (isset($_GET['csv'])) && (isset($_GET['from'])) && (isset($_GET['to'])) && (isset($_GET['tzo']))) {
-    $tmp_csv = $_GET['csv'];
-    $from_timestamp = $_GET['from'];
-    $to_timestamp = $_GET['to'];
-    $tzo = $_GET['tzo'];
+    // See the timerpt block above -- every key is already isset()-gated.
+    $tmp_csv = get_string('csv');
+    $from_timestamp = get_string('from');
+    $to_timestamp = get_string('to');
+    $tzo = get_string('tzo');
 
     $row_count = 0;
     $page_count = 0;

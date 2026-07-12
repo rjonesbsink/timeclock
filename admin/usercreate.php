@@ -129,14 +129,14 @@ if ($request == 'GET') {
     $password = post_string('password');
     $confirm_password = post_string('confirm_password');
     $email_addy = post_string('email_addy');
-    $user_barcode = value_or_null($_POST['barcode']);// UNIQUE constraint so no empty strings
-    $office_name = $_POST['office_name'] ?? '';
-    @$group_name = $_POST['group_name'];
-    $admin_perms = $_POST['admin_perms'] ?? '';
-    $reports_perms = $_POST['reports_perms'] ?? '';
-    $time_admin_perms = $_POST['time_admin_perms'] ?? '';
-    $post_disabled = $_POST['disabled'] ?? '';
-    $inout = $_POST['inout'];
+    $user_barcode = value_or_null(post_string('barcode'));// UNIQUE constraint so no empty strings
+    $office_name = post_string('office_name');
+    $group_name = post_string('group_name');
+    $admin_perms = post_string('admin_perms');
+    $reports_perms = post_string('reports_perms');
+    $time_admin_perms = post_string('time_admin_perms');
+    $post_disabled = post_string('disabled');
+    $inout = post_string('inout');
 
     $tmp_username = tc_select_value("empfullname", "employees", "empfullname = ? ORDER by empfullname", $post_username);
 

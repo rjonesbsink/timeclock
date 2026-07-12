@@ -219,16 +219,18 @@ if ($request == 'GET') {
 } else {
     include_once 'header_post_reports.php';
 
-    @$office_name = $_POST['office_name'];
-    @$group_name = $_POST['group_name'];
-    $fullname = stripslashes($_POST['user_name']);
-    $from_date = $_POST['from_date'];
-    $to_date = $_POST['to_date'];
-    $tmp_paginate = $_POST['tmp_paginate'];
-    $tmp_round_time = $_POST['tmp_round_time'];
-    $tmp_show_details = $_POST['tmp_show_details'];
-    @$tmp_display_ip = $_POST['tmp_display_ip'];
-    @$tmp_csv = $_POST['csv'];
+    $office_name = post_string('office_name');
+    $group_name = post_string('group_name');
+    $fullname = stripslashes(post_string('user_name'));
+    $from_date = post_string('from_date');
+    $to_date = post_string('to_date');
+    $tmp_paginate = post_string('tmp_paginate');
+    $tmp_round_time = post_string('tmp_round_time');
+    $tmp_show_details = post_string('tmp_show_details');
+    // tmp_display_ip's radio buttons only render when ip_logging is
+    // enabled; isset() below needs it to stay genuinely absent, not ''.
+    $tmp_display_ip = post_string('tmp_display_ip', null);
+    $tmp_csv = post_string('csv');
 
     $fullname = addslashes($fullname);
 
@@ -732,13 +734,13 @@ if ($request == 'GET') {
     if (!empty($from_date)) {
         $from_date = "$from_month/$from_day/$from_year";
         $from_timestamp = strtotime($from_date . " " . $report_start_time) - $tzo;
-        $from_date = $_POST['from_date'];
+        $from_date = post_string('from_date');
     }
 
     if (!empty($to_date)) {
         $to_date = "$to_month/$to_day/$to_year";
         $to_timestamp = strtotime($to_date . " " . $report_end_time) - $tzo + 60;
-        $to_date = $_POST['to_date'];
+        $to_date = post_string('to_date');
     }
 
     //if (!empty($from_date)) {$from_timestamp = strtotime($from_date . " " . $report_start_time) - $tzo;}

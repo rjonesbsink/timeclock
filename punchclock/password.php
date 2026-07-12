@@ -21,12 +21,13 @@ include 'setup_timeclock.php'; // authorize and initialize
 // Parse arguments
 $change_password = isset($_GET['change_password']) ? true : false;
 $forgot_password = isset($_GET['forgot_password']) ? true : false;
-$emp = isset($_GET['emp']) ? $_GET['emp'] : null;
+$emp = get_string('emp', null);
 
-$empfullname = isset($_POST['empfullname']) ? $_POST['empfullname'] : null;
-$old_password = isset($_POST['old_password']) ? $_POST['old_password'] : null;
-$new_password = isset($_POST['new_password']) ? $_POST['new_password'] : null;
-$confirm_password = isset($_POST['confirm_password']) ? $_POST['confirm_password'] : null;
+// Guard against an array payload for any of these -- see password.ajax.php.
+$empfullname = post_string('empfullname', null);
+$old_password = post_string('old_password', null);
+$new_password = post_string('new_password', null);
+$confirm_password = post_string('confirm_password', null);
 
 if (!$empfullname) {
     $empfullname = $emp; // from url or form entry
@@ -55,7 +56,9 @@ if ($old_password) {
         print error_msg("Your session has expired. Please try again.");
     } elseif (is_valid_password($empfullname, $old_password)) {
         // Check if new password is same as confirm password entry
-        if ($new_password === $confirm_password) {
+        if (!has_value($new_password)) {
+            print error_msg("Your new password cannot be blank.");
+        } elseif ($new_password === $confirm_password) {
             // Save password.
             if (save_employee_password($empfullname, $new_password)) {
                 # Uncomment next if do not want to return to login screen to enter a password before going on.
