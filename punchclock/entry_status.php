@@ -36,7 +36,7 @@ if ($in_or_out == 1) {
     $h_hours = '';
 }
 
-$h_notes = htmlentities($notes);
+$h_notes = htmlentities((string) $notes);
 ?>
 <table class="misc_items timecard_list" border="0" cellpadding="2" cellspacing="0" style="margin:0 auto;">
     <thead>
