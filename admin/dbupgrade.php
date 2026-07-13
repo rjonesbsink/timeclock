@@ -155,13 +155,16 @@ $count = "0";
 $result = tc_query("show grants for current_user()");
 while ($row = mysqli_fetch_array($result)) {
     $abc = stripslashes("" . $row["0"] . "");
+    // MySQL 8+/MariaDB quote SHOW GRANTS identifiers with backticks
+    // (`to `user`@`host``); older versions used single quotes (`to
+    // 'user'@'host'`) -- accept either so this check works on both.
     if (
         ((preg_match("/\bgrant\b/i", $abc)) && (preg_match("/\bselect\b/i", $abc)) &&
          (preg_match("/\binsert\b/i", $abc)) && (preg_match("/\bupdate\b/i", $abc)) &&
          (preg_match("/\bdelete\b/i", $abc)) && (preg_match("/\bcreate\b/i", $abc)) &&
-         (preg_match("/\balter\b/i", $abc)) && (preg_match("/\bon `\Q$db_name`.*\E to '\Q$db_username\E'@/i", $abc))) ||
-        (preg_match("/\bgrant all privileges on \Q`$db_name`.*\E to '\Q$db_username\E'@'/i", $abc)) ||
-        (preg_match("/\bgrant all privileges on \*\.\* to '\Q$db_username\E'@/i", $abc))
+         (preg_match("/\balter\b/i", $abc)) && (preg_match("/\bon `\Q$db_name\E`.*\E to [`']\Q$db_username\E[`']@/i", $abc))) ||
+        (preg_match("/\bgrant all privileges on `\Q$db_name\E`.*\E to [`']\Q$db_username\E[`']@/i", $abc)) ||
+        (preg_match("/\bgrant all privileges on \*\.\* to [`']\Q$db_username\E[`']@/i", $abc))
     ) {
         $count++;
     }
