@@ -888,6 +888,7 @@ if ($request == 'GET') {
                 $info_cnt++;
             }
 
+            $raw_empfullname = $employees_empfullname[$x];
             $employees_empfullname[$x] = htmlentities(stripslashes($employees_empfullname[$x]));
             $employees_displayname[$x] = htmlentities(stripslashes($employees_displayname[$x]));
 
@@ -1185,7 +1186,9 @@ if ($request == 'GET') {
                         $punch_cnt++;
                         if (empty($punchlist_in_or_out[$y])) {
                             $status = "out";
-                            $secs = $info_timestamp[$y] - $info_start_time[$y];
+                            $secs = had_open_shift_before($raw_empfullname, $info_start_time[$y])
+                                ? $info_timestamp[$y] - $info_start_time[$y]
+                                : 0;
                             $out_time = $info_timestamp[$y];
                             $previous_days_end_time = $info_end_time[$y] + 1;
                             if ($y == $info_cnt - 1) {
@@ -1364,10 +1367,15 @@ if ($request == 'GET') {
                     if (empty($punchlist_in_or_out[$y])) {
                         $out = 1;
                         $status = "out";
-                        if ($info_date[$y] == $from_date) {
-                            $secs = $info_timestamp[$y] - $from_timestamp - $tzo;
+                        $day_boundary = ($info_date[$y] == $from_date) ? $from_timestamp : $info_start_time[$y];
+                        if (had_open_shift_before($raw_empfullname, $day_boundary)) {
+                            if ($info_date[$y] == $from_date) {
+                                $secs = $info_timestamp[$y] - $from_timestamp - $tzo;
+                            } else {
+                                $secs = $info_timestamp[$y] - $info_start_time[$y];
+                            }
                         } else {
-                            $secs = $info_timestamp[$y] - $info_start_time[$y];
+                            $secs = 0;
                         }
                         $out_time = $info_timestamp[$y];
                         $previous_days_end_time = $info_end_time[$y] + 1;

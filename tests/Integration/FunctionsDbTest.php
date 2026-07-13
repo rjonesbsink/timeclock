@@ -8,10 +8,22 @@ require_once TIMECLOCK_ROOT . '/functions.php';
 final class FunctionsDbTest extends DatabaseTestCase
 {
     private const EMPFULLNAME = 'zztest_functions_employee';
+    private const EMPFULLNAME_SHIFT = 'zztest_openshift_employee';
 
     protected function tearDown(): void
     {
         tc_delete('employees', 'empfullname = ?', self::EMPFULLNAME);
+        tc_delete('info', 'fullname = ?', self::EMPFULLNAME_SHIFT);
+    }
+
+    private function insertPunch(string $inout, int $timestamp): void
+    {
+        tc_insert_strings('info', [
+            'fullname' => self::EMPFULLNAME_SHIFT,
+            'inout' => $inout,
+            'timestamp' => $timestamp,
+            'notes' => '',
+        ]);
     }
 
     private function insertTestEmployee(array $overrides = []): int
@@ -118,6 +130,59 @@ final class FunctionsDbTest extends DatabaseTestCase
         $this->assertSame(
             '<option value="' . self::EMPFULLNAME . '" selected>ZZ Test Employee</option>' . "\n",
             $html
+        );
+    }
+
+    public function testHadOpenShiftBeforeReturnsFalseWithNoPriorPunches(): void
+    {
+        $this->assertFalse(
+            had_open_shift_before(self::EMPFULLNAME_SHIFT, mktime(0, 0, 0, 1, 6, 2020))
+        );
+    }
+
+    public function testHadOpenShiftBeforeReturnsTrueWhenMostRecentPriorPunchIsIn(): void
+    {
+        $this->insertPunch('in', mktime(22, 0, 0, 1, 5, 2020));
+
+        $this->assertTrue(
+            had_open_shift_before(self::EMPFULLNAME_SHIFT, mktime(0, 0, 0, 1, 6, 2020))
+        );
+    }
+
+    public function testHadOpenShiftBeforeReturnsFalseWhenMostRecentPriorPunchIsOut(): void
+    {
+        $this->insertPunch('in', mktime(9, 0, 0, 1, 5, 2020));
+        $this->insertPunch('out', mktime(17, 0, 0, 1, 5, 2020));
+
+        $this->assertFalse(
+            had_open_shift_before(self::EMPFULLNAME_SHIFT, mktime(0, 0, 0, 1, 6, 2020))
+        );
+    }
+
+    public function testHadOpenShiftBeforeIgnoresPunchesAtOrAfterTheBoundary(): void
+    {
+        // An "in" punch exactly at (or after) the boundary doesn't count --
+        // only a punch strictly before it can represent a shift already
+        // open going into that moment.
+        $this->insertPunch('in', mktime(0, 0, 0, 1, 6, 2020));
+
+        $this->assertFalse(
+            had_open_shift_before(self::EMPFULLNAME_SHIFT, mktime(0, 0, 0, 1, 6, 2020))
+        );
+    }
+
+    public function testHadOpenShiftBeforeUsesTheMostRecentPunchNotTheOldest(): void
+    {
+        // Oldest punch is "in", but the most recent one before the boundary
+        // is "out" -- the shift was already closed, so this must be false
+        // even though an "in" punch exists somewhere earlier in history.
+        $this->insertPunch('in', mktime(9, 0, 0, 1, 4, 2020));
+        $this->insertPunch('out', mktime(17, 0, 0, 1, 4, 2020));
+        $this->insertPunch('in', mktime(9, 0, 0, 1, 5, 2020));
+        $this->insertPunch('out', mktime(17, 0, 0, 1, 5, 2020));
+
+        $this->assertFalse(
+            had_open_shift_before(self::EMPFULLNAME_SHIFT, mktime(0, 0, 0, 1, 6, 2020))
         );
     }
 }
