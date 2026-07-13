@@ -193,7 +193,10 @@ function compute_day_hours($date, $start_time, $end_time)
 
 function hrs_min($hours)
 {
-    // Return string of hours:minutes from given decimal hours.
+    // Return string of hours:minutes from given decimal hours. Callers
+    // sometimes pass a null (e.g. a row with no computed hours yet), so
+    // coerce to a number first rather than letting floor() warn on null.
+    $hours = (float) $hours;
     // Round minutes slightly to accommodate numbers like 25.99999998
     return sprintf("%02d:%02d", floor($hours), floor((($hours - floor($hours)) * 60) + .1));
 }

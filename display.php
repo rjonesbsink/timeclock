@@ -104,7 +104,7 @@ while ($row = mysqli_fetch_array($result)) {
         echo "                <td nowrap align=left width=10% bgcolor='$row_color' style='padding-left:10px;'>" . htmlentities($row["groups"]) . "</td>\n";
     }
 
-    echo stripslashes("                <td bgcolor='$row_color' style='padding-left:10px;'>" . htmlentities($row["notes"]) . "</td>\n");
+    echo stripslashes("                <td bgcolor='$row_color' style='padding-left:10px;'>" . htmlentities((string) $row["notes"]) . "</td>\n");
     echo "              </tr>\n";
 
     $row_count++;

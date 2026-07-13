@@ -81,7 +81,7 @@ End_Of_HTML;
                 $h_total = sprintf(HOURS_FORMAT, ($tc->week_hours + $tc->overtime_hours));
             }
 
-            $h_notes = htmlentities($tc->row['notes']);
+            $h_notes = htmlentities((string) $tc->row['notes']);
 
             if ($tc->in_or_out != 1) {
                 // Don't display hours on "out" records.

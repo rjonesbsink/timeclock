@@ -95,7 +95,7 @@ End_Of_HTML;
     $h_inout = htmlentities($row['inout']);
     $h_office = htmlentities($row['office']);
     $h_groups = htmlentities($row['groups']);
-    $h_notes = htmlentities($row['notes']);
+    $h_notes = htmlentities((string) $row['notes']);
 
     // Make DOM id out of employee fullname column (which is assumed to be their employee id).
     $id = htmlentities(make_id($row['empfullname']));

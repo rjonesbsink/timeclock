@@ -670,7 +670,7 @@ if ($request == 'GET') {
                     echo "                <td nowrap align=left width=15% style='background-color:$row_color;color:" . htmlentities($row["color"]) . ";
                       padding-left:10px;'>" . htmlentities($row["ipaddress"]) . "</td>\n";
                 }
-                echo stripslashes("                <td bgcolor='$row_color' style='padding-left:10px;'>" . htmlentities($row["notes"]) . "</td>\n");
+                echo stripslashes("                <td bgcolor='$row_color' style='padding-left:10px;'>" . htmlentities((string) $row["notes"]) . "</td>\n");
                 echo "              </tr>\n";
 
                 $row_count++;
