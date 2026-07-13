@@ -9,11 +9,13 @@ final class FunctionsDbTest extends DatabaseTestCase
 {
     private const EMPFULLNAME = 'zztest_functions_employee';
     private const EMPFULLNAME_SHIFT = 'zztest_openshift_employee';
+    private const EMPFULLNAME_SCHEDULE = 'zztest_schedule_employee';
 
     protected function tearDown(): void
     {
         tc_delete('employees', 'empfullname = ?', self::EMPFULLNAME);
         tc_delete('info', 'fullname = ?', self::EMPFULLNAME_SHIFT);
+        tc_delete('schedules', 'empfullname = ?', self::EMPFULLNAME_SCHEDULE);
     }
 
     private function insertPunch(string $inout, int $timestamp): void
@@ -184,5 +186,60 @@ final class FunctionsDbTest extends DatabaseTestCase
         $this->assertFalse(
             had_open_shift_before(self::EMPFULLNAME_SHIFT, mktime(0, 0, 0, 1, 6, 2020))
         );
+    }
+
+    public function testGetEmployeeScheduleReturnsEmptyArrayWithNoSchedule(): void
+    {
+        $this->assertSame([], get_employee_schedule(self::EMPFULLNAME_SCHEDULE));
+    }
+
+    public function testSetEmployeeScheduleThenGetEmployeeScheduleRoundTrips(): void
+    {
+        set_employee_schedule(self::EMPFULLNAME_SCHEDULE, [
+            1 => ['start_time' => '09:00', 'end_time' => '17:00'],
+            3 => ['start_time' => '09:00', 'end_time' => '17:00'],
+        ]);
+
+        $schedule = get_employee_schedule(self::EMPFULLNAME_SCHEDULE);
+
+        $this->assertCount(2, $schedule);
+        $this->assertSame('09:00:00', $schedule[1]['start_time']);
+        $this->assertSame('17:00:00', $schedule[1]['end_time']);
+        $this->assertSame('09:00:00', $schedule[3]['start_time']);
+        $this->assertArrayNotHasKey(0, $schedule);
+    }
+
+    public function testSetEmployeeScheduleReplacesThePreviousSchedule(): void
+    {
+        set_employee_schedule(self::EMPFULLNAME_SCHEDULE, [
+            1 => ['start_time' => '09:00', 'end_time' => '17:00'],
+            2 => ['start_time' => '09:00', 'end_time' => '17:00'],
+        ]);
+
+        // Re-saving with only day 1 must remove day 2's row, not just add to it.
+        set_employee_schedule(self::EMPFULLNAME_SCHEDULE, [
+            1 => ['start_time' => '10:00', 'end_time' => '18:00'],
+        ]);
+
+        $schedule = get_employee_schedule(self::EMPFULLNAME_SCHEDULE);
+
+        $this->assertCount(1, $schedule);
+        $this->assertSame('10:00:00', $schedule[1]['start_time']);
+        $this->assertArrayNotHasKey(2, $schedule);
+    }
+
+    public function testSetEmployeeScheduleSupportsAnOvernightShift(): void
+    {
+        // end_time earlier than start_time means the shift crosses midnight
+        // (see get_employee_schedule()'s docblock) -- this must be stored
+        // as-is, not rejected or silently reordered.
+        set_employee_schedule(self::EMPFULLNAME_SCHEDULE, [
+            5 => ['start_time' => '22:00', 'end_time' => '06:00'],
+        ]);
+
+        $schedule = get_employee_schedule(self::EMPFULLNAME_SCHEDULE);
+
+        $this->assertSame('22:00:00', $schedule[5]['start_time']);
+        $this->assertSame('06:00:00', $schedule[5]['end_time']);
     }
 }

@@ -95,6 +95,7 @@ echo "                <th class=table_heading width=3% align=center>Time Admin</
 echo "                <th class=table_heading nowrap width=3% align=center>Reports</th>\n";
 echo "                <th class=table_heading nowrap width=3% align=center>Edit</th>\n";
 echo "                <th class=table_heading width=3% align=center>Chg Pwd</th>\n";
+echo "                <th class=table_heading width=3% align=center>Schedule</th>\n";
 echo "                <th class=table_heading nowrap width=3% align=center>Delete</th>\n";
 echo "              </tr>\n";
 
@@ -165,6 +166,10 @@ while ($row = mysqli_fetch_array($result)) {
     href=\"chngpasswd.php?username=$empfullname&officename=" . $row["office"] . "\">Chg Pwd</a></td>\n";
         echo "
 <td class=table_rows width=3% align=center><a style='color:#27408b;text-decoration:underline;'
+                                              title=\"Schedule: $empfullname\"
+    href=\"scheduleedit.php?username=$empfullname\">Schedule</a></td>\n";
+        echo "
+<td class=table_rows width=3% align=center><a style='color:#27408b;text-decoration:underline;'
                                               title=\"Delete User: $empfullname\"
     href=\"userdelete.php?username=$empfullname&officename=" . $row["office"] . "\">Delete</a></td></tr>\n";
     } else {
@@ -176,6 +181,11 @@ while ($row = mysqli_fetch_array($result)) {
 <td class=table_rows width=3% align=center><a title=\"Change Password: $empfullname\"
     href=\"chngpasswd.php?username=$empfullname&officename=" . $row["office"] . "\"><img border=0
                                                                                      src='../images/icons/lock_edit.png'/></a>
+</td>\n";
+        echo "
+<td class=table_rows width=3% align=center><a title=\"Schedule: $empfullname\"
+    href=\"scheduleedit.php?username=$empfullname\"><img border=0
+                                                          src='../images/icons/clock.png'/></a>
 </td>\n";
         echo "
 <td class=table_rows width=3% align=center><a title=\"Delete User: $empfullname\"

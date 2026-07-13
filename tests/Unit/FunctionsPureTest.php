@@ -238,4 +238,25 @@ final class FunctionsPureTest extends TestCase
 
         $this->assertSame([], post_array('zztest_key'));
     }
+
+    public function testIsValidTimeOfDayAcceptsHoursAndMinutes(): void
+    {
+        $this->assertTrue(is_valid_time_of_day('09:00'));
+        $this->assertTrue(is_valid_time_of_day('23:59'));
+        $this->assertTrue(is_valid_time_of_day('00:00'));
+    }
+
+    public function testIsValidTimeOfDayAcceptsHoursMinutesAndSeconds(): void
+    {
+        $this->assertTrue(is_valid_time_of_day('09:00:30'));
+    }
+
+    public function testIsValidTimeOfDayRejectsOutOfRangeOrMalformedValues(): void
+    {
+        $this->assertFalse(is_valid_time_of_day('24:00'));
+        $this->assertFalse(is_valid_time_of_day('09:60'));
+        $this->assertFalse(is_valid_time_of_day('9:00'));
+        $this->assertFalse(is_valid_time_of_day('not a time'));
+        $this->assertFalse(is_valid_time_of_day(''));
+    }
 }

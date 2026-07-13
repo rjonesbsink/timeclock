@@ -32,8 +32,6 @@ CREATE TABLE `dbversion` (
   `dbversion` decimal(5,1) PRIMARY KEY
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
-INSERT INTO dbversion VALUES ('1.4');
-
 
 -- --------------------------------------------------------
 --
@@ -123,13 +121,33 @@ CREATE TABLE `punchlist` (
 
 -- --------------------------------------------------------
 --
+-- Table structure for table `schedules`
+--
+-- An employee's recurring weekly schedule: one row per day they're
+-- scheduled to work. day_of_week follows PHP's date('w') convention
+-- (0 = Sunday .. 6 = Saturday); a day with no row is a day off. An
+-- end_time earlier than start_time means the shift crosses midnight.
+--
+
+CREATE TABLE `schedules` (
+  `scheduleid` int(10) AUTO_INCREMENT PRIMARY KEY,
+  `empfullname` varchar(50) COLLATE utf8_bin NOT NULL,
+  `day_of_week` tinyint(1) NOT NULL,
+  `start_time` time NOT NULL,
+  `end_time` time NOT NULL,
+  UNIQUE KEY `schedules_emp_day` (`empfullname`, `day_of_week`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+
+-- --------------------------------------------------------
+--
 -- Insert default data. Version, etc.
 --
 -- The initial admin account is created by setup.php with an
 -- installer-chosen password, not seeded here with a fixed default
 -- credential.
 
-INSERT INTO dbversion VALUES ('1.5');
+INSERT INTO dbversion VALUES ('1.6');
 INSERT INTO punchlist VALUES ('in', '', '#009900', 1);
 INSERT INTO punchlist VALUES ('out', '', '#FF0000', 0);
 INSERT INTO punchlist VALUES ('break', '', '#FF9900', 0);
