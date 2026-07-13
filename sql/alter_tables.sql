@@ -122,7 +122,7 @@ ALTER TABLE `employees` ADD `disabled` TINYINT(1) NOT NULL DEFAULT '0';
 # The placeholder below is not a valid hash of anything, so the account it
 # creates cannot be logged into until you replace it -- if you forget this
 # step, the failure is "no working login", not a live default credential.
-INSERT INTO employees VALUES ('admin', NULL, 'REPLACE_WITH_A_REAL_PASSWORD_HASH_BEFORE_RUNNING', 'administrator', '', '', '', 1, 1, 1, '');
+INSERT INTO employees VALUES ('admin', NULL, 'REPLACE_WITH_A_REAL_PASSWORD_HASH_BEFORE_RUNNING', 'administrator', '', '', '', 1, 1, 1, 0);
 
 # --------------------------------------------------------
 
