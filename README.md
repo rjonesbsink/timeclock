@@ -8,7 +8,8 @@ This project is PHP Timeclock with the Punchclock add-on already installed.
 repo committed real credentials — treat any password that was ever in `config.inc.php` as
 compromised and rotate it). For a new install, open `setup.php` in your browser: it creates
 `config.inc.php`, the database tables, and the initial admin account (with a password you choose)
-for you. See `docs/INSTALL` for full setup steps and manual/advanced configuration.
+for you. See `docs/INSTALL` for full setup steps and manual/advanced configuration. If you
+lose the admin password later, see `docs/RECOVERY`.
 
 # This Fork
 

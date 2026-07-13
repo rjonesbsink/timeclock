@@ -1,0 +1,29 @@
+PHP Timeclock - Account Password Recovery
+
+
+THE SITUATION:
+
+There is no "forgot password" flow anywhere in PHP Timeclock -- chngpasswd.php requires
+already being logged in, and setup.php refuses to run again once config.inc.php exists (it
+only ever creates the single initial admin account). If the admin password is lost, or any
+other user's password is lost and no other admin account is available to reset it, the only
+way back in is a direct database update.
+
+
+RESETTING A PASSWORD:
+
+--- Generate a bcrypt hash for the new password (do this on any machine with PHP, it doesn't
+    need to be the server):
+        php -r 'echo password_hash("choose-a-strong-password", PASSWORD_DEFAULT);'
+--- Connect to the PHP Timeclock database with the mysql client, using the credentials from
+    config.inc.php ($db_hostname, $db_username, $db_password, $db_name).
+--- Run, replacing <hash> with the value the command above printed and <username> with the
+    exact empfullname of the account to reset:
+        UPDATE employees SET employee_passwd = '<hash>' WHERE empfullname = '<username>';
+    A bcrypt hash never contains a single quote, so it's always safe to paste directly between
+    the quotes in that statement.
+--- Log in with the username and the password you chose (not the hash).
+
+This works for any employees row, not just the admin account -- the same steps apply if a
+Time Admin, reports, or ordinary punchclock user's password needs to be reset and no admin is
+available to do it through chngpasswd.php.
