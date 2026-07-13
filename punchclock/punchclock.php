@@ -35,6 +35,10 @@ if (isset($_REQUEST['office'])) {
 
     $display_office = $office ? $office : 'all'; // override config option
     $PAGE_TITLE = "Punchclock - $h_office - $title"; // browser window title
+} else {
+    $office = '';
+    $h_office = '';
+    $u_office = '';
 }
 
 if (isset($_REQUEST['group'])) {

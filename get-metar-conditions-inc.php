@@ -198,7 +198,14 @@ function mtr_conditions($icao, $curtime = '', $sunrise = '', $sunset = '', $useJ
 				$content = mtr_get_JSON_rawmetar($content);
 			}
       $html = $content;
-      $fp = fopen($metarCacheName, "w");
+      // A fresh checkout/install has no cache directory yet -- create it
+      // instead of letting every request until someone notices emit a
+      // fopen() warning (this is just a cache, so failing quietly and
+      // re-fetching next time is fine either way).
+      if (!is_dir(dirname($metarCacheName))) {
+        @mkdir(dirname($metarCacheName), 0755, true);
+      }
+      $fp = @fopen($metarCacheName, "w");
       if ($fp) {
         $write = fputs($fp, $html);
         fclose($fp);
