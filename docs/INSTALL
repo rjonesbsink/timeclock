@@ -26,12 +26,14 @@ New Install
 --- Create a mysql user named "timeclock" (or whatever you wish to name it) with a password.
     Give this user at least SELECT, UPDATE, INSERT, DELETE, ALTER, and CREATE privileges to ONLY
     this database.
---- Import the tables using the create_tables.sql script included in this distribution.
---- Edit config.inc.php.
+--- Open setup.php with your web browser. It creates the database tables (using create_tables.sql),
+    an initial admin account with a password you choose, and optionally the weather sidebar --
+    config.inc.php no longer needs to be edited by hand for these. Restrict access to setup.php
+    (IP allowlist, HTTP auth, or delete it) once setup is complete; it refuses to run again while
+    config.inc.php exists.
 --- Open index.php with your web browser.
---- Click on the Administration link on the right side of the page. Input "admin" (without the quotes)
-    for the username and "admin" (without the quotes) for the password. Please change the password
-    for this admin user after the initial setup of PHP Timeclock is complete.
+--- Click on the Administration link on the right side of the page and log in with the admin
+    username and password you chose during setup.
 --- Create at least one office by clicking on the Create Office link on the left side of the page.
     You MUST create an office to achieve the desired results. Create more offices if needed.
 --- Create at least one group by clicking on the Create Group link on the left side of the page.
