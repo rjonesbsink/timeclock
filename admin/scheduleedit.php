@@ -13,11 +13,16 @@ include_once '../config.inc.php';
 include_once 'header.php';
 echo "<title>$title - Edit Schedule</title>\n";
 
-$self = $_SERVER['PHP_SELF'];
+// $_SERVER['PHP_SELF'] reflects attacker-controlled path info verbatim
+// (e.g. /admin/scheduleedit.php/"><script>...), so it must be escaped
+// before landing in an HTML attribute below.
+$self = htmlentities($_SERVER['PHP_SELF']);
 $request = $_SERVER['REQUEST_METHOD'];
 
 const WHERE_EMPFULLNAME = "empfullname = ?";
 const FOOTER_PHP = '../footer.php';
+const TABLE_OPEN_HEADING = "            <table align=center class=table_border width=80% border=0 cellpadding=3 cellspacing=0>\n";
+const TABLE_OPEN_SPACER = "            <table align=center width=80% border=0 cellpadding=0 cellspacing=3>\n";
 const SCHEDULE_DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 require_once '../lib/auth.php';
@@ -87,17 +92,17 @@ if ($request == 'GET') {
     echo "            <form name='form' action='$self' method='post'>\n";
     echo csrf_field() . "\n";
     echo "            <input type='hidden' name='post_username' value=\"" . htmlentities($username) . "\">\n";
-    echo "            <table align=center class=table_border width=80% border=0 cellpadding=3 cellspacing=0>\n";
+    echo TABLE_OPEN_HEADING;
     echo "              <tr><th class=rightside_heading nowrap halign=left colspan=4><img src='../images/icons/clock.png' />&nbsp;&nbsp;&nbsp;
                   Schedule: " . htmlentities($username) . "</th></tr>\n";
     echo "              <tr><td height=15></td></tr>\n";
     echo render_schedule_rows($values);
     echo "              <tr><td height=15></td></tr>\n";
     echo "            </table>\n";
-    echo "            <table align=center width=80% border=0 cellpadding=0 cellspacing=3>\n";
+    echo TABLE_OPEN_SPACER;
     echo "              <tr><td height=40></td></tr>\n";
     echo "            </table>\n";
-    echo "            <table align=center width=80% border=0 cellpadding=0 cellspacing=3>\n";
+    echo TABLE_OPEN_SPACER;
     echo "              <tr><td width=30><input type='image' name='submit' value='Save Schedule' src='../images/buttons/next_button.png'></td>
                   <td><a href='useradmin.php'><img src='../images/buttons/cancel_button.png' border='0'></td></tr></table></form></td></tr>\n";
     include_once FOOTER_PHP;
@@ -154,17 +159,17 @@ if ($request == 'GET') {
         echo "            <form name='form' action='$self' method='post'>\n";
         echo csrf_field() . "\n";
         echo "            <input type='hidden' name='post_username' value=\"" . htmlentities($username) . "\">\n";
-        echo "            <table align=center class=table_border width=80% border=0 cellpadding=3 cellspacing=0>\n";
+        echo TABLE_OPEN_HEADING;
         echo "              <tr><th class=rightside_heading nowrap halign=left colspan=4><img src='../images/icons/clock.png' />&nbsp;&nbsp;&nbsp;
                     Schedule: " . htmlentities($username) . "</th></tr>\n";
         echo "              <tr><td height=15></td></tr>\n";
         echo render_schedule_rows($values);
         echo "              <tr><td height=15></td></tr>\n";
         echo "            </table>\n";
-        echo "            <table align=center width=80% border=0 cellpadding=0 cellspacing=3>\n";
+        echo TABLE_OPEN_SPACER;
         echo "              <tr><td height=40></td></tr>\n";
         echo "            </table>\n";
-        echo "            <table align=center width=80% border=0 cellpadding=0 cellspacing=3>\n";
+        echo TABLE_OPEN_SPACER;
         echo "              <tr><td width=30><input type='image' name='submit' value='Save Schedule' src='../images/buttons/next_button.png'></td>
                     <td><a href='useradmin.php'><img src='../images/buttons/cancel_button.png' border='0'></td></tr></table></form></td></tr>\n";
         include_once FOOTER_PHP;
@@ -178,14 +183,14 @@ if ($request == 'GET') {
               <td class=table_rows_green>&nbsp;Schedule saved successfully.</td></tr>\n";
     echo "            </table>\n";
     echo "            <br />\n";
-    echo "            <table align=center class=table_border width=80% border=0 cellpadding=3 cellspacing=0>\n";
+    echo TABLE_OPEN_HEADING;
     echo "              <tr><th class=rightside_heading nowrap halign=left colspan=4><img src='../images/icons/clock.png' />&nbsp;&nbsp;&nbsp;
                 Schedule: " . htmlentities($username) . "</th></tr>\n";
     echo "              <tr><td height=15></td></tr>\n";
     echo render_schedule_rows($values);
     echo "              <tr><td height=15></td></tr>\n";
     echo "            </table>\n";
-    echo "            <table align=center width=80% border=0 cellpadding=0 cellspacing=3>\n";
+    echo TABLE_OPEN_SPACER;
     echo "              <tr><td height=20 align=left>&nbsp;</td></tr>\n";
     echo "              <tr><td><a href='useradmin.php'><img src='../images/buttons/done_button.png' border='0'></a></td></tr></table>\n";
     include_once FOOTER_PHP;

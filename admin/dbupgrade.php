@@ -17,6 +17,7 @@ const EXTRA_NOT_NULL_DEFAULT_ZERO = "NOT NULL DEFAULT '0'";
 const EXTRA_PRIMARY_KEY_COLLATE = "PRIMARY KEY COLLATE utf8_bin";
 const EXTRA_DEFAULT_NULL = "DEFAULT NULL";
 const EXTRA_NOT_NULL = "NOT NULL";
+const EXTRA_AUTO_INCREMENT_PRIMARY_KEY = "AUTO_INCREMENT PRIMARY KEY";
 const FOOTER_PHP = '../footer.php';
 
 function msg_changed($msg)
@@ -277,9 +278,9 @@ if (!empty($count)) {
 
 
         // TABLE: groups //
-        $changes_made += ensure_table("groups", "groupid int(10) AUTO_INCREMENT PRIMARY KEY");
+        $changes_made += ensure_table("groups", "groupid int(10) " . EXTRA_AUTO_INCREMENT_PRIMARY_KEY);
 
-        $changes_made += ensure_field("groups", "groupid", TYPE_INT10, "AUTO_INCREMENT PRIMARY KEY");
+        $changes_made += ensure_field("groups", "groupid", TYPE_INT10, EXTRA_AUTO_INCREMENT_PRIMARY_KEY);
         $changes_made += ensure_field("groups", "groupname", TYPE_VARCHAR50, EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
         $changes_made += ensure_field("groups", "officeid", TYPE_INT10, EXTRA_NOT_NULL_DEFAULT_ZERO);
 
@@ -325,9 +326,9 @@ if (!empty($count)) {
 
 
         // TABLE: offices //
-        $changes_made += ensure_table("offices", "officeid int(10) AUTO_INCREMENT PRIMARY KEY");
+        $changes_made += ensure_table("offices", "officeid int(10) " . EXTRA_AUTO_INCREMENT_PRIMARY_KEY);
 
-        $changes_made += ensure_field("offices", "officeid", TYPE_INT10, "AUTO_INCREMENT PRIMARY KEY");
+        $changes_made += ensure_field("offices", "officeid", TYPE_INT10, EXTRA_AUTO_INCREMENT_PRIMARY_KEY);
         $changes_made += ensure_field("offices", "officename", TYPE_VARCHAR50, EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
 
 
@@ -341,9 +342,9 @@ if (!empty($count)) {
 
 
         // TABLE: schedules //
-        $changes_made += ensure_table("schedules", "scheduleid int(10) AUTO_INCREMENT PRIMARY KEY");
+        $changes_made += ensure_table("schedules", "scheduleid int(10) " . EXTRA_AUTO_INCREMENT_PRIMARY_KEY);
 
-        $changes_made += ensure_field("schedules", "scheduleid", TYPE_INT10, "AUTO_INCREMENT PRIMARY KEY");
+        $changes_made += ensure_field("schedules", "scheduleid", TYPE_INT10, EXTRA_AUTO_INCREMENT_PRIMARY_KEY);
         $changes_made += ensure_field("schedules", "empfullname", TYPE_VARCHAR50, EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
         $changes_made += ensure_field("schedules", "day_of_week", TYPE_TINYINT1, EXTRA_NOT_NULL);
         $changes_made += ensure_field("schedules", "start_time", "time", EXTRA_NOT_NULL);
