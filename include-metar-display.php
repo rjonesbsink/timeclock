@@ -262,10 +262,12 @@ BAROMETER : 1019 hPa (30.09 inHg)
         print "  </tr>\n";
     }
 
-    print "  <tr>\n";
-    print "     <td class=\"data1\" colspan=\"2\"><small>" . $mtr['RAW-METAR'] . "</small></td>\n";
-    print "  </tr>\n";
-    if (isset($_REQUEST['debug']) and strtolower($_REQUEST['debug']) == 'y') {
+    if (isset($mtr['RAW-METAR'])) {
+        print "  <tr>\n";
+        print "     <td class=\"data1\" colspan=\"2\"><small>" . $mtr['RAW-METAR'] . "</small></td>\n";
+        print "  </tr>\n";
+    }
+    if (isset($_REQUEST['debug']) and strtolower($_REQUEST['debug']) == 'y' and isset($mtr['METAR'])) {
         print "  <tr>\n";
         print "     <td class=\"data1\" colspan=\"2\"><small>" . $mtr['METAR'] . "</small></td>\n";
         print "  </tr>\n";

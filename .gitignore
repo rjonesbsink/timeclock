@@ -1,4 +1,5 @@
 /config.inc.php
 /vendor/
 /.phpunit.cache/
+/cache/
 .DS_Store
