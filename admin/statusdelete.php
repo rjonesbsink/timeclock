@@ -46,6 +46,7 @@ if ($request == 'GET') {
     } elseif ($in_or_out == '0') {
         $in_or_out_tmp = 'Out';
     } else {
+        echo "Status is not defined.\n";
         exit;
     }
 

@@ -168,11 +168,7 @@ if ($request == 'GET') {
 
     // check for duplicate officenames //
 
-    $result = tc_select("*", "offices", "officename = ?", $post_officename);
-
-    while ($row = mysqli_fetch_array($result)) {
-        $tmp_officename = "" . $row['officename'] . "";
-    }
+    $office_name_exists = entity_name_exists("offices", "officename", $post_officename);
 
     // error checking: check for duplicate names, disallow certain characters for some fields, etc... //
 
@@ -180,7 +176,7 @@ if ($request == 'GET') {
     $string2 = strstr($post_officename, "\"");
 
     if (
-        (@$tmp_officename == $post_officename) || (empty($post_officename)) || (!preg_match('/' . OFFICENAME_PATTERN . '/i', $post_officename)) ||
+        ($office_name_exists) || (empty($post_officename)) || (!preg_match('/' . OFFICENAME_PATTERN . '/i', $post_officename)) ||
         ((isset($how_many)) && (!preg_match('/' . "^([0-9])$" . '/i', $how_many))) || (@$how_many == '0') || (($create_groups != '1') && (!empty($create_groups))) ||
         (!empty($string)) || (!empty($string2))
     ) {
@@ -202,7 +198,7 @@ if ($request == 'GET') {
             echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
                     Double Quotes are not allowed when creating an Office Name.</td></tr>\n";
             echo "            </table>\n";
-        } elseif (@$tmp_officename == $post_officename) {
+        } elseif ($office_name_exists) {
             echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
             echo "              <tr>\n";
             echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>

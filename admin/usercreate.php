@@ -139,13 +139,13 @@ if ($request == 'GET') {
     $post_disabled = post_string('disabled');
     $inout = post_string('inout');
 
-    $tmp_username = tc_select_value("empfullname", "employees", "empfullname = ? ORDER by empfullname", $post_username);
+    $username_exists = entity_name_exists("employees", "empfullname", $post_username);
 
     $string = strstr($post_username, "\"");
     $string2 = strstr($display_name, "\"");
 
     if (
-        (@$tmp_username == $post_username) || ($password !== $confirm_password) ||
+        ($username_exists) || ($password !== $confirm_password) ||
         (!preg_match('/' . USERNAME_PATTERN . '/i', $post_username)) || (!preg_match('/' . USERNAME_PATTERN . '/i', $display_name)) || (empty($post_username)) ||
         (empty($display_name)) || (empty($email_addy)) || (empty($office_name)) || (empty($group_name)) ||
         (!preg_match('/' . "^([[:alnum:]]|~|\!|@|#|\$|%|\^|&|\*|\(|\)|-|\+|`|_|\=|[{]|[}]|\[|\]|\||\:|\<|\>|\.|,|\?)+$" . '/i', $password)) ||
@@ -247,7 +247,7 @@ if ($request == 'GET') {
             echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
                     A Group is required.</td></tr>\n";
             echo "            </table>\n";
-        } elseif (@$tmp_username == $post_username) {
+        } elseif ($username_exists) {
             echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
             echo "              <tr>\n";
             echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>

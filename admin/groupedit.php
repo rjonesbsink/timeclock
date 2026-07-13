@@ -297,6 +297,7 @@ if ($request == 'GET') {
     $post_groupname = addslashes($post_groupname);
 
     $string = strstr($post_groupname, "\'");
+    $string2 = strstr($post_groupname, "\"");
 
     // begin post validation //
 
@@ -383,15 +384,13 @@ if ($request == 'GET') {
     echo "    <td class=left_main width=180 align=left scope=col>\n";
     echo "      <table class=hide width=100% border=0 cellpadding=1 cellspacing=0>\n";
 
-    if (empty($string)) {
-        $result = tc_select("*", "groups", "groupname = ? and officeid = ?", array($post_groupname, $post_officeid));
+    $group_name_exists = !(($post_groupname === $get_group) && ($post_officeid === $orig_officeid))
+        && entity_name_exists("groups", "groupname", $post_groupname, "officeid = ?", array($post_officeid));
 
-        while ($row = mysqli_fetch_array($result)) {
-            $dupe = '1';
-        }
-    }
-
-    if ((empty($post_groupname)) || (!preg_match('/' . "^([[:alnum:]]| |-|_|\.)+$" . '/i', $post_groupname)) || (!empty($string))) {
+    if (
+        (empty($post_groupname)) || (!preg_match('/' . "^([[:alnum:]]| |-|_|\.)+$" . '/i', $post_groupname)) || (!empty($string)) ||
+        (!empty($string2)) || ($group_name_exists)
+    ) {
         $evil_group = '1';
     }
 
@@ -454,18 +453,12 @@ if ($request == 'GET') {
     echo "          <td valign=top>\n";
     echo "            <br />\n";
 
-    if ((isset($evil_group)) || (isset($dupe))) {
+    if (isset($evil_group)) {
         if (empty($post_groupname)) {
             echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
             echo "              <tr>\n";
             echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
                     A Group Name is required.</td></tr>\n";
-            echo "            </table>\n";
-        } elseif (!preg_match('/' . "^([[:alnum:]]| |-|_|\.)+$" . '/i', $post_groupname)) {
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr>\n";
-            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    Alphanumeric characters, hyphens, underscores, spaces, and periods are allowed when creating a Group Name.</td></tr>\n";
             echo "            </table>\n";
         } elseif (!empty($string)) {
             echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
@@ -473,15 +466,30 @@ if ($request == 'GET') {
             echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
                    Apostrohpes are not allowed when editing a Group Name.</td></tr>\n";
             echo "            </table>\n";
-        } elseif (isset($dupe)) {
+        } elseif (!empty($string2)) {
+            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
+            echo "              <tr>\n";
+            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
+                   Double Quotes are not allowed when editing a Group Name.</td></tr>\n";
+            echo "            </table>\n";
+        } elseif ($group_name_exists) {
             echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
             echo "              <tr>\n";
             echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
                     This combination of groupname and officename already exist. Please choose another groupname and/or officename.</td></tr>\n";
             echo "            </table>\n";
+        } elseif (!preg_match('/' . "^([[:alnum:]]| |-|_|\.)+$" . '/i', $post_groupname)) {
+            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
+            echo "              <tr>\n";
+            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
+                    Alphanumeric characters, hyphens, underscores, spaces, and periods are allowed when creating a Group Name.</td></tr>\n";
+            echo "            </table>\n";
         }
 
         if (!empty($string)) {
+            $post_groupname = stripslashes($post_groupname);
+        }
+        if (!empty($string2)) {
             $post_groupname = stripslashes($post_groupname);
         }
 

@@ -173,16 +173,12 @@ if ($request == 'GET') {
 
     // check for duplicate groupnames with matching officeids //
 
-    $result = tc_select("*", "groups", "groupname = ? and officeid = ?", array($post_groupname, @$officeid));
-
-    while ($row = mysqli_fetch_array($result)) {
-        $tmp_groupname = "" . $row['groupname'] . "";
-    }
+    $group_name_exists = entity_name_exists("groups", "groupname", $post_groupname, "officeid = ?", array(@$officeid));
 
     $string = strstr($post_groupname, "\'");
     $string2 = strstr($post_groupname, "\"");
 
-    if ((!empty($string)) || (empty($post_groupname)) || (!preg_match('/' . "^([[:alnum:]]| |-|_|\.)+$" . '/i', $post_groupname)) || ($select_office_name == '1') || (@$tmp_groupname == $post_groupname) || (!empty($string2))) {
+    if ((!empty($string)) || (empty($post_groupname)) || (!preg_match('/' . "^([[:alnum:]]| |-|_|\.)+$" . '/i', $post_groupname)) || ($select_office_name == '1') || ($group_name_exists) || (!empty($string2))) {
         if (!empty($string)) {
             echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
             echo "              <tr><td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
@@ -208,7 +204,7 @@ if ($request == 'GET') {
             echo "              <tr><td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
                     A Parent Office must be chosen.</td></tr>\n";
             echo "            </table>\n";
-        } elseif (@$tmp_groupname == $post_groupname) {
+        } elseif ($group_name_exists) {
             echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
             echo "              <tr><td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
                     Group already exists. Create another group.</td></tr>\n";

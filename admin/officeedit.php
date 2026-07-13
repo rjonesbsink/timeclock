@@ -252,7 +252,14 @@ if ($request == 'GET') {
 
     $h_get_office = htmlentities($get_office);
 
-    if ((empty($post_officename)) || (!preg_match('/' . "^([[:alnum:]]| |-|_|\.)+$" . '/i', $post_officename))) {
+    $office_name_exists = ($post_officename !== $get_office) && entity_name_exists("offices", "officename", $post_officename);
+    $string = strstr($post_officename, "'");
+    $string2 = strstr($post_officename, "\"");
+
+    if (
+        (empty($post_officename)) || (!preg_match('/' . "^([[:alnum:]]| |-|_|\.)+$" . '/i', $post_officename)) ||
+        ($office_name_exists) || (!empty($string)) || (!empty($string2))
+    ) {
         echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
         echo "  <tr valign=top>\n";
         echo "    <td class=left_main width=180 align=left scope=col>\n";
@@ -307,6 +314,24 @@ if ($request == 'GET') {
             echo "              <tr>\n";
             echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
                     An Office Name is required.</td></tr>\n";
+            echo "            </table>\n";
+        } elseif (!empty($string)) {
+            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
+            echo "              <tr>\n";
+            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
+                    Apostrohpes are not allowed when creating an Office Name.</td></tr>\n";
+            echo "            </table>\n";
+        } elseif (!empty($string2)) {
+            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
+            echo "              <tr>\n";
+            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
+                    Double Quotes are not allowed when creating an Office Name.</td></tr>\n";
+            echo "            </table>\n";
+        } elseif ($office_name_exists) {
+            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
+            echo "              <tr>\n";
+            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
+                    Office already exists. Create another office.</td></tr>\n";
             echo "            </table>\n";
         } elseif (!preg_match('/' . "^([[:alnum:]]| |-|_|\.)+$" . '/i', $post_officename)) {
             echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
