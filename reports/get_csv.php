@@ -1,9 +1,18 @@
 <?php
 
+require_once '../lib/session.php';
+start_secure_session();
+
 include '../config.inc.php';
 include_once '../functions.php';
 
 require_once '../lib/db.php';
+require_once '../lib/auth.php';
+
+if (reports_login_required()) {
+    http_response_code(403);
+    exit;
+}
 
 const CSV_HEADER_CONTENT_TYPE = "Content-type: application/x-msdownload";
 const CSV_HEADER_CONTENT_DISPOSITION = "Content-Disposition: attachment; filename=total_hours.csv";
