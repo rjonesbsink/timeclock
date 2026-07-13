@@ -331,6 +331,15 @@ $display_ip = "yes";
 $export_csv = "no";
 
 
+/* Employee schedules (set per-employee under Administration -> User Summary -> Schedule)
+   define expected clock-in/clock-out times. The exception report flags a punch as "late"
+   or "early" only once it misses the scheduled time by more than $schedule_grace_minutes,
+   so employees aren't flagged for punching a minute or two off from their scheduled time.
+   Default is 10. */
+
+$schedule_grace_minutes = 10;
+
+
 /* --- TIMEZONE INFO --- */
 
 
@@ -431,5 +440,5 @@ $title = "$app_name $app_version";
 /* --- DO NOT CHANGE ANYTHING BELOW THIS LINE!!! --- */
 
 
-$dbversion = "1.5";
+$dbversion = "1.6";
 ?>

@@ -182,6 +182,49 @@ function tc_maybe_upgrade_password($empfullname, $password, $hash)
     }
 }
 
+function is_valid_time_of_day($value)
+{
+    // Accepts "HH:MM" (what <input type="time"> submits) or "HH:MM:SS".
+    return (bool) preg_match('/^([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/', (string) $value);
+}
+
+function get_employee_schedule($empfullname)
+{
+    // Returns [day_of_week => ['start_time' => 'HH:MM:SS', 'end_time' => 'HH:MM:SS']]
+    // for each day $empfullname is scheduled to work. day_of_week follows PHP's
+    // date('w') convention: 0 = Sunday .. 6 = Saturday. A day with no entry here
+    // is a day off. An end_time earlier than start_time means the shift crosses
+    // midnight (e.g. an overnight shift).
+    $result = tc_select('day_of_week, start_time, end_time', 'schedules', 'empfullname = ?', $empfullname);
+    $schedule = array();
+    while ($row = mysqli_fetch_array($result)) {
+        $schedule[(int) $row['day_of_week']] = array(
+            'start_time' => $row['start_time'],
+            'end_time' => $row['end_time'],
+        );
+    }
+    return $schedule;
+}
+
+function set_employee_schedule($empfullname, array $days)
+{
+    // Replace $empfullname's entire weekly schedule with $days -- an array of
+    // [day_of_week => ['start_time' => .., 'end_time' => ..]], see
+    // get_employee_schedule(). Not transactional (this app's tables are
+    // MyISAM), but scoped to one employee's rows, matching the
+    // delete-then-reinsert pattern already used elsewhere in this app for
+    // replacing a whole set of related rows at once.
+    tc_delete('schedules', 'empfullname = ?', $empfullname);
+    foreach ($days as $day_of_week => $times) {
+        tc_insert_strings('schedules', array(
+            'empfullname' => $empfullname,
+            'day_of_week' => $day_of_week,
+            'start_time' => $times['start_time'],
+            'end_time' => $times['end_time'],
+        ));
+    }
+}
+
 function btag($tag, $attr = array())
 {
     $begin = array(htmlentities($tag));
@@ -690,4 +733,60 @@ function admin_time_sidebar_links($get_user, $current)
     }
 
     return $html;
+}
+
+/*
+ * Shared left-nav sidebar for admin/scheduleedit.php, following the same
+ * pattern as admin_time_left_nav() above -- a single shared function instead
+ * of duplicating this ~40-line block into another file.
+ */
+function admin_schedule_left_nav($get_user)
+{
+    $u = htmlspecialchars(rawurlencode($get_user));
+
+    return "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n"
+        . "  <tr valign=top>\n"
+        . "    <td class=left_main width=180 align=left scope=col>\n"
+        . "      <table class=hide width=100% border=0 cellpadding=1 cellspacing=0>\n"
+        . "        <tr><td class=left_rows height=11></td></tr>\n"
+        . "        <tr><td class=left_rows_headings height=18 valign=middle>Users</td></tr>\n"
+        . "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/user.png' alt='User Summary' />&nbsp;&nbsp;\n"
+        . "                <a class=admin_headings href='useradmin.php'>User Summary</a></td></tr>\n"
+        . "        <tr><td class=left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Edit User' />&nbsp;&nbsp;\n"
+        . "                <a class=admin_headings href=\"useredit.php?username=$u\">Edit User</a></td></tr>\n"
+        . "        <tr><td class=current_left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Schedule' />\n"
+        . "                &nbsp;&nbsp;<a class=admin_headings href=\"scheduleedit.php?username=$u\">Schedule</a></td></tr>\n"
+        . "        <tr><td class=left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Delete User' />&nbsp;&nbsp;\n"
+        . "                <a class=admin_headings href=\"userdelete.php?username=$u\">Delete User</a></td></tr>\n"
+        . "        <tr><td class=left_rows_border_top height=18 align=left valign=middle><img src='../images/icons/user_add.png' alt='Create New User' />\n"
+        . "                &nbsp;&nbsp;<a class=admin_headings href='usercreate.php'>Create New User</a></td></tr>\n"
+        . "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/magnifier.png' alt='User Search' />&nbsp;&nbsp;\n"
+        . "                <a class=admin_headings href='usersearch.php'>User Search</a></td></tr>\n"
+        . "        <tr><td class=left_rows height=33></td></tr>\n"
+        . "        <tr><td class=left_rows_headings height=18 valign=middle>Offices</td></tr>\n"
+        . "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/brick.png' alt='Office Summary' />&nbsp;&nbsp;\n"
+        . "                <a class=admin_headings href='officeadmin.php'>Office Summary</a></td></tr>\n"
+        . "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/brick_add.png' alt='Create New Office' />&nbsp;&nbsp;\n"
+        . "                <a class=admin_headings href='officecreate.php'>Create New Office</a></td></tr>\n"
+        . "        <tr><td class=left_rows height=33></td></tr>\n"
+        . "        <tr><td class=left_rows_headings height=18 valign=middle>Groups</td></tr>\n"
+        . "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/group.png' alt='Group Summary' />&nbsp;&nbsp;\n"
+        . "                <a class=admin_headings href='groupadmin.php'>Group Summary</a></td></tr>\n"
+        . "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/group_add.png' alt='Create New Group' />&nbsp;&nbsp;\n"
+        . "                <a class=admin_headings href='groupcreate.php'>Create New Group</a></td></tr>\n"
+        . "        <tr><td class=left_rows height=33></td></tr>\n"
+        . "        <tr><td class=left_rows_headings height=18 valign=middle colspan=2>In/Out Status</td></tr>\n"
+        . "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application.png' alt='Status Summary' />\n"
+        . "                &nbsp;&nbsp;<a class=admin_headings href='statusadmin.php'>Status Summary</a></td></tr>\n"
+        . "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application_add.png' alt='Create Status' />&nbsp;&nbsp;\n"
+        . "                <a class=admin_headings href='statuscreate.php'>Create Status</a></td></tr>\n"
+        . "        <tr><td class=left_rows height=33></td></tr>\n"
+        . "        <tr><td class=left_rows_headings height=18 valign=middle colspan=2>Miscellaneous</td></tr>\n"
+        . "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/clock.png' alt='Add/Edit/Delete Time' />\n"
+        . "                &nbsp;&nbsp;<a class=admin_headings href='timeadmin.php'>Add/Edit/Delete Time</a></td></tr>\n"
+        . "        <tr><td class=left_rows_border_top height=18 align=left valign=middle><img src='../images/icons/application_edit.png'\n"
+        . "                alt='Edit System Settings' /> &nbsp;&nbsp;<a class=admin_headings href='sysedit.php'>Edit System Settings</a></td></tr>\n"
+        . "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/database_go.png'\n"
+        . "                alt='Upgrade Database' />&nbsp;&nbsp;&nbsp;<a class=admin_headings href='dbupgrade.php'>Upgrade Database</a></td></tr>\n"
+        . "      </table></td>\n";
 }

@@ -340,18 +340,50 @@ if (!empty($count)) {
         $changes_made += ensure_field("punchlist", "in_or_out", TYPE_TINYINT1, EXTRA_DEFAULT_NULL);
 
 
+        // TABLE: schedules //
+        $changes_made += ensure_table("schedules", "scheduleid int(10) AUTO_INCREMENT PRIMARY KEY");
+
+        $changes_made += ensure_field("schedules", "scheduleid", TYPE_INT10, "AUTO_INCREMENT PRIMARY KEY");
+        $changes_made += ensure_field("schedules", "empfullname", TYPE_VARCHAR50, EXTRA_COLLATE_UTF8_NOT_NULL_DEFAULT_EMPTY);
+        $changes_made += ensure_field("schedules", "day_of_week", TYPE_TINYINT1, EXTRA_NOT_NULL);
+        $changes_made += ensure_field("schedules", "start_time", "time", EXTRA_NOT_NULL);
+        $changes_made += ensure_field("schedules", "end_time", "time", EXTRA_NOT_NULL);
+
+        $rows = mysqli_num_rows(tc_query("SHOW INDEX FROM {$db_prefix}schedules WHERE Key_name = 'schedules_emp_day'"));
+        if (empty($rows)) {
+            tc_query("ALTER TABLE {$db_prefix}schedules ADD UNIQUE KEY schedules_emp_day (empfullname, day_of_week)");
+            msg_added("UNIQUE INDEX has been added to the <u>schedules.(empfullname, day_of_week)</u> columns.");
+            $changes_made += 1;
+        }
+
+
         // TABLE: dbversion //
         $changes_made += ensure_table("dbversion", "dbversion decimal(5,1) NOT NULL DEFAULT '0.0'");
 
         $changes_made += ensure_field("dbversion", "dbversion", "decimal(5,1)", "NOT NULL DEFAULT '0.0'");
 
-        $current_dbversion = tc_select_value("dbversion", "dbversion");
+        // dbversion is PRIMARY KEY'd on the version value itself, and
+        // create_tables.sql has historically seeded more than one row on a
+        // fresh install (e.g. '1.4' and '1.5') -- take the highest of
+        // whatever rows exist rather than assuming there's exactly one, and
+        // replace them all with a single current-version row rather than
+        // UPDATE-ing in place, which fails with a duplicate-key error the
+        // moment more than one row exists.
+        $current_dbversion = null;
+        $result = tc_select("dbversion", "dbversion");
+        while ($row = mysqli_fetch_array($result)) {
+            if ($current_dbversion === null || (float) $row[0] > (float) $current_dbversion) {
+                $current_dbversion = $row[0];
+            }
+        }
+
         if (empty($current_dbversion)) {
             tc_insert_strings("dbversion", array("dbversion" => $dbversion));
             $changes_made += 1;
             msg_changed("the database is now at version $dbversion.");
         } elseif ($current_dbversion != $dbversion) {
-            tc_update_strings("dbversion", array("dbversion" => $dbversion));
+            tc_delete("dbversion", "1=1");
+            tc_insert_strings("dbversion", array("dbversion" => $dbversion));
             msg_changed("the database has been upgraded from version <b>$current_dbversion</b> to version <b>$dbversion</b>.");
             $changes_made += 1;
         }
