@@ -24,6 +24,8 @@ final class TimecardTest extends DatabaseTestCase
         $GLOBALS['db_prefix'] = '';
         $GLOBALS['default_in_or_out'] = 1;
         $GLOBALS['overtime_week_limit'] = 35;
+        $GLOBALS['overtime_daily_limit'] = 0;
+        $GLOBALS['one_day'] = 24 * 60 * 60;
         $GLOBALS['show_display_name'] = 'no';
         $GLOBALS['timefmt'] = 'g:i a';
         $GLOBALS['datefmt'] = 'm/d/Y';
@@ -86,6 +88,46 @@ final class TimecardTest extends DatabaseTestCase
         [$begin, $end] = $this->fixedPastWeek();
 
         // Five 8-hour days (Mon-Fri) = 40 hours, 5 over the 35-hour limit.
+        for ($day = 6; $day <= 10; $day++) {
+            $this->insertPunch('in', mktime(9, 0, 0, 1, $day, 2020));
+            $this->insertPunch('out', mktime(17, 0, 0, 1, $day, 2020));
+        }
+
+        $timecard = new \Timecard(self::EMPFULLNAME, $begin, $end);
+        [$rowCount, $totalHours, $overtimeHours] = $timecard->tally();
+
+        $this->assertSame(10, $rowCount);
+        $this->assertEqualsWithDelta(40.0, $totalHours, 0.001);
+        $this->assertEqualsWithDelta(5.0, $overtimeHours, 0.001);
+    }
+
+    public function testTallyAppliesDailyOvertimeEvenUnderTheWeeklyLimit(): void
+    {
+        $GLOBALS['overtime_daily_limit'] = 8;
+        [$begin, $end] = $this->fixedPastWeek();
+
+        // A single 10-hour day, nowhere near the 35-hour weekly limit, but
+        // 2 hours over the 8-hour daily limit.
+        $this->insertPunch('in', mktime(9, 0, 0, 1, 6, 2020));
+        $this->insertPunch('out', mktime(19, 0, 0, 1, 6, 2020));
+
+        $timecard = new \Timecard(self::EMPFULLNAME, $begin, $end);
+        [$rowCount, $totalHours, $overtimeHours] = $timecard->tally();
+
+        $this->assertSame(2, $rowCount);
+        $this->assertEqualsWithDelta(10.0, $totalHours, 0.001);
+        $this->assertEqualsWithDelta(2.0, $overtimeHours, 0.001);
+    }
+
+    public function testTallyUsesWeeklyOvertimeWhenItExceedsDaily(): void
+    {
+        $GLOBALS['overtime_daily_limit'] = 8;
+        [$begin, $end] = $this->fixedPastWeek();
+
+        // Five 8-hour days (Mon-Fri) = 40 hours, none crossing the 8-hour
+        // daily limit on any single day, but 5 hours over the 35-hour
+        // weekly limit overall -- confirms the daily limit doesn't
+        // suppress the pre-existing weekly overtime behavior.
         for ($day = 6; $day <= 10; $day++) {
             $this->insertPunch('in', mktime(9, 0, 0, 1, $day, 2020));
             $this->insertPunch('out', mktime(17, 0, 0, 1, $day, 2020));

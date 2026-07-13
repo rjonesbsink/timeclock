@@ -136,14 +136,40 @@ End_Of_SQL;
 }
 
 ////////////////////////////////////////
-function compute_work_hours($start_time, $end_time, $week_hours)
+function compute_work_hours($start_time, $end_time, $week_hours, $day_hours_by_date = array())
 {
-    // Compute work and overtime hours between two times.
-    $hours = compute_hours($start_time, $end_time);
-    $overtime = compute_overtime_hours($hours, $week_hours);
-    $hours -= $overtime;
+    // Compute work and overtime hours between two times, applying the
+    // greater-of daily/weekly overtime rule to each calendar day the
+    // segment touches. A segment spanning midnight (an overnight shift) is
+    // split so each day's hours are checked against $overtime_daily_limit
+    // independently, rather than lumping the whole segment under one day.
+    global $one_day;
+    $hours = 0;
+    $overtime = 0;
 
-    return array($hours, $overtime);
+    $day_start = $start_time;
+    while ($day_start < $end_time) {
+        $date = date('Ymd', $day_start);
+        // Half-open [day_start, day_end) so consecutive days tile exactly at
+        // midnight with no lost or double-counted minute, unlike subtracting
+        // 1 second from the boundary (which rounds away a whole minute once
+        // compute_hours() rounds down to full minutes).
+        $day_end = min($end_time, day_timestamp($day_start) + $one_day);
+
+        $day_hours = compute_hours($day_start, $day_end);
+        $day_hours_before = $day_hours_by_date[$date] ?? 0;
+
+        $day_overtime = compute_overtime_hours($day_hours, $week_hours, $day_hours_before);
+
+        $hours += $day_hours - $day_overtime;
+        $overtime += $day_overtime;
+        $week_hours += $day_hours;
+        $day_hours_by_date[$date] = $day_hours_before + $day_hours;
+
+        $day_start = $day_end;
+    }
+
+    return array($hours, $overtime, $day_hours_by_date);
 }
 
 function compute_hours($start_time, $end_time)
@@ -154,18 +180,30 @@ function compute_hours($start_time, $end_time)
     return (($end_time - $start_time) / 60) / 60;
 }
 
-function compute_overtime_hours($hours, $week_hours)
+function compute_overtime_hours($hours, $week_hours, $day_hours = null)
 {
-    // Compute the amount of overtime for $hours. The $week_hours is the current
-    // sum of hours worked in the week (before including $hours in its total).
-    global $overtime_week_limit;
+    // Compute the amount of overtime for $hours, as the greater of however much
+    // pushes the week's cumulative total past $overtime_week_limit and however
+    // much pushes the day's cumulative total (if known) past $overtime_daily_limit.
+    // $week_hours/$day_hours are the running sums from before $hours is included.
+    // Some jurisdictions require both a daily and a weekly overtime threshold, and
+    // an employee is owed whichever of the two credits more overtime.
+    global $overtime_week_limit, $overtime_daily_limit;
+    $overtime_daily_limit = $overtime_daily_limit ?? 0;
+
+    $weekly_overtime = 0;
     if (($overtime_week_limit > 0) && (($week_hours + $hours) > $overtime_week_limit)) {
         $overlimit = ($week_hours + $hours) - $overtime_week_limit;
-
-        return $overlimit < $hours ? $overlimit : $hours;
+        $weekly_overtime = $overlimit < $hours ? $overlimit : $hours;
     }
 
-    return 0;
+    $daily_overtime = 0;
+    if (($day_hours !== null) && ($overtime_daily_limit > 0) && (($day_hours + $hours) > $overtime_daily_limit)) {
+        $overlimit = ($day_hours + $hours) - $overtime_daily_limit;
+        $daily_overtime = $overlimit < $hours ? $overlimit : $hours;
+    }
+
+    return max($weekly_overtime, $daily_overtime);
 }
 
 function compute_day_hours($date, $start_time, $end_time)
