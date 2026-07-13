@@ -11,6 +11,7 @@ const ADMIN_TOPMAIN_PHP = '../admin/topmain.php';
 
 include_once '../config.inc.php';
 require_once '../lib/auth.php';
+require_once '../lib/csrf.php';
 
 if (reports_login_required()) {
     echo "<title>$title</title>\n";
@@ -39,6 +40,7 @@ if ($request == 'GET') {
     echo "          <td valign=top>\n";
     echo "            <br />\n";
     echo "            <form name='form' action='$self' method='post' onsubmit=\"return isFromOrToDate();\">\n";
+    echo csrf_field() . "\n";
     echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
     echo "              <tr>\n";
     echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/report.png' />&nbsp;&nbsp;&nbsp;Daily
@@ -119,6 +121,8 @@ if ($request == 'GET') {
     include_once '../footer.php';
     exit;
 } else {
+    require_csrf_token();
+
     include_once 'header_post_reports.php';
 
     $office_name = post_string('office_name');
@@ -400,6 +404,7 @@ if ($request == 'GET') {
     if (isset($evil_post)) {
         echo "            <br />\n";
         echo "            <form name='form' action='$self' method='post' onsubmit=\"return isFromOrToDate();\">\n";
+        echo csrf_field() . "\n";
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
         echo "              <tr>\n";
         echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/report.png' />&nbsp;&nbsp;&nbsp;Daily

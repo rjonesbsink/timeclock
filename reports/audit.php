@@ -11,6 +11,7 @@ const ADMIN_TOPMAIN_PHP = '../admin/topmain.php';
 
 include_once '../config.inc.php';
 require_once '../lib/auth.php';
+require_once '../lib/csrf.php';
 
 if (reports_login_required()) {
     echo "<title>$title</title>\n";
@@ -39,6 +40,7 @@ if ($request == 'GET') {
     echo "          <td valign=top>\n";
     echo "            <br />\n";
     echo "            <form name='form' action='$self' method='post' onsubmit=\"return isFromOrToDate();\">\n";
+    echo csrf_field() . "\n";
     echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
     echo "              <tr><td class=table_rows width=20 align=center><img src='../images/icons/information.png' /></td><td class=table_rows
                       style='color:#3366CC;'>This report will display all information pertaining to punch-in/out times that have been 
@@ -86,6 +88,8 @@ if ($request == 'GET') {
     include_once '../footer.php';
     exit;
 } else {
+    require_csrf_token();
+
     include_once '../admin/header_date.php';
 
     $from_date = post_string('from_date');
@@ -304,6 +308,7 @@ if ($request == 'GET') {
     if (isset($evil_post)) {
         echo "            <br />\n";
         echo "            <form name='form' action='$self' method='post' onsubmit=\"return isFromOrToDate();\">\n";
+        echo csrf_field() . "\n";
         echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
         echo "              <tr>\n";
         echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/report.png' />&nbsp;&nbsp;&nbsp;Audit Log</th>
