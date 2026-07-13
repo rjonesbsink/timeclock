@@ -1,6 +1,7 @@
 <?php
 
-session_start();
+require_once 'lib/session.php';
+start_secure_session();
 if (isset($_SESSION['valid_user'])) {
     unset($_SESSION['valid_user']);
 }

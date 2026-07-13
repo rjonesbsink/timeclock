@@ -19,7 +19,8 @@ turn_off_magic_quotes();
 # Uncomment next to force logout and always run punchclock without privileges
 #session_stop();
 
-session_start();
+require_once '../lib/session.php';
+start_secure_session();
 $_SESSION['application'] = $current_page; // security
 
 include 'setup_timeclock.php'; // authorize and initialize like timeclock.php

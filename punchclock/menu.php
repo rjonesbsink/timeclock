@@ -8,7 +8,8 @@
 
 $current_page = "menu.php";
 
-session_start();
+require_once '../lib/session.php';
+start_secure_session();
 $_SESSION['application'] = $current_page; // security
 
 include 'config.inc.php';

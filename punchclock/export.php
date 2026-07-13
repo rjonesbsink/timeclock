@@ -11,7 +11,8 @@ require_once 'lib.common.php';
 require_once 'lib.select.php';
 turn_off_magic_quotes();
 
-session_start();
+require_once '../lib/session.php';
+start_secure_session();
 $_SESSION['application'] = $current_page; // security
 
 ////////////////////////////////////////
