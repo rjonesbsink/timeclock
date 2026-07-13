@@ -99,7 +99,7 @@ echo "              </tr>\n";
 
 $row_count = 0;
 
-$query = "select empfullname, displayname, email, groups, office, admin, reports, time_admin, disabled from " . $db_prefix . "employees
+$query = "select empfullname, displayname, email, `groups`, office, admin, reports, time_admin, disabled from " . $db_prefix . "employees
           order by empfullname";
 $result = tc_query($query);
 

@@ -5,7 +5,7 @@ session_start();
 $self = $_SERVER['PHP_SELF'];
 $request = $_SERVER['REQUEST_METHOD'];
 
-const WHERE_OFFICE_AND_GROUPS = "office = ? and groups = ?";
+const WHERE_OFFICE_AND_GROUPS = "office = ? and `groups` = ?";
 const FOOTER_PHP = '../footer.php';
 const MSG_OFFICE_NOT_DEFINED = "Office name is not defined for this group.\n";
 const MSG_GROUP_NOT_DEFINED = "Group name is not defined for this group.\n";
@@ -90,7 +90,7 @@ if ($request == 'GET') {
     echo "          <td valign=top>\n";
     echo "            <br />\n";
 
-    $result = tc_select("*", "groups, " . $db_prefix . "offices", "officename = ? and groupname = ?", array($get_office, $get_group));
+    $result = tc_select("*", "`groups`, " . $db_prefix . "offices", "officename = ? and groupname = ?", array($get_office, $get_group));
 
     while ($row = mysqli_fetch_array($result)) {
         $officename = "" . $row['officename'] . "";

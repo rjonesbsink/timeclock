@@ -61,7 +61,7 @@ if ($punchclock_select_groups == "yes") {
     if ($office) {
         $groups_result = tc_select(
             "groupname",
-            "groups join {$db_prefix}offices on {$db_prefix}groups.officeid = {$db_prefix}offices.officeid",
+            "`groups` join {$db_prefix}offices on `{$db_prefix}groups`.officeid = {$db_prefix}offices.officeid",
             "{$db_prefix}offices.officename = ? order by groupname",
             $office
         );

@@ -562,7 +562,7 @@ if ($request == 'GET') {
     echo "              <tr><td height=15></td></tr>\n";
 
     $result4 = tc_select(
-        "empfullname, displayname, email, barcode, groups, office, admin, reports, time_admin, disabled",
+        "empfullname, displayname, email, barcode, `groups`, office, admin, reports, time_admin, disabled",
         "employees",
         "empfullname = ? ORDER BY empfullname",
         $post_username

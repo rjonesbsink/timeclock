@@ -43,7 +43,7 @@ function ensure_table($table, $columns, $engine = "ENGINE=MyISAM DEFAULT CHARSET
     $rows = mysqli_num_rows(tc_query("SHOW TABLES LIKE '$db_prefix$table'"));
 
     if (empty($rows)) {
-        tc_query("CREATE TABLE $db_prefix$table ($columns) $engine");
+        tc_query("CREATE TABLE `$db_prefix$table` ($columns) $engine");
         msg_added("<b>$table</b> table has been added to the <u>$db_name</u> database.");
         return 1;
     }
@@ -55,19 +55,19 @@ function ensure_table($table, $columns, $engine = "ENGINE=MyISAM DEFAULT CHARSET
 function ensure_field($table, $field, $type, $extra)
 {
     global $db_prefix;
-    $result = tc_query("SHOW FIELDS FROM $db_prefix$table LIKE '$field'");
+    $result = tc_query("SHOW FIELDS FROM `$db_prefix$table` LIKE '$field'");
 
     while ($row = mysqli_fetch_array($result)) {
         $current_type = "" . $row['Type'] . "";
         if (strtolower($type) !== strtolower($current_type)) {
-            tc_query("ALTER TABLE $db_prefix$table CHANGE `$field` `$field` $type $extra");
+            tc_query("ALTER TABLE `$db_prefix$table` CHANGE `$field` `$field` $type $extra");
             msg_changed("<b>$field</b> field in <u>$table</u> table has been changed from type $current_type to type $type.");
             return 1;
         }
     }
 
     if (empty($current_type)) {
-        tc_query("ALTER TABLE $db_prefix$table ADD `$field` $type $extra;");
+        tc_query("ALTER TABLE `$db_prefix$table` ADD `$field` $type $extra;");
         msg_added("<b>$field</b> field has been added to the <u>$table</u> table.");
         return 1;
     }
@@ -80,10 +80,10 @@ function ensure_field($table, $field, $type, $extra)
 function ensure_index($table, $field)
 {
     global $db_prefix;
-    $rows = mysqli_num_rows(tc_query("SHOW INDEX FROM $db_prefix$table WHERE column_name = ?", $field));
+    $rows = mysqli_num_rows(tc_query("SHOW INDEX FROM `$db_prefix$table` WHERE column_name = ?", $field));
 
     if (empty($rows)) {
-        tc_query("CREATE INDEX {$db_prefix}{$table}_{$field} ON {$db_prefix}{$table} (`{$field}`)");
+        tc_query("CREATE INDEX {$db_prefix}{$table}_{$field} ON `{$db_prefix}{$table}` (`{$field}`)");
         msg_added("INDEX has been added to the <u>{$table}.{$field}</u> column.");
         return 1;
     }

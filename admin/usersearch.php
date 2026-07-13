@@ -297,7 +297,7 @@ if ($request !== 'POST') {
                 $query_params[] = $office_name;
 
                 if (has_value($group_name)) {
-                    $query_where[] = "groups = ?";
+                    $query_where[] = "`groups` = ?";
                     $query_params[] = $group_name;
                 }
             }

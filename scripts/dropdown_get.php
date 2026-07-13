@@ -51,7 +51,7 @@
 
         if (offices_select.options[offices_select.selectedIndex].text == "<?php echo $office_row; ?>") {
             <?php
-            $query2 = "select * from " . $db_prefix . "offices, " . $db_prefix . "groups where " . $db_prefix . "groups.officeid = " . $db_prefix . "offices.officeid
+            $query2 = "select * from " . $db_prefix . "offices, `" . $db_prefix . "groups` where `" . $db_prefix . "groups`.officeid = " . $db_prefix . "offices.officeid
                        and " . $db_prefix . "offices.officename = '" . $office_row . "'";
             $result2 = mysqli_query($GLOBALS["___mysqli_ston"], $query2);
             echo "groups_select.options[0] = new Option(\"...\");\n";

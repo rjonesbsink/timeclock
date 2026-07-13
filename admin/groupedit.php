@@ -11,11 +11,11 @@ $self = $_SERVER['PHP_SELF'];
 $request = $_SERVER['REQUEST_METHOD'];
 $user_agent = $_SERVER['HTTP_USER_AGENT'];
 
-const WHERE_GROUP_AND_OFFICE_ORDER_BY_EMPFULLNAME = "groups = ? and office = ? order by empfullname";
-const WHERE_ADMIN_GROUP_AND_OFFICE = "admin = '1' and groups = ? and office = ?";
-const WHERE_TIME_ADMIN_GROUP_AND_OFFICE = "time_admin = '1' and groups = ? and office = ?";
-const WHERE_REPORTS_GROUP_AND_OFFICE = "reports = '1' and groups = ? and office = ?";
-const EMPLOYEE_COLUMNS = "empfullname, displayname, email, groups, office, admin, reports, time_admin, disabled";
+const WHERE_GROUP_AND_OFFICE_ORDER_BY_EMPFULLNAME = "`groups` = ? and office = ? order by empfullname";
+const WHERE_ADMIN_GROUP_AND_OFFICE = "admin = '1' and `groups` = ? and office = ?";
+const WHERE_TIME_ADMIN_GROUP_AND_OFFICE = "time_admin = '1' and `groups` = ? and office = ?";
+const WHERE_REPORTS_GROUP_AND_OFFICE = "reports = '1' and `groups` = ? and office = ?";
+const EMPLOYEE_COLUMNS = "empfullname, displayname, email, `groups`, office, admin, reports, time_admin, disabled";
 const FOOTER_PHP = '../footer.php';
 const MSG_OFFICE_NOT_DEFINED = "Office name is not defined for this group.\n";
 const MSIE3 = "MSIE 3";
@@ -98,7 +98,7 @@ if ($request == 'GET') {
     echo "          <td valign=top>\n";
     echo "            <br />\n";
 
-    $result = tc_select("*", "groups, " . $db_prefix . "offices", "officename = ? and groupname = ?", array($get_office, $get_group));
+    $result = tc_select("*", "`groups`, " . $db_prefix . "offices", "officename = ? and groupname = ?", array($get_office, $get_group));
 
     while ($row = mysqli_fetch_array($result)) {
         $officename = "" . $row['officename'] . "";
@@ -116,7 +116,7 @@ if ($request == 'GET') {
         exit;
     }
 
-    $result2 = tc_select("*", "employees", "office = ? and groups = ?", array($get_office, $get_group));
+    $result2 = tc_select("*", "employees", "office = ? and `groups` = ?", array($get_office, $get_group));
     @$user_cnt = mysqli_num_rows($result2);
 
     echo "            <form name='form' action='$self' method='post'>\n";
@@ -369,7 +369,7 @@ if ($request == 'GET') {
         exit;
     }
 
-    $result = tc_select("*", "employees", "office = ? and groups = ?", array($get_office, $get_group));
+    $result = tc_select("*", "employees", "office = ? and `groups` = ?", array($get_office, $get_group));
     @$tmp_user_cnt = mysqli_num_rows($result);
 
     if ($user_cnt != $tmp_user_cnt) {
@@ -652,7 +652,7 @@ if ($request == 'GET') {
         tc_update_strings(
             "employees",
             array("groups" => $post_groupname, "office" => $post_officename),
-            "groups = ? and office = ?",
+            "`groups` = ? and office = ?",
             array($get_group, $get_office)
         );
 
@@ -732,7 +732,7 @@ if ($request == 'GET') {
             $result = tc_select(
                 EMPLOYEE_COLUMNS,
                 "employees",
-                "groups = ? order by empfullname",
+                "`groups` = ? order by empfullname",
                 $post_groupname
             );
 

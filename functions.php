@@ -54,16 +54,28 @@ function tc_query($query, $params = array(), $types = null)
     return $stmt->get_result();
 }
 
-function tc_select($what, $from, $where = '1=1', $params = array(), $types = null)
+// Backtick-quotes $from when it's a single bare table name, so reserved
+// words like `groups` work as table names. Left alone (aside from the
+// prefix) when $from is a multi-table FROM/JOIN expression, since those
+// can't be quoted as a single identifier and callers already qualify each
+// table in them individually.
+function tc_qualify_from($from)
 {
     global $db_prefix;
-    return tc_query("SELECT $what FROM {$db_prefix}$from WHERE $where", $params, $types);
+    if (preg_match('/^\w+$/', $from)) {
+        return "`{$db_prefix}{$from}`";
+    }
+    return "{$db_prefix}{$from}";
+}
+
+function tc_select($what, $from, $where = '1=1', $params = array(), $types = null)
+{
+    return tc_query("SELECT $what FROM " . tc_qualify_from($from) . " WHERE $where", $params, $types);
 }
 
 function tc_select_value($what, $from, $where = '1=1', $params = array(), $types = null)
 {
-    global $db_prefix;
-    $result = tc_query("SELECT $what FROM {$db_prefix}$from WHERE $where", $params, $types);
+    $result = tc_query("SELECT $what FROM " . tc_qualify_from($from) . " WHERE $where", $params, $types);
     $value = null;
     while ($row = mysqli_fetch_array($result)) {
         $value = $row[0];
@@ -74,7 +86,7 @@ function tc_select_value($what, $from, $where = '1=1', $params = array(), $types
 function tc_delete($from, $where, $params = array(), $types = null)
 {
     global $db_prefix;
-    return tc_query("DELETE FROM {$db_prefix}$from WHERE $where", $params, $types);
+    return tc_query("DELETE FROM `{$db_prefix}$from` WHERE $where", $params, $types);
 }
 
 function tc_insert_strings($db, $keyvals)
@@ -97,7 +109,7 @@ function tc_insert_strings($db, $keyvals)
         // rely on NULL to avoid colliding on a UNIQUE column.
         $values[] = is_null($value) ? null : "$value";
     }
-    tc_execute("INSERT INTO {$db_prefix}$db ($keys) VALUES ($places)", $values, $types);
+    tc_execute("INSERT INTO `{$db_prefix}$db` ($keys) VALUES ($places)", $values, $types);
     return mysqli_insert_id($GLOBALS["___mysqli_ston"]);
 }
 
@@ -123,7 +135,7 @@ function tc_update_strings($db, $keyvals, $where = '1=1', $bind = array(), $type
     if (!is_null($types)) {
         $types = $set_types . $types;
     }
-    tc_execute("UPDATE {$db_prefix}$db SET $places WHERE $where", array_merge($values, $bind), $types);
+    tc_execute("UPDATE `{$db_prefix}$db` SET $places WHERE $where", array_merge($values, $bind), $types);
 }
 
 function tc_hash_password($password)

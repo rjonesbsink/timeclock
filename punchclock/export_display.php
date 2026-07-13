@@ -20,7 +20,7 @@ $end_utm_timestamp = utm_timestamp($end_local_timestamp);
 
 $employee_clause = $user_name == 'All' ? '' : "   and {$db_prefix}employees.empfullname = ?\n";
 $office_clause = $office_name == 'All' ? '' : "   and {$db_prefix}employees.office = ?\n";
-$groups_clause = $group_name == 'All' ? '' : "   and {$db_prefix}employees.groups = ?\n";
+$groups_clause = $group_name == 'All' ? '' : "   and {$db_prefix}employees.`groups` = ?\n";
 
 $params = array();
 if ($user_name != 'All') {
@@ -72,7 +72,7 @@ if ($c_office) {
     $cols .= ",office";
 }
 if ($c_group) {
-    $cols .= ",groups";
+    $cols .= ",`groups`";
 }
 if ($c_employee) {
     $cols .= ",empfullname";
@@ -338,7 +338,7 @@ function record_hours($tc)
             $reg_ot = 'R';
             #$date        = date('Y-m-d H:i',$start_time); ## debug
             $date = date('Y-m-d', $start_time);
-            $sql = "insert into t_computed_hours (hours,reg_ot,`inout`,color,hours_date,empfullname,displayname,groups,office)"
+            $sql = "insert into t_computed_hours (hours,reg_ot,`inout`,color,hours_date,empfullname,displayname,`groups`,office)"
                 . " values (?,?,?,?,?,?,?,?,?)";
             tc_execute($sql, array(
                 $hours, $reg_ot, $tc->row['inout'], $tc->row['color'], $date,
@@ -350,7 +350,7 @@ function record_hours($tc)
             $reg_ot = 'O';
             #$date        = date('Y-m-d H:i',$start_time); ## debug
             $date = date('Y-m-d', $start_time);
-            $sql = "insert into t_computed_hours (hours,reg_ot,`inout`,color,hours_date,empfullname,displayname,groups,office)"
+            $sql = "insert into t_computed_hours (hours,reg_ot,`inout`,color,hours_date,empfullname,displayname,`groups`,office)"
                 . " values (?,?,?,?,?,?,?,?,?)";
             tc_execute($sql, array(
                 $overtime, $reg_ot, $tc->row['inout'], $tc->row['color'], $date,

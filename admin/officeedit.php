@@ -15,7 +15,7 @@ const WHERE_OFFICENAME = "officename = ?";
 const WHERE_OFFICE = "office = ?";
 const WHERE_OFFICEID = "officeid = ?";
 const WHERE_OFFICEID_ORDER_BY_GROUPNAME = "officeid = ? order by groupname";
-const WHERE_OFFICE_AND_GROUPS = "office = ? and groups = ?";
+const WHERE_OFFICE_AND_GROUPS = "office = ? and `groups` = ?";
 const FOOTER_PHP = '../footer.php';
 const MSIE3 = "MSIE 3";
 const MSIE4 = "MSIE 4";

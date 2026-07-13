@@ -169,7 +169,7 @@ function build_config($dbHostname, $dbName, $dbUsername, $dbPassword, $weather)
         // sequences as backreferences -- a password containing a literal
         // "$1" would otherwise be silently mangled in the written file.
         $template = preg_replace_callback(
-            '/^\$' . $variable . '\s*=\s*".*";$/m',
+            '/^\$' . $variable . '\s*=\s*".*";\r?$/m',
             fn () => '$' . $variable . ' = ' . var_export($value, true) . ';',
             $template,
             1,
@@ -184,7 +184,7 @@ function build_config($dbHostname, $dbName, $dbUsername, $dbPassword, $weather)
     // pattern; the commented-out example assignments in the template are
     // indented, so the ^\$-anchored pattern below only matches the real one.
     $template = preg_replace_callback(
-        '/^\$WxTimeZone\s*=\s*\'.*\';[ \t]*$/m',
+        '/^\$WxTimeZone\s*=\s*\'.*\';[ \t]*\r?$/m',
         fn () => '$WxTimeZone = ' . var_export($weather['timezone'], true) . ';',
         $template,
         1,
@@ -204,7 +204,7 @@ function build_config($dbHostname, $dbName, $dbUsername, $dbPassword, $weather)
         : null;
     $wxListLiteral = $wxListEntry === null ? 'array()' : 'array(' . var_export($wxListEntry, true) . ')';
     $template = preg_replace_callback(
-        '/^\$WxList\s*=\s*array\(.*\);$/m',
+        '/^\$WxList\s*=\s*array\(.*\);\r?$/m',
         fn () => '$WxList = ' . $wxListLiteral . ';',
         $template,
         -1,
@@ -272,7 +272,7 @@ function create_admin_account($connection, $username, $displayName, $email, $pas
 
     try {
         $stmt = $connection->prepare(
-            'INSERT INTO employees (empfullname, employee_passwd, displayname, email, groups, office, admin, reports, time_admin, disabled)'
+            'INSERT INTO employees (empfullname, employee_passwd, displayname, email, `groups`, office, admin, reports, time_admin, disabled)'
             . " VALUES (?, ?, ?, ?, '', '', 1, 1, 1, 0)"
         );
         $stmt->bind_param('ssss', $username, $hash, $displayName, $email);

@@ -559,7 +559,7 @@ if ($request == 'GET') {
         $emp_params[] = $office_name;
     }
     if (!empty($group_name) && $group_name != "All") {
-        $where .= " and groups = ?";
+        $where .= " and `groups` = ?";
         $emp_params[] = $group_name;
     }
     if (!empty($fullname) && $fullname != "All") {

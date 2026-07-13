@@ -228,7 +228,7 @@ if ($request == 'GET') {
 
     if (
         !empty($group_name)
-         and is_null(tc_select_value("groups", "employees", "empfullname = ? AND groups = ?", array($post_username, $group_name)))
+         and is_null(tc_select_value("`groups`", "employees", "empfullname = ? AND `groups` = ?", array($post_username, $group_name)))
     ) {
         echo MSG_SOMETHING_FISHY;
         exit;

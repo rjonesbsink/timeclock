@@ -78,7 +78,7 @@ while ($row = mysqli_fetch_array($result)) {
     $result2 = mysqli_query($GLOBALS["___mysqli_ston"], $query2);
     @$user_cnt = mysqli_num_rows($result2);
 
-    $query3 = "select * from " . $db_prefix . "groups where officeid = '" . $row['officeid'] . "'";
+    $query3 = "select * from `" . $db_prefix . "groups` where officeid = '" . $row['officeid'] . "'";
     $result3 = mysqli_query($GLOBALS["___mysqli_ston"], $query3);
     @$group_cnt = mysqli_num_rows($result3);
 

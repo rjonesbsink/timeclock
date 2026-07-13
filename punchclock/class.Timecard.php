@@ -226,7 +226,7 @@ select	{$db_prefix}info.*,
 	{$db_prefix}punchlist.color,
 	coalesce({$db_prefix}punchlist.in_or_out,$default_in_or_out) as in_or_out,
 	{$db_prefix}employees.displayname,
-	{$db_prefix}employees.groups,
+	{$db_prefix}employees.`groups`,
 	{$db_prefix}employees.office
 from {$db_prefix}info
 left join {$db_prefix}punchlist on {$db_prefix}info.inout = {$db_prefix}punchlist.punchitems
@@ -249,7 +249,7 @@ select	{$db_prefix}info.*,
 	{$db_prefix}punchlist.color,
 	coalesce({$db_prefix}punchlist.in_or_out,$default_in_or_out) as in_or_out,
 	{$db_prefix}employees.displayname,
-	{$db_prefix}employees.groups,
+	{$db_prefix}employees.`groups`,
 	{$db_prefix}employees.office
 from {$db_prefix}info
 left join {$db_prefix}punchlist on {$db_prefix}info.inout = {$db_prefix}punchlist.punchitems

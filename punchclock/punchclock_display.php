@@ -14,7 +14,7 @@ $sortdirection = 'asc';
 // Construct query. $sortcolumn/$sortdirection are hardwired above (not user input),
 // so they're safe to interpolate directly -- placeholders can't bind identifiers anyway.
 $office_clause = $display_office == 'all' ? '' : "   and {$db_prefix}employees.office = ?\n";
-$groups_clause = $display_group == 'all' ? '' : "   and {$db_prefix}employees.groups = ?\n";
+$groups_clause = $display_group == 'all' ? '' : "   and {$db_prefix}employees.`groups` = ?\n";
 
 $params = array();
 if ($display_office != 'all') {
