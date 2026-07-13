@@ -110,7 +110,19 @@ ALTER TABLE `employees` ADD `admin` TINYINT(1) NOT NULL DEFAULT '0';
 ALTER TABLE `employees` ADD `reports` TINYINT(1) NOT NULL DEFAULT '0';
 ALTER TABLE `employees` ADD `time_admin` TINYINT(1) NOT NULL DEFAULT '0';
 ALTER TABLE `employees` ADD `disabled` TINYINT(1) NOT NULL DEFAULT '0';
-INSERT INTO employees VALUES ('admin', NULL, 'xy.RY2HT1QTc2', 'administrator', '', '', '', 1, 1, 1, '');
+
+# This is the only point in this upgrade where the admin/reports/time_admin
+# columns (and so the concept of an admin account) exist for the first time,
+# so an admin account has to be seeded here -- but not with a fixed default
+# password. Before running this INSERT, generate a real password hash and
+# substitute it for the placeholder below:
+#
+#   php -r 'echo password_hash("choose-a-strong-password", PASSWORD_DEFAULT);'
+#
+# The placeholder below is not a valid hash of anything, so the account it
+# creates cannot be logged into until you replace it -- if you forget this
+# step, the failure is "no working login", not a live default credential.
+INSERT INTO employees VALUES ('admin', NULL, 'REPLACE_WITH_A_REAL_PASSWORD_HASH_BEFORE_RUNNING', 'administrator', '', '', '', 1, 1, 1, '');
 
 # --------------------------------------------------------
 
