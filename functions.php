@@ -279,6 +279,30 @@ function post_array($key, $default = [])
     return is_array($value) ? $value : $default;
 }
 
+// True if $fullname's most recent punch strictly before $timestamp was an
+// "in" -- i.e. a shift that was still genuinely open going into $timestamp.
+// The hours-worked reports (total_hours.php, get_csv.php) credit an
+// employee's day-start "out" punch with time back to midnight on the
+// assumption that they'd been clocked in continuously since before then;
+// this lets that assumption be checked against a real punch instead of
+// applied unconditionally, which previously credited seconds-to-hours of
+// phantom time whenever a day's first captured punch was "out" with no
+// preceding "in" at all.
+function had_open_shift_before($fullname, $timestamp)
+{
+    global $db_prefix;
+    $result = tc_query(
+        "select " . $db_prefix . "punchlist.in_or_out
+         from " . $db_prefix . "info, " . $db_prefix . "punchlist
+         where " . $db_prefix . "info.fullname = ? and " . $db_prefix . "info.timestamp < ?
+         and " . $db_prefix . "info.`inout` = " . $db_prefix . "punchlist.punchitems
+         order by " . $db_prefix . "info.timestamp desc limit 1",
+        array($fullname, $timestamp)
+    );
+    $row = mysqli_fetch_array($result);
+    return $row !== null && $row['in_or_out'] == '1';
+}
+
 function secsToHours($secs, $round_time)
 {
 

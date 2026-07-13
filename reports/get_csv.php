@@ -453,7 +453,9 @@ if (
                         $punch_cnt++;
                         if (empty($punchlist_in_or_out[$y])) {
                             $status = "out";
-                            $secs = $info_timestamp[$y] - $info_start_time[$y];
+                            $secs = had_open_shift_before($employees_empfullname[$x], $info_start_time[$y])
+                                ? $info_timestamp[$y] - $info_start_time[$y]
+                                : 0;
                             $out_time = $info_timestamp[$y];
                             $previous_days_end_time = $info_end_time[$y] + 1;
                             if ($y == $info_cnt - 1) {
@@ -578,10 +580,15 @@ if (
                     if (empty($punchlist_in_or_out[$y])) {
                         $out = 1;
                         $status = "out";
-                        if ($info_date[$y] == $from_date) {
-                            $secs = $info_timestamp[$y] - $from_timestamp - $tzo;
+                        $day_boundary = ($info_date[$y] == $from_date) ? $from_timestamp : $info_start_time[$y];
+                        if (had_open_shift_before($employees_empfullname[$x], $day_boundary)) {
+                            if ($info_date[$y] == $from_date) {
+                                $secs = $info_timestamp[$y] - $from_timestamp - $tzo;
+                            } else {
+                                $secs = $info_timestamp[$y] - $info_start_time[$y];
+                            }
                         } else {
-                            $secs = $info_timestamp[$y] - $info_start_time[$y];
+                            $secs = 0;
                         }
                         $out_time = $info_timestamp[$y];
                         $previous_days_end_time = $info_end_time[$y] + 1;
@@ -589,49 +596,45 @@ if (
                             $hours = secsToHours($secs, $tmp_round_time);
                             $total_hours = $total_hours + $hours;
                             $hours = number_format($hours, 2);
-                            if ($y == $info_cnt - 1) {
-                                $hours = secsToHours($secs, $tmp_round_time);
-                                $total_hours = $total_hours + $hours;
-                                if ($tmp_show_details == "1") {
-                                    for ($z = $tmp_z; $z <= $punch_cnt; $z++) {
-                                        $time_formatted = date($timefmt, $info_timestamp[$z]);
-                                        if (strtolower($user_or_display) == "display") {
-                                            if (!empty($tmp_display_ip)) {
-                                                if ($z == $punch_cnt) {
-                                                    $string .= "$employees_displayname[$x], $info_inout[$z], $time_formatted, $info_date[$y], $info_ipaddress[$z], $info_notes[$z], $hours, ,\n";
-                                                } else {
-                                                    $string .= "$employees_displayname[$x], $info_inout[$z], $time_formatted, $info_date[$y], $info_ipaddress[$z], $info_notes[$z], , ,\n";
-                                                }
+                            if ($tmp_show_details == "1") {
+                                for ($z = $tmp_z; $z <= $punch_cnt; $z++) {
+                                    $time_formatted = date($timefmt, $info_timestamp[$z]);
+                                    if (strtolower($user_or_display) == "display") {
+                                        if (!empty($tmp_display_ip)) {
+                                            if ($z == $punch_cnt) {
+                                                $string .= "$employees_displayname[$x], $info_inout[$z], $time_formatted, $info_date[$y], $info_ipaddress[$z], $info_notes[$z], $hours, ,\n";
                                             } else {
-                                                if ($z == $punch_cnt) {
-                                                    $string .= "$employees_displayname[$x], $info_inout[$z], $time_formatted, $info_date[$y], $info_notes[$z], $hours, ,\n";
-                                                } else {
-                                                    $string .= "$employees_displayname[$x], $info_inout[$z], $time_formatted, $info_date[$y], $info_notes[$z], , ,\n";
-                                                }
+                                                $string .= "$employees_displayname[$x], $info_inout[$z], $time_formatted, $info_date[$y], $info_ipaddress[$z], $info_notes[$z], , ,\n";
                                             }
                                         } else {
-                                            if (!empty($tmp_display_ip)) {
-                                                if ($z == $punch_cnt) {
-                                                    $string .= "$employees_empfullname[$x], $info_inout[$z], $time_formatted, $info_date[$y], $info_ipaddress[$z], $info_notes[$z], $hours, ,\n";
-                                                } else {
-                                                    $string .= "$employees_empfullname[$x], $info_inout[$z], $time_formatted, $info_date[$y], $info_ipaddress[$z], $info_notes[$z], , ,\n";
-                                                }
+                                            if ($z == $punch_cnt) {
+                                                $string .= "$employees_displayname[$x], $info_inout[$z], $time_formatted, $info_date[$y], $info_notes[$z], $hours, ,\n";
                                             } else {
-                                                if ($z == $punch_cnt) {
-                                                    $string .= "$employees_empfullname[$x], $info_inout[$z], $time_formatted, $info_date[$y], $info_notes[$z], $hours, ,\n";
-                                                } else {
-                                                    $string .= "$employees_empfullname[$x], $info_inout[$z], $time_formatted, $info_date[$y], $info_notes[$z], , ,\n";
-                                                }
+                                                $string .= "$employees_displayname[$x], $info_inout[$z], $time_formatted, $info_date[$y], $info_notes[$z], , ,\n";
                                             }
                                         }
-                                        $tmp_z++;
-                                    }
-                                } else {
-                                    if (strtolower($user_or_display) == "display") {
-                                        $string .= "$employees_displayname[$x], $info_date[$y], $hours, ,\n";
                                     } else {
-                                        $string .= "$employees_empfullname[$x], $info_date[$y], $hours, ,\n";
+                                        if (!empty($tmp_display_ip)) {
+                                            if ($z == $punch_cnt) {
+                                                $string .= "$employees_empfullname[$x], $info_inout[$z], $time_formatted, $info_date[$y], $info_ipaddress[$z], $info_notes[$z], $hours, ,\n";
+                                            } else {
+                                                $string .= "$employees_empfullname[$x], $info_inout[$z], $time_formatted, $info_date[$y], $info_ipaddress[$z], $info_notes[$z], , ,\n";
+                                            }
+                                        } else {
+                                            if ($z == $punch_cnt) {
+                                                $string .= "$employees_empfullname[$x], $info_inout[$z], $time_formatted, $info_date[$y], $info_notes[$z], $hours, ,\n";
+                                            } else {
+                                                $string .= "$employees_empfullname[$x], $info_inout[$z], $time_formatted, $info_date[$y], $info_notes[$z], , ,\n";
+                                            }
+                                        }
                                     }
+                                    $tmp_z++;
+                                }
+                            } else {
+                                if (strtolower($user_or_display) == "display") {
+                                    $string .= "$employees_displayname[$x], $info_date[$y], $hours, ,\n";
+                                } else {
+                                    $string .= "$employees_empfullname[$x], $info_date[$y], $hours, ,\n";
                                 }
                             }
                             $secs = 0;
@@ -657,49 +660,45 @@ if (
                             $hours = secsToHours($secs, $tmp_round_time);
                             $total_hours = $total_hours + $hours;
                             $hours = number_format($hours, 2);
-                            if ($y == $info_cnt - 1) {
-                                $hours = secsToHours($secs, $tmp_round_time);
-                                $total_hours = $total_hours + $hours;
-                                if ($tmp_show_details == "1") {
-                                    for ($z = $tmp_z; $z <= $punch_cnt; $z++) {
-                                        $time_formatted = date($timefmt, $info_timestamp[$z]);
-                                        if (strtolower($user_or_display) == "display") {
-                                            if (!empty($tmp_display_ip)) {
-                                                if ($z == $punch_cnt) {
-                                                    $string .= "$employees_displayname[$x], $info_inout[$z], $time_formatted, $info_date[$y], $info_ipaddress[$z], $info_notes[$z], $hours, ,\n";
-                                                } else {
-                                                    $string .= "$employees_displayname[$x], $info_inout[$z], $time_formatted, $info_date[$y], $info_ipaddress[$z], $info_notes[$z], , ,\n";
-                                                }
+                            if ($tmp_show_details == "1") {
+                                for ($z = $tmp_z; $z <= $punch_cnt; $z++) {
+                                    $time_formatted = date($timefmt, $info_timestamp[$z]);
+                                    if (strtolower($user_or_display) == "display") {
+                                        if (!empty($tmp_display_ip)) {
+                                            if ($z == $punch_cnt) {
+                                                $string .= "$employees_displayname[$x], $info_inout[$z], $time_formatted, $info_date[$y], $info_ipaddress[$z], $info_notes[$z], $hours, ,\n";
                                             } else {
-                                                if ($z == $punch_cnt) {
-                                                    $string .= "$employees_displayname[$x], $info_inout[$z], $time_formatted, $info_date[$y], $info_notes[$z], $hours, ,\n";
-                                                } else {
-                                                    $string .= "$employees_displayname[$x], $info_inout[$z], $time_formatted, $info_date[$y], $info_notes[$z], , ,\n";
-                                                }
+                                                $string .= "$employees_displayname[$x], $info_inout[$z], $time_formatted, $info_date[$y], $info_ipaddress[$z], $info_notes[$z], , ,\n";
                                             }
                                         } else {
-                                            if (!empty($tmp_display_ip)) {
-                                                if ($z == $punch_cnt) {
-                                                    $string .= "$employees_empfullname[$x], $info_inout[$z], $time_formatted, $info_date[$y], $info_ipaddress[$z], $info_notes[$z], $hours, ,\n";
-                                                } else {
-                                                    $string .= "$employees_empfullname[$x], $info_inout[$z], $time_formatted, $info_date[$y], $info_ipaddress[$z], $info_notes[$z], , ,\n";
-                                                }
+                                            if ($z == $punch_cnt) {
+                                                $string .= "$employees_displayname[$x], $info_inout[$z], $time_formatted, $info_date[$y], $info_notes[$z], $hours, ,\n";
                                             } else {
-                                                if ($z == $punch_cnt) {
-                                                    $string .= "$employees_empfullname[$x], $info_inout[$z], $time_formatted, $info_date[$y], $info_notes[$z], $hours, ,\n";
-                                                } else {
-                                                    $string .= "$employees_empfullname[$x], $info_inout[$z], $time_formatted, $info_date[$y], $info_notes[$z], , ,\n";
-                                                }
+                                                $string .= "$employees_displayname[$x], $info_inout[$z], $time_formatted, $info_date[$y], $info_notes[$z], , ,\n";
                                             }
                                         }
-                                        $tmp_z++;
-                                    }
-                                } else {
-                                    if (strtolower($user_or_display) == "display") {
-                                        $string .= "$employees_displayname[$x], $info_date[$y], $hours, ,\n";
                                     } else {
-                                        $string .= "$employees_empfullname[$x], $info_date[$y], $hours, ,\n";
+                                        if (!empty($tmp_display_ip)) {
+                                            if ($z == $punch_cnt) {
+                                                $string .= "$employees_empfullname[$x], $info_inout[$z], $time_formatted, $info_date[$y], $info_ipaddress[$z], $info_notes[$z], $hours, ,\n";
+                                            } else {
+                                                $string .= "$employees_empfullname[$x], $info_inout[$z], $time_formatted, $info_date[$y], $info_ipaddress[$z], $info_notes[$z], , ,\n";
+                                            }
+                                        } else {
+                                            if ($z == $punch_cnt) {
+                                                $string .= "$employees_empfullname[$x], $info_inout[$z], $time_formatted, $info_date[$y], $info_notes[$z], $hours, ,\n";
+                                            } else {
+                                                $string .= "$employees_empfullname[$x], $info_inout[$z], $time_formatted, $info_date[$y], $info_notes[$z], , ,\n";
+                                            }
+                                        }
                                     }
+                                    $tmp_z++;
+                                }
+                            } else {
+                                if (strtolower($user_or_display) == "display") {
+                                    $string .= "$employees_displayname[$x], $info_date[$y], $hours, ,\n";
+                                } else {
+                                    $string .= "$employees_empfullname[$x], $info_date[$y], $hours, ,\n";
                                 }
                             }
                             $secs = 0;
