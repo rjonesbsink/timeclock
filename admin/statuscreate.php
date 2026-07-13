@@ -155,12 +155,7 @@ if ($request == 'GET') {
     $string  = strstr($post_statusname, "'");
     $string2 = strstr($post_statusname, "\"");
 
-    if (empty($string)) {
-        $result = tc_select("punchitems", "punchlist", "punchitems = ?", $post_statusname);
-        while ($row = mysqli_fetch_array($result)) {
-            $dupe = '1';
-        }
-    }
+    $dupe = empty($string) && entity_name_exists("punchlist", "punchitems", $post_statusname);
 
     $punchnext_ok = true;
     if (has_value($punchnext)) {
@@ -171,7 +166,7 @@ if ($request == 'GET') {
         (empty($post_statusname)) ||
         (empty($post_color)) ||
         (!preg_match('/' . "^([[:alnum:]]| |-|_|\.)+$" . '/i', $post_statusname)) ||
-        (isset($dupe)) ||
+        ($dupe) ||
         ((!preg_match('/' . "^(#[a-fA-F0-9]{6})+$" . '/i', $post_color)) &&
         (!preg_match('/' . "^([a-fA-F0-9]{6})+$" . '/i', $post_color))) ||
         (!empty($string)) ||
@@ -212,7 +207,7 @@ if ($request == 'GET') {
             echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
                     The '#' symbol followed by letters A-F, or numbers 0-9 are allowed when editing a Color.</td></tr>\n";
             echo "            </table>\n";
-        } elseif (isset($dupe)) {
+        } elseif ($dupe) {
             echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
             echo "              <tr><td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
                     Status already exists. Create another status.</td></tr>\n";

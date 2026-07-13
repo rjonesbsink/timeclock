@@ -83,6 +83,20 @@ function tc_select_value($what, $from, $where = '1=1', $params = array(), $types
     return $value;
 }
 
+// True if a row already exists with $name in $nameColumn of $table. Pass
+// $extraWhere/$extraParams to scope the uniqueness check further (e.g. a
+// group name only needs to be unique within its office).
+function entity_name_exists($table, $nameColumn, $name, $extraWhere = null, $extraParams = array())
+{
+    $where = "$nameColumn = ?";
+    $params = array($name);
+    if ($extraWhere !== null) {
+        $where .= " and $extraWhere";
+        $params = array_merge($params, $extraParams);
+    }
+    return tc_select_value($nameColumn, $table, $where, $params) !== null;
+}
+
 function tc_delete($from, $where, $params = array(), $types = null)
 {
     global $db_prefix;

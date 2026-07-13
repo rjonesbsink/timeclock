@@ -117,6 +117,7 @@ if ($request == 'GET') {
         echo "                  <td class=table_rows align=left width=80% style='padding-left:20px;'><input type='radio' name='create_status' value='1'>In
                       <input checked type='radio' name='create_status' value='0'>Out</td></tr>\n";
     } else {
+        echo "Status is not defined.\n";
         exit;
     }
 
@@ -168,6 +169,7 @@ if ($request == 'GET') {
 
     $string  = strstr($post_statusname, "'");
     $string2 = strstr($post_statusname, "\"");
+    $status_name_exists = ($post_statusname !== $get_status) && entity_name_exists("punchlist", "punchitems", $post_statusname);
 
     if (
         (empty($post_statusname)) ||
@@ -177,6 +179,7 @@ if ($request == 'GET') {
         (!preg_match('/' . "^([a-fA-F0-9]{6})+$" . '/i', $post_color))) ||
         (!empty($string)) ||
         (!empty($string2)) ||
+        ($status_name_exists) ||
         !$punchnext_ok
     ) {
         echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
@@ -240,6 +243,21 @@ if ($request == 'GET') {
             echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red nowrap>
                     &nbsp;A Color is required.</td></tr>\n";
             echo "            </table>\n";
+        } elseif (!empty($string)) {
+            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
+            echo "              <tr><td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
+                    Apostrophes are not allowed.</td></tr>\n";
+            echo "            </table>\n";
+        } elseif (!empty($string2)) {
+            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
+            echo "              <tr><td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
+                    Double Quotes are not allowed.</td></tr>\n";
+            echo "            </table>\n";
+        } elseif ($status_name_exists) {
+            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
+            echo "              <tr><td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
+                    Status already exists. Create another status.</td></tr>\n";
+            echo "            </table>\n";
         } elseif (!preg_match('/' . "^([[:alnum:]]| |-|_|.)+$" . '/i', $post_statusname)) {
             echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
             echo "              <tr>\n";
@@ -251,16 +269,6 @@ if ($request == 'GET') {
             echo "              <tr>\n";
             echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red nowrap>
                     &nbsp;The '#' symbol followed by letters A-F, or numbers 0-9 are allowed when editing a Color.</td></tr>\n";
-            echo "            </table>\n";
-        } elseif (!empty($string)) {
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr><td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    Apostrophes are not allowed.</td></tr>\n";
-            echo "            </table>\n";
-        } elseif (!empty($string2)) {
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr><td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    Double Quotes are not allowed.</td></tr>\n";
             echo "            </table>\n";
         } elseif (!$punchnext_ok) {
             echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
