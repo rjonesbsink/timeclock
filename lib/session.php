@@ -19,7 +19,10 @@ function start_secure_session()
     $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
         || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
 
-    session_set_cookie_params([
+    // php:S2092 wants a literal "secure" => true here, but the secure flag
+    // below is intentionally derived from the request instead of hardcoded
+    // -- see the comment on that line.
+    session_set_cookie_params([ // NOSONAR
         'lifetime' => 0,
         'path' => '/',
         'httponly' => true,
