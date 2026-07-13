@@ -581,12 +581,15 @@ function setTimeZone()
 
     global $use_client_tz;
     global $use_server_tz;
+    global $tzo;
 
     if ($use_client_tz == "yes") {
         if (isset($_COOKIE['tzoffset'])) {
             $tzo = $_COOKIE['tzoffset'];
             settype($tzo, "integer");
             $tzo = $tzo * 60;
+        } else {
+            $tzo = 0;
         }
     } elseif ($use_server_tz == "yes") {
         $tzo = date('Z');

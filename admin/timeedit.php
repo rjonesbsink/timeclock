@@ -436,11 +436,12 @@ if ($request == 'GET') {
                 for ($x = 0; $x < $final_num_rows; $x++) {
                     $row_color = ($row_count % 2) ? $color1 : $color2;
                     $final_username[$x] = stripslashes($final_username[$x]);
+                    $statuscolor = tc_select_value("color", "punchlist", "punchitems = ?", $final_inout[$x]);
 
                     echo "              <tr class=display_row>\n";
                     echo "                <td nowrap width=1% style='padding-right:5px;padding-left:10px;' class=table_rows><input type='text'
                     size='7' maxlength='$timefmt_size' name='edit_time_textbox[$x]' value=\"" . htmlspecialchars($edit_time_textbox[$x]) . "\"></td>\n";
-                    echo "                <td nowrap align=left style='width:7%;padding-left:15px;background-color:$row_color;color:" . $row["color"] . "'>" . htmlspecialchars($final_inout[$x]) . "</td>\n";
+                    echo "                <td nowrap align=left style='width:7%;padding-left:15px;background-color:$row_color;color:" . htmlspecialchars($statuscolor) . "'>" . htmlspecialchars($final_inout[$x]) . "</td>\n";
                     echo "                <td nowrap align=left style='padding-left:20px;' width=4% bgcolor='$row_color'>" . htmlspecialchars($final_time[$x]) . "</td>\n";
                     echo "                <td style='padding-left:25px;' bgcolor='$row_color'>" . htmlspecialchars($final_notes[$x]) . "</td>\n";
                     echo "              </tr>\n";
@@ -720,11 +721,12 @@ if ($request == 'GET') {
                 $row_color = ($row_count % 2) ? $color1 : $color2;
                 $time[$x] = date("$timefmt", $mysql_timestamp[$x] + $tzo);
                 $username[$x] = stripslashes($username[$x]);
+                $statuscolor = tc_select_value("color", "punchlist", "punchitems = ?", $inout[$x]);
 
                 echo "              <tr class=display_row>\n";
                 echo "                <td nowrap width=1% style='padding-right:5px;padding-left:10px;' class=table_rows><input type='text'
                     size='7' maxlength='$timefmt_size' name='edit_time_textbox[$x]'></td>\n";
-                echo "                <td nowrap align=left style='width:7%;padding-left:15px;background-color:$row_color;color:" . $row["color"] . "'>$inout[$x]</td>\n";
+                echo "                <td nowrap align=left style='width:7%;padding-left:15px;background-color:$row_color;color:" . htmlspecialchars($statuscolor) . "'>$inout[$x]</td>\n";
                 echo "                <td nowrap align=left style='padding-left:20px;' width=4% bgcolor='$row_color'>$time[$x]</td>\n";
                 echo "                <td style='padding-left:25px;' bgcolor='$row_color'>$notes[$x]</td>\n";
                 echo "              </tr>\n";
