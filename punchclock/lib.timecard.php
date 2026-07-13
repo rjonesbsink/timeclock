@@ -36,9 +36,9 @@ function timecard_html($empfullname, $local_timestamp_in_week)
     function print_header($tc)
     {
         // Print timecard html header.
-        global $overtime_week_limit, $timecard_display_running_total;
+        global $overtime_week_limit, $overtime_daily_limit, $timecard_display_running_total;
 
-        $overtime_col = $overtime_week_limit > 0 ? "\n    <th align=\"center\" class=\"ovt\" title=\"Overtime hours\">OT</th>" : '';
+        $overtime_col = ($overtime_week_limit > 0 || $overtime_daily_limit > 0) ? "\n    <th align=\"center\" class=\"ovt\" title=\"Overtime hours\">OT</th>" : '';
         $total_col = $timecard_display_running_total == "yes" ? "\n    <th align=\"center\" class=\"total\" title=\"Running total of regular work hours and overtime to date.\">Total</th>" : '';
         print <<<End_Of_HTML
 
@@ -60,7 +60,7 @@ End_Of_HTML;
     {
         // Configuration variables.
         global $timefmt, $datefmt;
-        global $overtime_week_limit, $timecard_list_punch_outs, $timecard_display_hours_minutes;
+        global $overtime_week_limit, $overtime_daily_limit, $timecard_list_punch_outs, $timecard_display_hours_minutes;
         global $timecard_hours_include_overtime, $timecard_display_running_total;
         static $print_count = 0;
 
@@ -89,7 +89,7 @@ End_Of_HTML;
             }
 
             $row_class = (++$print_count % 2) ? 'odd' : 'even';
-            $overtime_col = $overtime_week_limit > 0 ? "\n    <td align=\"right\" class=\"ovt\">$h_overtime</td>" : '';
+            $overtime_col = ($overtime_week_limit > 0 || $overtime_daily_limit > 0) ? "\n    <td align=\"right\" class=\"ovt\">$h_overtime</td>" : '';
             $total_col = $timecard_display_running_total == "yes" ? "\n    <td align=\"right\" class=\"total\">$h_total</td>" : '';
             print <<<End_Of_HTML
 
@@ -107,7 +107,7 @@ End_Of_HTML;
     function print_footer($tc)
     {
         global $timecard_display_running_total, $timecard_hours_include_overtime;
-        global $timecard_display_hours_minutes, $overtime_week_limit;
+        global $timecard_display_hours_minutes, $overtime_week_limit, $overtime_daily_limit;
 
         // Set flag to print paragraph of totals if they're not already obvious.
         $print_totals = ($timecard_display_running_total == "yes" || $timecard_hours_include_overtime != "yes") ? true : false;
@@ -125,7 +125,7 @@ End_Of_HTML;
             // Print row of totals
             $total_hours = $timecard_hours_include_overtime == "yes" ? ($tc->week_hours + $tc->overtime_hours) : $tc->week_hours;
             $h_hours = $timecard_display_hours_minutes == "yes" ? hrs_min($total_hours) : $h_total_hours;
-            $overtime_col = $overtime_week_limit > 0 ? "\n    <td align=\"right\" class=\"ovt\">" . ($timecard_display_hours_minutes == "yes" ? hrs_min($tc->overtime_hours) : $h_ovt_total_hours) . "</td>" : '';
+            $overtime_col = ($overtime_week_limit > 0 || $overtime_daily_limit > 0) ? "\n    <td align=\"right\" class=\"ovt\">" . ($timecard_display_hours_minutes == "yes" ? hrs_min($tc->overtime_hours) : $h_ovt_total_hours) . "</td>" : '';
             $total_col = $timecard_display_running_total == "yes" ? "\n    <td align=\"right\" class=\"total\">" . ($timecard_display_hours_minutes == "yes" ? hrs_min($tc->week_hours + $tc->overtime_hours) : $h_total_hours) . "</td>" : '';
             print <<<End_Of_HTML
   <tr class="total_row">

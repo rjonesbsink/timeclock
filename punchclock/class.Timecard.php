@@ -61,6 +61,7 @@ class Timecard
         $this->week_hours = 0;
         $this->overtime_hours = 0;
         $this->today_hours = null; // not used unless week includes today
+        $day_hours_by_date = array(); // running per-calendar-day totals, for daily overtime
 
         // Set flag to tally today's hours if within current week.
         $local_timestamp = local_timestamp(); // current time
@@ -129,7 +130,8 @@ class Timecard
 
             // Is employee punched in?
             if ($this->in_or_out == 1) {
-                list ($this->hours, $this->overtime) = compute_work_hours($this->start_time, $this->end_time, $this->week_hours);
+                list ($this->hours, $this->overtime, $day_hours_by_date) =
+                    compute_work_hours($this->start_time, $this->end_time, $this->week_hours, $day_hours_by_date);
                 if ($do_today_hours) {
                     $this->today_hours += compute_day_hours($today_date, $this->start_time, $this->end_time);
                 }
@@ -161,7 +163,8 @@ class Timecard
                 $row_count++;
 
                 $this->end_time = $this->end_local_timestamp > $local_timestamp ? $local_timestamp : $this->end_local_timestamp;
-                list ($this->hours, $this->overtime) = compute_work_hours($this->start_time, $this->end_time, $this->week_hours);
+                list ($this->hours, $this->overtime, $day_hours_by_date) =
+                    compute_work_hours($this->start_time, $this->end_time, $this->week_hours, $day_hours_by_date);
                 if ($do_today_hours) {
                     $this->today_hours += compute_day_hours($today_date, $this->start_time, $this->end_time);
                 }

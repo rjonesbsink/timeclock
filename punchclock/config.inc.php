@@ -71,6 +71,14 @@ $entry_display_timecard = "yes";
 
 $overtime_week_limit = 35;
 
+/* Overtime can also be computed daily, crediting overtime for hours worked in a single day
+   over $overtime_daily_limit. Set the limit to 0 if daily overtime is not to be computed
+   (the default). When both a daily and a weekly limit are set, whichever credits more
+   overtime for a given stretch of hours is used -- a day that alone crosses the daily
+   limit is overtime even if the week as a whole is still under $overtime_week_limit. */
+
+$overtime_daily_limit = 0;
+
 /* The day of the week starting a pay period can be specified by setting $begin_week_day to
    0 for Sunday, 1 for Monday, and so on. The default is 0 for Sunday. */
 
