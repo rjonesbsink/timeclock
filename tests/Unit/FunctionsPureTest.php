@@ -259,4 +259,175 @@ final class FunctionsPureTest extends TestCase
         $this->assertFalse(is_valid_time_of_day('not a time'));
         $this->assertFalse(is_valid_time_of_day(''));
     }
+
+    public function testTimeOfDayToSecondsParsesHoursMinutesSeconds(): void
+    {
+        $this->assertSame(9 * 3600 + 30 * 60 + 15, time_of_day_to_seconds('09:30:15'));
+    }
+
+    public function testTimeOfDayToSecondsParsesHoursMinutesOnly(): void
+    {
+        $this->assertSame(9 * 3600 + 30 * 60, time_of_day_to_seconds('09:30'));
+    }
+
+    public function testDayStartTimestampReturnsMidnightOfTheSameDay(): void
+    {
+        $midday = mktime(14, 30, 0, 3, 15, 2026);
+
+        $this->assertSame(mktime(0, 0, 0, 3, 15, 2026), day_start_timestamp($midday));
+    }
+
+    public function testComputeDayExceptionsReturnsNothingWhenNotScheduled(): void
+    {
+        $date = mktime(0, 0, 0, 1, 6, 2026);
+
+        $this->assertSame([], compute_day_exceptions($date, null, [], 10));
+    }
+
+    public function testComputeDayExceptionsFlagsAbsenceWhenScheduledButNoInPunch(): void
+    {
+        $date = mktime(0, 0, 0, 1, 6, 2026);
+        $schedule = ['start_time' => '09:00:00', 'end_time' => '17:00:00'];
+
+        $this->assertSame(
+            [['type' => 'absence']],
+            compute_day_exceptions($date, $schedule, [], 10)
+        );
+    }
+
+    public function testComputeDayExceptionsReturnsNothingWhenOnTime(): void
+    {
+        $date = mktime(0, 0, 0, 1, 6, 2026);
+        $schedule = ['start_time' => '09:00:00', 'end_time' => '17:00:00'];
+        $punches = [
+            ['in_or_out' => 1, 'timestamp' => mktime(9, 0, 0, 1, 6, 2026)],
+            ['in_or_out' => 0, 'timestamp' => mktime(17, 0, 0, 1, 6, 2026)],
+        ];
+
+        $this->assertSame([], compute_day_exceptions($date, $schedule, $punches, 10));
+    }
+
+    public function testComputeDayExceptionsFlagsLateArrivalBeyondGrace(): void
+    {
+        $date = mktime(0, 0, 0, 1, 6, 2026);
+        $schedule = ['start_time' => '09:00:00', 'end_time' => '17:00:00'];
+        // 25 minutes late, past the 10-minute grace period.
+        $punches = [['in_or_out' => 1, 'timestamp' => mktime(9, 25, 0, 1, 6, 2026)]];
+
+        $this->assertSame(
+            [['type' => 'late', 'minutes' => 25]],
+            compute_day_exceptions($date, $schedule, $punches, 10)
+        );
+    }
+
+    public function testComputeDayExceptionsDoesNotFlagLateWithinGrace(): void
+    {
+        $date = mktime(0, 0, 0, 1, 6, 2026);
+        $schedule = ['start_time' => '09:00:00', 'end_time' => '17:00:00'];
+        $punches = [['in_or_out' => 1, 'timestamp' => mktime(9, 5, 0, 1, 6, 2026)]];
+
+        $this->assertSame([], compute_day_exceptions($date, $schedule, $punches, 10));
+    }
+
+    public function testComputeDayExceptionsFlagsEarlyDeparture(): void
+    {
+        $date = mktime(0, 0, 0, 1, 6, 2026);
+        $schedule = ['start_time' => '09:00:00', 'end_time' => '17:00:00'];
+        $punches = [
+            ['in_or_out' => 1, 'timestamp' => mktime(9, 0, 0, 1, 6, 2026)],
+            // 40 minutes early, past the 10-minute grace period.
+            ['in_or_out' => 0, 'timestamp' => mktime(16, 20, 0, 1, 6, 2026)],
+        ];
+
+        $this->assertSame(
+            [['type' => 'early', 'minutes' => 40]],
+            compute_day_exceptions($date, $schedule, $punches, 10)
+        );
+    }
+
+    public function testComputeDayExceptionsDoesNotFlagEarlyWhenStillClockedIn(): void
+    {
+        // No "out" punch at all yet (still on shift) -- shouldn't be treated
+        // as having left early just because there's no departure recorded.
+        $date = mktime(0, 0, 0, 1, 6, 2026);
+        $schedule = ['start_time' => '09:00:00', 'end_time' => '17:00:00'];
+        $punches = [['in_or_out' => 1, 'timestamp' => mktime(9, 0, 0, 1, 6, 2026)]];
+
+        $this->assertSame([], compute_day_exceptions($date, $schedule, $punches, 10));
+    }
+
+    public function testComputeDayExceptionsGraceBoundaryIsExactNotOverBy1Second(): void
+    {
+        // Exactly at the grace boundary (10:00 sharp with a 10-minute grace
+        // starting at 09:00) should not be flagged -- only strictly beyond it.
+        $date = mktime(0, 0, 0, 1, 6, 2026);
+        $schedule = ['start_time' => '09:50:00', 'end_time' => '17:00:00'];
+        $punches = [['in_or_out' => 1, 'timestamp' => mktime(10, 0, 0, 1, 6, 2026)]];
+
+        $this->assertSame([], compute_day_exceptions($date, $schedule, $punches, 10));
+    }
+
+    public function testComputeDayExceptionsHandlesOvernightShiftLateCheck(): void
+    {
+        // An overnight shift (22:00-06:00): "late" is checked against the
+        // scheduled start on this same calendar date, unaffected by the
+        // shift crossing midnight.
+        $date = mktime(0, 0, 0, 1, 6, 2026);
+        $schedule = ['start_time' => '22:00:00', 'end_time' => '06:00:00'];
+        // 30 minutes late clocking in for the overnight shift.
+        $punches = [['in_or_out' => 1, 'timestamp' => mktime(22, 30, 0, 1, 6, 2026)]];
+
+        $this->assertSame(
+            [['type' => 'late', 'minutes' => 30]],
+            compute_day_exceptions($date, $schedule, $punches, 10)
+        );
+    }
+
+    public function testComputeDayExceptionsHandlesOvernightShiftEarlyCheck(): void
+    {
+        // Leaving at 23:00 on the shift's start date, for a shift scheduled
+        // until 06:00 the *next* day, is early -- confirms scheduled_end is
+        // correctly rolled onto the following day rather than compared
+        // against 06:00 on the same date (which would make 23:00 look late,
+        // not early).
+        $date = mktime(0, 0, 0, 1, 6, 2026);
+        $schedule = ['start_time' => '22:00:00', 'end_time' => '06:00:00'];
+        $punches = [
+            ['in_or_out' => 1, 'timestamp' => mktime(22, 0, 0, 1, 6, 2026)],
+            ['in_or_out' => 0, 'timestamp' => mktime(23, 0, 0, 1, 6, 2026)],
+        ];
+
+        $this->assertSame(
+            [['type' => 'early', 'minutes' => 7 * 60]],
+            compute_day_exceptions($date, $schedule, $punches, 10)
+        );
+    }
+
+    public function testParseReportDateAmericanStyle(): void
+    {
+        $this->assertSame(
+            mktime(0, 0, 0, 7, 9, 2026),
+            parse_report_date('07/09/2026', 'amer')
+        );
+    }
+
+    public function testParseReportDateEuroStyleSwapsDayAndMonth(): void
+    {
+        $this->assertSame(
+            mktime(0, 0, 0, 9, 7, 2026),
+            parse_report_date('07/09/2026', 'euro')
+        );
+    }
+
+    public function testParseReportDateRejectsInvalidMonthOrDay(): void
+    {
+        $this->assertNull(parse_report_date('13/09/2026', 'amer'));
+        $this->assertNull(parse_report_date('07/32/2026', 'amer'));
+    }
+
+    public function testParseReportDateRejectsMalformedOrEmptyInput(): void
+    {
+        $this->assertNull(parse_report_date('not a date', 'amer'));
+        $this->assertNull(parse_report_date('', 'amer'));
+    }
 }

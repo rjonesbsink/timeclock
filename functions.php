@@ -225,6 +225,148 @@ function set_employee_schedule($empfullname, array $days)
     }
 }
 
+function time_of_day_to_seconds($time_str)
+{
+    // Parse a TIME column value ("HH:MM:SS" or "HH:MM") into seconds since midnight.
+    sscanf($time_str, "%d:%d:%d", $hours, $minutes, $seconds);
+    return $hours * 3600 + $minutes * 60 + ($seconds ?? 0);
+}
+
+function day_start_timestamp($timestamp)
+{
+    // Local midnight for the day containing $timestamp.
+    return mktime(0, 0, 0, (int) date('n', $timestamp), (int) date('j', $timestamp), (int) date('Y', $timestamp));
+}
+
+function compute_day_exceptions($date_timestamp, $schedule_day, $punches, $grace_minutes)
+{
+    // Compute schedule exceptions (absence, late, early) for one calendar day.
+    // $date_timestamp is local midnight for that day. $schedule_day is
+    // ['start_time' => 'HH:MM:SS', 'end_time' => 'HH:MM:SS'], or null if the
+    // employee isn't scheduled to work that day -- no exceptions are possible
+    // then, since unscheduled work isn't flagged. $punches is a list of
+    // ['in_or_out' => 1|0, 'timestamp' => int] local timestamps for that day,
+    // in any order. An end_time at or before start_time means the scheduled
+    // shift crosses midnight.
+    if ($schedule_day === null) {
+        return array();
+    }
+
+    $start_secs = time_of_day_to_seconds($schedule_day['start_time']);
+    $end_secs = time_of_day_to_seconds($schedule_day['end_time']);
+    $scheduled_start = $date_timestamp + $start_secs;
+    $scheduled_end = $date_timestamp + $end_secs + ($end_secs <= $start_secs ? 86400 : 0);
+
+    $in_timestamps = array();
+    $out_timestamps = array();
+    foreach ($punches as $punch) {
+        if ($punch['in_or_out'] == 1) {
+            $in_timestamps[] = $punch['timestamp'];
+        } else {
+            $out_timestamps[] = $punch['timestamp'];
+        }
+    }
+
+    if (empty($in_timestamps)) {
+        return array(array('type' => 'absence'));
+    }
+
+    $exceptions = array();
+    $grace_seconds = $grace_minutes * 60;
+
+    $first_in = min($in_timestamps);
+    if ($first_in > $scheduled_start + $grace_seconds) {
+        $exceptions[] = array(
+            'type' => 'late',
+            'minutes' => (int) round(($first_in - $scheduled_start) / 60),
+        );
+    }
+
+    if (!empty($out_timestamps)) {
+        $last_out = max($out_timestamps);
+        if ($last_out < $scheduled_end - $grace_seconds) {
+            $exceptions[] = array(
+                'type' => 'early',
+                'minutes' => (int) round(($scheduled_end - $last_out) / 60),
+            );
+        }
+    }
+
+    return $exceptions;
+}
+
+function get_employee_exceptions($empfullname, $from_timestamp, $to_timestamp, $tzo, $grace_minutes)
+{
+    // Compute every schedule exception for $empfullname between the UTM
+    // $from_timestamp (inclusive) and $to_timestamp (exclusive), applying the
+    // client/server timezone offset $tzo the same way the rest of the
+    // reports/ pages do. Returns a flat list of exceptions, each augmented
+    // with 'date' (Ymd, local) and 'empfullname'.
+    global $db_prefix;
+
+    $schedule = get_employee_schedule($empfullname);
+
+    $query = "select {$db_prefix}info.timestamp as timestamp,
+                     coalesce({$db_prefix}punchlist.in_or_out, 1) as in_or_out
+              from {$db_prefix}info
+              left join {$db_prefix}punchlist on {$db_prefix}info.inout = {$db_prefix}punchlist.punchitems
+              where {$db_prefix}info.fullname = ? and {$db_prefix}info.timestamp >= ? and {$db_prefix}info.timestamp < ?
+              order by {$db_prefix}info.timestamp";
+    $result = tc_query($query, array($empfullname, $from_timestamp, $to_timestamp));
+
+    $punches_by_date = array();
+    while ($row = mysqli_fetch_array($result)) {
+        $local_timestamp = (int) $row['timestamp'] + $tzo;
+        $date = date('Ymd', $local_timestamp);
+        $punches_by_date[$date][] = array(
+            'in_or_out' => (int) $row['in_or_out'],
+            'timestamp' => $local_timestamp,
+        );
+    }
+
+    $exceptions = array();
+    $day_timestamp = day_start_timestamp($from_timestamp + $tzo);
+    $end_day_timestamp = day_start_timestamp($to_timestamp + $tzo);
+    while ($day_timestamp < $end_day_timestamp) {
+        $date = date('Ymd', $day_timestamp);
+        $day_of_week = (int) date('w', $day_timestamp);
+        $schedule_day = $schedule[$day_of_week] ?? null;
+        $day_punches = $punches_by_date[$date] ?? array();
+
+        foreach (compute_day_exceptions($day_timestamp, $schedule_day, $day_punches, $grace_minutes) as $exception) {
+            $exception['date'] = $date;
+            $exception['empfullname'] = $empfullname;
+            $exceptions[] = $exception;
+        }
+
+        $day_timestamp += 86400;
+    }
+
+    return $exceptions;
+}
+
+function parse_report_date($date_str, $calendar_style)
+{
+    // Parse a report "From Date"/"To Date" field (mm/dd/yyyy or dd/mm/yyyy,
+    // matching $calendar_style) into a local-midnight timestamp, or null if
+    // the string isn't a plausibly valid date in that format.
+    if (empty($date_str) || !preg_match('/^([0-9]{1,2})[-\/.]([0-9]{1,2})[-\/.]([0-9]{2}|[0-9]{4})$/', $date_str, $regs)) {
+        return null;
+    }
+
+    if ($calendar_style == "euro") {
+        [$day, $month, $year] = [$regs[1], $regs[2], $regs[3]];
+    } else {
+        [$month, $day, $year] = [$regs[1], $regs[2], $regs[3]];
+    }
+
+    if ($month > 12 || $day > 31) {
+        return null;
+    }
+
+    return mktime(0, 0, 0, (int) $month, (int) $day, (int) $year);
+}
+
 function btag($tag, $attr = array())
 {
     $begin = array(htmlentities($tag));

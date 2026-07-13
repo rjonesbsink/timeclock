@@ -10,12 +10,25 @@ final class FunctionsDbTest extends DatabaseTestCase
     private const EMPFULLNAME = 'zztest_functions_employee';
     private const EMPFULLNAME_SHIFT = 'zztest_openshift_employee';
     private const EMPFULLNAME_SCHEDULE = 'zztest_schedule_employee';
+    private const EMPFULLNAME_EXCEPTIONS = 'zztest_exceptions_employee';
 
     protected function tearDown(): void
     {
         tc_delete('employees', 'empfullname = ?', self::EMPFULLNAME);
         tc_delete('info', 'fullname = ?', self::EMPFULLNAME_SHIFT);
         tc_delete('schedules', 'empfullname = ?', self::EMPFULLNAME_SCHEDULE);
+        tc_delete('schedules', 'empfullname = ?', self::EMPFULLNAME_EXCEPTIONS);
+        tc_delete('info', 'fullname = ?', self::EMPFULLNAME_EXCEPTIONS);
+    }
+
+    private function insertExceptionPunch(string $inout, int $timestamp): void
+    {
+        tc_insert_strings('info', [
+            'fullname' => self::EMPFULLNAME_EXCEPTIONS,
+            'inout' => $inout,
+            'timestamp' => $timestamp,
+            'notes' => '',
+        ]);
     }
 
     private function insertPunch(string $inout, int $timestamp): void
@@ -241,5 +254,90 @@ final class FunctionsDbTest extends DatabaseTestCase
 
         $this->assertSame('22:00:00', $schedule[5]['start_time']);
         $this->assertSame('06:00:00', $schedule[5]['end_time']);
+    }
+
+    public function testGetEmployeeExceptionsFlagsAbsenceForScheduledDayWithNoPunches(): void
+    {
+        set_employee_schedule(self::EMPFULLNAME_EXCEPTIONS, [
+            1 => ['start_time' => '09:00', 'end_time' => '17:00'], // Monday
+        ]);
+
+        $from = mktime(0, 0, 0, 1, 6, 2020); // Monday
+        $to = mktime(0, 0, 0, 1, 7, 2020); // exclusive upper bound
+
+        $exceptions = get_employee_exceptions(self::EMPFULLNAME_EXCEPTIONS, $from, $to, 0, 10);
+
+        $this->assertSame(
+            [['type' => 'absence', 'date' => '20200106', 'empfullname' => self::EMPFULLNAME_EXCEPTIONS]],
+            $exceptions
+        );
+    }
+
+    public function testGetEmployeeExceptionsFlagsLateArrival(): void
+    {
+        set_employee_schedule(self::EMPFULLNAME_EXCEPTIONS, [
+            1 => ['start_time' => '09:00', 'end_time' => '17:00'],
+        ]);
+        $this->insertExceptionPunch('in', mktime(9, 25, 0, 1, 6, 2020));
+        $this->insertExceptionPunch('out', mktime(17, 0, 0, 1, 6, 2020));
+
+        $from = mktime(0, 0, 0, 1, 6, 2020);
+        $to = mktime(0, 0, 0, 1, 7, 2020);
+
+        $exceptions = get_employee_exceptions(self::EMPFULLNAME_EXCEPTIONS, $from, $to, 0, 10);
+
+        $this->assertSame(
+            [['type' => 'late', 'minutes' => 25, 'date' => '20200106', 'empfullname' => self::EMPFULLNAME_EXCEPTIONS]],
+            $exceptions
+        );
+    }
+
+    public function testGetEmployeeExceptionsReturnsNothingWhenOnTime(): void
+    {
+        set_employee_schedule(self::EMPFULLNAME_EXCEPTIONS, [
+            1 => ['start_time' => '09:00', 'end_time' => '17:00'],
+        ]);
+        $this->insertExceptionPunch('in', mktime(9, 0, 0, 1, 6, 2020));
+        $this->insertExceptionPunch('out', mktime(17, 0, 0, 1, 6, 2020));
+
+        $from = mktime(0, 0, 0, 1, 6, 2020);
+        $to = mktime(0, 0, 0, 1, 7, 2020);
+
+        $this->assertSame([], get_employee_exceptions(self::EMPFULLNAME_EXCEPTIONS, $from, $to, 0, 10));
+    }
+
+    public function testGetEmployeeExceptionsIgnoresDaysWithNoSchedule(): void
+    {
+        // No schedule at all set for this employee -- absence of punches on
+        // any day must not generate exceptions (unscheduled work/no-shows
+        // aren't flagged, per the chosen design).
+        $from = mktime(0, 0, 0, 1, 6, 2020);
+        $to = mktime(0, 0, 0, 1, 7, 2020);
+
+        $this->assertSame([], get_employee_exceptions(self::EMPFULLNAME_EXCEPTIONS, $from, $to, 0, 10));
+    }
+
+    public function testGetEmployeeExceptionsAppliesTimezoneOffsetWhenBucketingPunchesByDate(): void
+    {
+        // Stored (naive) at 23:00 on Jan 5 (Sunday) -- but a +3 hour tzo
+        // shifts this to 02:00 local on Jan 6 (Monday), which is the date
+        // the schedule lookup and "late" check must use. If the offset
+        // weren't applied, this punch would bucket to Sunday (unscheduled,
+        // no exceptions at all) instead of correctly flagging it late.
+        set_employee_schedule(self::EMPFULLNAME_EXCEPTIONS, [
+            1 => ['start_time' => '01:00', 'end_time' => '09:00'], // Monday
+        ]);
+        $this->insertExceptionPunch('in', mktime(23, 0, 0, 1, 5, 2020));
+
+        $tzo = 3 * 3600;
+        $from = mktime(0, 0, 0, 1, 5, 2020);
+        $to = mktime(0, 0, 0, 1, 7, 2020);
+
+        $exceptions = get_employee_exceptions(self::EMPFULLNAME_EXCEPTIONS, $from, $to, $tzo, 10);
+
+        $this->assertSame(
+            [['type' => 'late', 'minutes' => 60, 'date' => '20200106', 'empfullname' => self::EMPFULLNAME_EXCEPTIONS]],
+            $exceptions
+        );
     }
 }
