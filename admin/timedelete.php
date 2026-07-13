@@ -188,7 +188,7 @@ if ($request == 'GET') {
         echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
                     A valid Date is required.</td></tr>\n";
         echo "            </table>\n";
-    } elseif (preg_match('/' . "^([0-9]{1,2})[-,/,.]([0-9]{1,2})[-,/,.](([0-9]{2})|([0-9]{4}))$" . '/i', $post_date, $date_regs)) {
+    } elseif (preg_match('/' . "^([0-9]{1,2})[\-\/\.]([0-9]{1,2})[\-\/\.](([0-9]{2})|([0-9]{4}))$" . '/i', $post_date, $date_regs)) {
         if ($calendar_style == "amer") {
             if (isset($date_regs)) {
                 $month = $date_regs[1];
@@ -497,11 +497,12 @@ if ($request == 'GET') {
                 $row_color = ($row_count % 2) ? $color1 : $color2;
                 $time[$x] = date("$timefmt", $mysql_timestamp[$x] + $tzo);
                 $username[$x] = stripslashes($username[$x]);
+                $statuscolor = tc_select_value("color", "punchlist", "punchitems = ?", $inout[$x]);
 
                 echo "              <tr class=display_row>\n";
                 echo "                <td nowrap width=1% style='padding-right:5px;padding-left:0px;' align=center><input type='checkbox' name='delete_time_checkbox[$x]'
                       value='1'></td>\n";
-                echo "                <td nowrap align=left style='width:7%;padding-left:5px;background-color:$row_color;color:" . $row["color"] . "'>$inout[$x]</td>\n";
+                echo "                <td nowrap align=left style='width:7%;padding-left:5px;background-color:$row_color;color:" . htmlspecialchars($statuscolor) . "'>$inout[$x]</td>\n";
                 echo "                <td nowrap align=right style='padding-left:20px;' width=4% bgcolor='$row_color'>$time[$x]</td>\n";
                 echo "                <td style='padding-left:25px;' bgcolor='$row_color'>$notes[$x]</td>\n";
                 echo "              </tr>\n";
@@ -646,11 +647,12 @@ if ($request == 'GET') {
                 $row_color = ($row_count % 2) ? $color1 : $color2;
                 $time[$x] = date("$timefmt", $mysql_timestamp[$x] + $tzo);
                 $username[$x] = stripslashes($username[$x]);
+                $statuscolor = tc_select_value("color", "punchlist", "punchitems = ?", $inout[$x]);
 
                 echo "              <tr class=display_row>\n";
                 echo "                <td nowrap width=1% style='padding-right:5px;padding-left:0px;' align=center><input type='checkbox' name='delete_time_checkbox[$x]'
                       value='1'></td>\n";
-                echo "                <td nowrap align=left style='width:7%;padding-left:5px;background-color:$row_color;color:" . $row["color"] . "'>$inout[$x]</td>\n";
+                echo "                <td nowrap align=left style='width:7%;padding-left:5px;background-color:$row_color;color:" . htmlspecialchars($statuscolor) . "'>$inout[$x]</td>\n";
                 echo "                <td nowrap align=right style='padding-left:20px;' width=4% bgcolor='$row_color'>$time[$x]</td>\n";
                 echo "                <td style='padding-left:25px;' bgcolor='$row_color'>$notes[$x]</td>\n";
                 echo "              </tr>\n";
