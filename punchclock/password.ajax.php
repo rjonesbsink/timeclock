@@ -6,7 +6,8 @@
  * This is an AJAX form and it returns incomplete HTML fragments.
  */
 
-session_start();
+require_once '../lib/session.php';
+start_secure_session();
 require_once '../lib/auth.php';
 require_application_context();
 require_once '../lib/csrf.php';

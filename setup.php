@@ -10,7 +10,8 @@
  * deploying the code and actually running setup.
  */
 
-session_start();
+require_once __DIR__ . '/lib/session.php';
+start_secure_session();
 
 require_once __DIR__ . '/lib/csrf.php';
 require_once __DIR__ . '/functions.php';

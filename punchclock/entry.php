@@ -26,7 +26,8 @@ if (isset($_REQUEST['logout'])) {
     exit_next(preg_replace('/[^\/]*$/', '', $_SERVER['PHP_SELF'])); // goto index page
 }
 
-session_start();
+require_once '../lib/session.php';
+start_secure_session();
 $_SESSION['application'] = $current_page; // security
 
 $msg = '';

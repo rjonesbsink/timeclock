@@ -1,6 +1,7 @@
 <?php
 
-session_start();
+require_once 'lib/session.php';
+start_secure_session();
 
 include 'config.inc.php';
 include 'header.php';

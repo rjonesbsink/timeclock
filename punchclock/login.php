@@ -19,7 +19,8 @@ if (isset($_REQUEST['logout'])) {
     // Fall through and display login form.
 }
 
-session_start();
+require_once '../lib/session.php';
+start_secure_session();
 $_SESSION['application'] = $current_page;
 // security
 

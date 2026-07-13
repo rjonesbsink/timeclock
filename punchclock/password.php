@@ -13,7 +13,8 @@ require_once 'lib.common.php';
 require_once '../lib/csrf.php';
 turn_off_magic_quotes();
 
-session_start();
+require_once '../lib/session.php';
+start_secure_session();
 $_SESSION['application'] = $current_page; // security
 
 include 'setup_timeclock.php'; // authorize and initialize
