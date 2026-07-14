@@ -20,8 +20,8 @@ list($in_or_out, $color, $inout, $timestamp, $notes) = get_employee_status($empf
 $punch_time = local_timestamp($timestamp);
 $hours = compute_hours($punch_time, local_timestamp());
 
-$h_color = htmlentities($color);
-$h_inout = htmlentities($inout);
+$h_color = htmlentities((string) $color);
+$h_inout = htmlentities((string) $inout);
 
 $h_time = date($timefmt, $punch_time);
 $h_date = date($datefmt, $punch_time);

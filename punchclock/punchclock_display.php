@@ -91,8 +91,8 @@ End_Of_HTML;
     $u_empfullname = urlencode($row['empfullname']);
 
     $h_name = htmlentities(($show_display_name == 'yes' ? $row['displayname'] : $row['empfullname']));
-    $h_color = htmlentities($row['color']);
-    $h_inout = htmlentities($row['inout']);
+    $h_color = htmlentities((string) $row['color']);
+    $h_inout = htmlentities((string) $row['inout']);
     $h_office = htmlentities($row['office']);
     $h_groups = htmlentities($row['groups']);
     $h_notes = htmlentities((string) $row['notes']);
