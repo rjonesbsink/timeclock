@@ -32,6 +32,8 @@ echo "  <tr class=right_main_text height=25>\n";
 echo "    <td align=center valign=top>&#8226;&nbsp;<a class=admin_headings href='timerpt.php'>Daily Time Report</a>&nbsp;&#8226;</td></tr>\n";
 echo "  <tr class=right_main_text height=25>\n";
 echo "    <td align=center valign=top>&#8226;&nbsp;<a class=admin_headings href='total_hours.php'>Hours Worked Report</a>&nbsp;&#8226;</td></tr>\n";
+echo "  <tr class=right_main_text height=25>\n";
+echo "    <td align=center valign=top>&#8226;&nbsp;<a class=admin_headings href='exceptions.php'>Exception Report</a>&nbsp;&#8226;</td></tr>\n";
 echo "  <tr class=right_main_text height=92%>\n";
 echo "    <td align=center valign=top>&#8226;&nbsp;<a class=admin_headings href='audit.php'>Audit Log</a>&nbsp;&#8226;</td></tr>\n";
 include '../footer.php';
