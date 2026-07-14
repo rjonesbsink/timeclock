@@ -18,6 +18,12 @@
  * and 'current' (one of 'useredit.php'/'chngpasswd.php'/'userdelete.php')
  * before including this file to show them, matching the original's
  * class=current_left_rows_indent/left_rows_indent treatment.
+ *
+ * 'username' and 'officename' must be raw (unescaped) values, exactly as
+ * read from $_GET/$_POST/the database -- this file urlencode()s them itself
+ * to build each sub-link's href. Passing an already-htmlentities()'d value
+ * double-encodes it, corrupting the link for any name containing a quote or
+ * ampersand.
  */
 
 $admin_leftnav_current = $admin_leftnav_current ?? '';

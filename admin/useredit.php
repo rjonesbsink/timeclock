@@ -37,7 +37,10 @@ if ($request == 'GET') {
 
     echo "<div class=\"container-fluid mt-3\">\n";
     echo "  <div class=\"row\">\n";
-    $admin_leftnav_user_context = array('username' => $get_user, 'officename' => $get_office, 'current' => 'useredit.php');
+    // admin_leftnav_user_context needs raw (unescaped) values -- it urlencode()s
+    // them itself, so passing the already-htmlentities()'d $get_user/$get_office
+    // would double-encode any username containing a quote or ampersand.
+    $admin_leftnav_user_context = array('username' => get_string('username'), 'officename' => get_string('officename'), 'current' => 'useredit.php');
     include_once 'leftnav_bootstrap.php';
     echo "    <div class=\"col-md-9\">\n";
 
@@ -238,7 +241,9 @@ if ($request == 'GET') {
     ) {
         echo "<div class=\"container-fluid mt-3\">\n";
         echo "  <div class=\"row\">\n";
-        $admin_leftnav_user_context = array('username' => $tmp_username, 'officename' => $get_office, 'current' => 'useredit.php');
+        // Raw officename for the leftnav links -- see the matching comment in
+        // the GET branch above; $get_office here is already htmlentities()'d.
+        $admin_leftnav_user_context = array('username' => $tmp_username, 'officename' => post_string('get_office'), 'current' => 'useredit.php');
         include_once 'leftnav_bootstrap.php';
         echo "    <div class=\"col-md-9\">\n";
 
