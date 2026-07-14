@@ -83,4 +83,4 @@ if (isset($_SESSION['valid_user'])) {
     echo "<script language=\"javascript\">document.forms['auth'].login_userid.focus();</script>\n";
 }
 
-include 'footer_bootstrap.php';
+include_once 'footer_bootstrap.php';

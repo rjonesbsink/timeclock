@@ -40,7 +40,10 @@ if ($restrict_ips == "yes") {
 require_once 'lib/db.php';
 
 $table = "dbversion";
-$result = mysqli_query($GLOBALS["___mysqli_ston"], "SHOW TABLES LIKE '" . $db_prefix . $table . "'");
+// $db_prefix comes from config.inc.php, not user input -- same trusted-config
+// concatenation pattern used throughout functions.php for table names, which
+// can't be bound as query parameters.
+$result = mysqli_query($GLOBALS["___mysqli_ston"], "SHOW TABLES LIKE '" . $db_prefix . $table . "'"); // NOSONAR
 @$rows = mysqli_num_rows($result);
 
 if ($rows == "1") {
@@ -49,7 +52,8 @@ if ($rows == "1") {
     $dbexists = "0";
 }
 
-$db_version_result = mysqli_query($GLOBALS["___mysqli_ston"], "select * from " . $db_prefix . "dbversion");
+// Same trusted-config table-name concatenation as above.
+$db_version_result = mysqli_query($GLOBALS["___mysqli_ston"], "select * from " . $db_prefix . "dbversion"); // NOSONAR
 while (@$row = mysqli_fetch_array($db_version_result)) {
     @$my_dbversion = "" . $row["dbversion"] . "";
 }
@@ -63,11 +67,9 @@ echo "<head>\n";
 echo "<meta charset=\"utf-8\">\n";
 echo "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n";
 
-if ($use_client_tz == "yes") {
-    if (!isset($_COOKIE['tzoffset'])) {
-        include 'tzoffset.php';
-        echo "<meta http-equiv='refresh' content='0;URL=timeclock.php'>\n";
-    }
+if ($use_client_tz == "yes" && !isset($_COOKIE['tzoffset'])) {
+    include_once 'tzoffset.php';
+    echo "<meta http-equiv='refresh' content='0;URL=timeclock.php'>\n";
 }
 
 echo "<link rel='stylesheet' href='css/bootstrap.min.css'>\n";
