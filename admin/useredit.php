@@ -434,7 +434,7 @@ if ($request == 'GET') {
         $username = htmlentities("" . $row['empfullname'] . "");
         $displayname = htmlentities("" . $row['displayname'] . "");
         $user_email = htmlentities("" . $row['email'] . "");
-        $user_barcode = htmlentities("" . $row['barcode'] . "");
+        $confirm_barcode = htmlentities("" . $row['barcode'] . "");
         $office = htmlentities("" . $row['office'] . "");
         $groups = htmlentities("" . $row['groups'] . "");
         $admin = "" . $row['admin'] . "";
@@ -448,7 +448,7 @@ if ($request == 'GET') {
     echo "        <tr><th>Username:</th><td>$username</td></tr>\n";
     echo "        <tr><th>Display Name:</th><td>$displayname</td></tr>\n";
     echo "        <tr><th>Email Address:</th><td>$user_email</td></tr>\n";
-    echo "        <tr><th>Barcode:</th><td>$user_barcode</td></tr>\n";
+    echo "        <tr><th>Barcode:</th><td>$confirm_barcode</td></tr>\n";
     echo "        <tr><th>Office:</th><td>$office</td></tr>\n";
     echo "        <tr><th>Group:</th><td>$groups</td></tr>\n";
 
