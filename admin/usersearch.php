@@ -76,7 +76,7 @@ if ($request !== 'POST') {
 
     if (
         (!preg_match('/' . USERNAME_PATTERN . '/i', $post_username)) || (!preg_match('/' . USERNAME_PATTERN . '/i', $display_name)) ||
-        (!preg_match('/' . "^([[:alnum:]]|_|.|-|@)+$" . '/i', $email_addy))
+        (!preg_match('/' . "^[[:alnum:]_.@-]+$" . '/i', $email_addy))
     ) {
         echo "<div class=\"container-fluid mt-3\">\n";
         echo "  <div class=\"row\">\n";
@@ -89,12 +89,12 @@ if ($request !== 'POST') {
                     when searching for a Username.</div>\n";
             $evil_input = "1";
         }
-        if (!preg_match('/^([[:alnum:]]|\s|\-|\'|\,)+$/i', $display_name) && $display_name != "") {
+        if (!preg_match('/^[[:alnum:]\s\-\',]+$/i', $display_name) && $display_name != "") {
             echo "      <div class=\"alert alert-danger\">Alphanumeric characters, hyphens, apostrophes, commas, and spaces are allowed
                     when searching for a Display Name.</div>\n";
             $evil_input = "1";
         }
-        if (!preg_match('/^([[:alnum:]]|_|.|-|@)+$/', $email_addy) && $email_addy != "") {
+        if (!preg_match('/^[[:alnum:]_.@-]+$/', $email_addy) && $email_addy != "") {
             echo "      <div class=\"alert alert-danger\">Alphanumeric characters, underscores, periods, and hyphens are allowed
                     when searching for an Email Address.</div>\n";
             $evil_input = "1";
