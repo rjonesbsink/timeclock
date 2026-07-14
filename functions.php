@@ -967,5 +967,8 @@ function admin_leftnav_link($href, $label, $current)
     // reads as white-on-white). Bold + a text color reads as "current page"
     // without that clash.
     $active = ($current === $href) ? ' fw-bold text-primary' : '';
-    echo "    <a href=\"$href\" class=\"list-group-item list-group-item-action bg-transparent$active\">$label</a>\n";
+    $safe_href = htmlspecialchars($href);
+    $safe_label = htmlspecialchars($label);
+
+    return "    <a href=\"$safe_href\" class=\"list-group-item list-group-item-action bg-transparent$active\">$safe_label</a>\n";
 }
