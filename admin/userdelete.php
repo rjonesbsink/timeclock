@@ -88,8 +88,8 @@ if ($request == 'GET') {
     echo "        <tr><th>Reports:</th><td><input type='hidden' name='reports_perms' value='$reports'>$reports_yes_no</td></tr>\n";
     echo "      </table>\n";
 
-    $delete_data_style = isset($evil) ? " style=\"display:none;\"" : "";
-    echo "      <div class=\"form-check mb-3\"$delete_data_style>\n";
+    $delete_data_style = isset($evil) ? " d-none" : "";
+    echo "      <div class=\"form-check mb-3$delete_data_style\">\n";
     echo "        <input type='checkbox' class=\"form-check-input\" id='delete_all_user_data' name='delete_all_user_data' value='1'>\n";
     echo "        <label class=\"form-check-label\" for='delete_all_user_data'>Delete all punch-in/out history for this user?</label>\n";
     echo "      </div>\n";
@@ -190,6 +190,7 @@ if ($request == 'GET') {
     $post_username = htmlentities($post_username);
     $display_name = htmlentities($display_name);
     $email_addy = htmlentities($email_addy);
+    $user_barcode = htmlentities($user_barcode);
     $office_name = htmlentities($office_name);
     $group_name = htmlentities($group_name);
 
@@ -204,6 +205,7 @@ if ($request == 'GET') {
     echo "        <tr><th>Username:</th><td>$post_username</td></tr>\n";
     echo "        <tr><th>Display Name:</th><td>$display_name</td></tr>\n";
     echo "        <tr><th>Email Address:</th><td>$email_addy</td></tr>\n";
+    echo "        <tr><th>Barcode:</th><td>$user_barcode</td></tr>\n";
     echo "        <tr><th>Office:</th><td>$office_name</td></tr>\n";
     echo "        <tr><th>Group:</th><td>$group_name</td></tr>\n";
 
