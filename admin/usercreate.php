@@ -241,7 +241,7 @@ if ($request == 'GET') {
         echo "        <div class=\"mb-3\">\n";
         echo "          <label class=\"form-label\">Group <span class=\"text-danger\">*</span></label>\n";
         echo "          <select class=\"form-select\" name='group_name' onfocus='group_names();'>\n";
-        echo "            <option selected>$group_name</option>\n";
+        echo "            <option selected>" . htmlentities($group_name) . "</option>\n";
         echo "          </select>\n";
         echo "        </div>\n";
 
