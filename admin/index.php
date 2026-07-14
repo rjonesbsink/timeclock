@@ -18,7 +18,7 @@ require_valid_user();
 
 echo "<div class=\"container-fluid mt-3\">\n";
 echo "  <div class=\"row\">\n";
-include 'leftnav_bootstrap.php';
+include_once 'leftnav_bootstrap.php';
 echo "    <div class=\"col-md-9\">\n";
 
 include '../templates/admin_index_tpl.php';
