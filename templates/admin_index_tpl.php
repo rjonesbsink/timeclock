@@ -1,6 +1,6 @@
 <?php
 
-echo "            <table width=100% border=0 cellpadding=0 cellspacing=0>\n";
+echo "            <table class=\"table table-sm table-bordered\" width=100% border=0 cellpadding=0 cellspacing=0>\n";
 echo "              <tr><th colspan=3 class=table_heading_no_color nowrap align=left>System Settings</th></tr>\n";
 echo "              <tr><td colspan=3 class=table_rows width=10% align=left style='padding-left:4px;'>Listed below are the 
                       settings that have been chosen within config.inc.php, the config file for PHP Timeclock.</td></tr>\n";
