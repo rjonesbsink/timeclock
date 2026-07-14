@@ -5,6 +5,7 @@
  */
 
 $current_page = "login.php";
+$h_self = htmlentities($_SERVER['PHP_SELF']);
 require_once 'config.inc.php';
 require_once 'lib.common.php';
 require_once '../lib/csrf.php';
@@ -81,7 +82,7 @@ End_Of_HTML;
     print <<<End_Of_HTML
 
 <div id="employee_entry_form">
-<form action="{$_SERVER['PHP_SELF']}" method="get">
+<form action="{$h_self}" method="get">
 <table align="center" class="table_border" width="100%" border="0" cellpadding="3" cellspacing="0">
   <tr>
 	<th class="rightside_heading" nowrap align="left" colspan="3"><img src="$TIMECLOCK_URL/images/icons/clock_add.png" />&nbsp;&nbsp;&nbsp;Enter your name
@@ -148,7 +149,7 @@ End_Of_HTML;
         }
         print <<<End_Of_HTML
 <div id="password_entry_form">
-<form action="{$_SERVER['PHP_SELF']}" method="post">
+<form action="{$h_self}" method="post">
 <table align=center class=table_border width=100% border=0 cellpadding=3 cellspacing=0>
   <tr>
 	<th class=rightside_heading nowrap align=left colspan=3><img src='$TIMECLOCK_URL/images/icons/clock_add.png' />&nbsp;&nbsp;&nbsp;Enter your password

@@ -8,7 +8,7 @@ include_once 'header.php';
 include_once 'topmain.php';
 echo "<title>$title - Change Password</title>\n";
 
-$self = $_SERVER['PHP_SELF'];
+$self = htmlentities($_SERVER['PHP_SELF']);
 $request = $_SERVER['REQUEST_METHOD'];
 
 const WHERE_EMPFULLNAME = "empfullname = ?";

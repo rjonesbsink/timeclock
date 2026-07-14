@@ -3,7 +3,7 @@
 require_once '../lib/session.php';
 start_secure_session();
 
-$self = $_SERVER['PHP_SELF'];
+$self = htmlentities($_SERVER['PHP_SELF']);
 $request = $_SERVER['REQUEST_METHOD'];
 $current_page = "total_hours.php";
 

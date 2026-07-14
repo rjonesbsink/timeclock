@@ -63,8 +63,12 @@ if ($use_client_tz == "yes") {
         $tzo = $tzo * 60;
     } else {
         // Return to browser so it can set cookie identifying its local timezone.
+        // Built from PHP_SELF (always anchored to this script's own path) rather
+        // than REQUEST_URI, which a request line like "//evil.example/x" can turn
+        // into a protocol-relative external redirect even after HTML-escaping.
+        $h_return_url = htmlentities($_SERVER['PHP_SELF'] . '?' . $_SERVER['QUERY_STRING']);
         echo "<html><head>\n";
-        echo "<meta http-equiv=\"refresh\" content=\"0;URL={$SERVER['PHP_SELF']}?{$SERVER['QUERY_STRING']}\">\n";
+        echo "<meta http-equiv=\"refresh\" content=\"0;URL=$h_return_url\">\n";
         include "$TIMECLOCK_PATH/tzoffset.php";
         echo "</head><body></body></html>\n";
         exit;

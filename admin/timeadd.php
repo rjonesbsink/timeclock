@@ -8,7 +8,7 @@ include_once 'header_date.php';
 include_once 'topmain.php';
 echo "<title>$title - Add Time</title>\n";
 
-$self = $_SERVER['PHP_SELF'];
+$self = htmlentities($_SERVER['PHP_SELF']);
 $request = $_SERVER['REQUEST_METHOD'];
 
 const WHERE_EMPFULLNAME = "empfullname = ?";

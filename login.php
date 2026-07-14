@@ -9,7 +9,7 @@ include 'topmain.php';
 require_once 'lib/csrf.php';
 echo "<title>$title - Admin Login</title>\n";
 
-$self = $_SERVER['PHP_SELF'];
+$self = htmlentities($_SERVER['PHP_SELF']);
 
 if (isset($_POST['login_userid']) && (isset($_POST['login_password'])) && verify_csrf_token()) {
     // Guard against an array payload: it otherwise flows unguarded into a

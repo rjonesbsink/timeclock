@@ -8,7 +8,7 @@ include 'header.php';
 include 'topmain.php';
 echo "<title>$title - Administration</title>\n";
 
-$self = $_SERVER['PHP_SELF'];
+$self = htmlentities($_SERVER['PHP_SELF']);
 $request = $_SERVER['REQUEST_METHOD'];
 $row_count = '0';
 $row_color = ($row_count % 2) ? $color2 : $color1;
