@@ -329,7 +329,6 @@ if ($request == 'GET') {
                     exit;
                 }
 
-                $final_notes[$x] = preg_replace('/[^[:alnum:] \,\.\?-]/', "", $final_notes[$x]);
                 $final_username[$x] = addslashes($final_username[$x]);
 
                 $result5 = tc_select(
@@ -417,7 +416,7 @@ if ($request == 'GET') {
                     echo "                <td nowrap bgcolor='$row_color' width=5% align=center><img src='../images/icons/accept.png' /></td>\n";
                     echo "                <td nowrap bgcolor='$row_color' align=left width=7% style='padding-left:5px;'>$final_inout[$x]</td>\n";
                     echo "                <td nowrap align=right style='padding-left:20px;' width=4% bgcolor='$row_color'>$final_time[$x]</td>\n";
-                    echo "                <td style='padding-left:25px;' bgcolor='$row_color'>$final_notes[$x]</td>\n";
+                    echo "                <td style='padding-left:25px;' bgcolor='$row_color'>" . htmlspecialchars($final_notes[$x]) . "</td>\n";
                     echo "              </tr>\n";
                     $row_count++;
                 }
@@ -504,11 +503,11 @@ if ($request == 'GET') {
                       value='1'></td>\n";
                 echo "                <td nowrap align=left style='width:7%;padding-left:5px;background-color:$row_color;color:" . htmlspecialchars($statuscolor) . "'>$inout[$x]</td>\n";
                 echo "                <td nowrap align=right style='padding-left:20px;' width=4% bgcolor='$row_color'>$time[$x]</td>\n";
-                echo "                <td style='padding-left:25px;' bgcolor='$row_color'>$notes[$x]</td>\n";
+                echo "                <td style='padding-left:25px;' bgcolor='$row_color'>" . htmlspecialchars($notes[$x]) . "</td>\n";
                 echo "              </tr>\n";
                 echo "              <input type='hidden' name='final_username[$x]' value=\"$username[$x]\">\n";
                 echo "              <input type='hidden' name='final_inout[$x]' value=\"$inout[$x]\">\n";
-                echo "              <input type='hidden' name='final_notes[$x]' value=\"$notes[$x]\">\n";
+                echo "              <input type='hidden' name='final_notes[$x]' value=\"" . htmlspecialchars($notes[$x]) . "\">\n";
                 echo "              <input type='hidden' name='final_mysql_timestamp[$x]' value=\"$mysql_timestamp[$x]\">\n";
                 echo "              <input type='hidden' name='final_time[$x]' value=\"$time[$x]\">\n";
                 $row_count++;
@@ -654,11 +653,11 @@ if ($request == 'GET') {
                       value='1'></td>\n";
                 echo "                <td nowrap align=left style='width:7%;padding-left:5px;background-color:$row_color;color:" . htmlspecialchars($statuscolor) . "'>$inout[$x]</td>\n";
                 echo "                <td nowrap align=right style='padding-left:20px;' width=4% bgcolor='$row_color'>$time[$x]</td>\n";
-                echo "                <td style='padding-left:25px;' bgcolor='$row_color'>$notes[$x]</td>\n";
+                echo "                <td style='padding-left:25px;' bgcolor='$row_color'>" . htmlspecialchars($notes[$x]) . "</td>\n";
                 echo "              </tr>\n";
                 echo "              <input type='hidden' name='final_username[$x]' value=\"$username[$x]\">\n";
                 echo "              <input type='hidden' name='final_inout[$x]' value=\"$inout[$x]\">\n";
-                echo "              <input type='hidden' name='final_notes[$x]' value=\"$notes[$x]\">\n";
+                echo "              <input type='hidden' name='final_notes[$x]' value=\"" . htmlspecialchars($notes[$x]) . "\">\n";
                 echo "              <input type='hidden' name='final_mysql_timestamp[$x]' value=\"$mysql_timestamp[$x]\">\n";
                 echo "              <input type='hidden' name='final_time[$x]' value=\"$time[$x]\">\n";
                 $row_count++;

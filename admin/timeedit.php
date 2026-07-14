@@ -316,7 +316,6 @@ if ($request == 'GET') {
                     exit;
                 }
 
-                $final_notes[$x] = preg_replace('/[^[:alnum:] \,\.\?-]/', "", $final_notes[$x]);
                 $final_username[$x] = addslashes($final_username[$x]);
 
                 $result5 = tc_select(
@@ -728,11 +727,11 @@ if ($request == 'GET') {
                     size='7' maxlength='$timefmt_size' name='edit_time_textbox[$x]'></td>\n";
                 echo "                <td nowrap align=left style='width:7%;padding-left:15px;background-color:$row_color;color:" . htmlspecialchars($statuscolor) . "'>$inout[$x]</td>\n";
                 echo "                <td nowrap align=left style='padding-left:20px;' width=4% bgcolor='$row_color'>$time[$x]</td>\n";
-                echo "                <td style='padding-left:25px;' bgcolor='$row_color'>$notes[$x]</td>\n";
+                echo "                <td style='padding-left:25px;' bgcolor='$row_color'>" . htmlspecialchars($notes[$x]) . "</td>\n";
                 echo "              </tr>\n";
                 echo "              <input type='hidden' name='final_username[$x]' value=\"$username[$x]\">\n";
                 echo "              <input type='hidden' name='final_inout[$x]' value=\"$inout[$x]\">\n";
-                echo "              <input type='hidden' name='final_notes[$x]' value=\"$notes[$x]\">\n";
+                echo "              <input type='hidden' name='final_notes[$x]' value=\"" . htmlspecialchars($notes[$x]) . "\">\n";
                 echo "              <input type='hidden' name='final_mysql_timestamp[$x]' value=\"$mysql_timestamp[$x]\">\n";
                 echo "              <input type='hidden' name='final_time[$x]' value=\"$time[$x]\">\n";
                 $row_count++;
