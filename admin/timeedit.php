@@ -316,7 +316,6 @@ if ($request == 'GET') {
                     exit;
                 }
 
-                $final_notes[$x] = preg_replace('/[^[:alnum:] \,\.\?-]/', "", $final_notes[$x]);
                 $final_username[$x] = addslashes($final_username[$x]);
 
                 $result5 = tc_select(
@@ -553,11 +552,16 @@ if ($request == 'GET') {
                             }
                         }
 
+                        // A punch with no notes typed stores notes as NULL
+                        // (not ''), but $final_notes[$x] round-trips as ''
+                        // either way -- match either so a NULL-notes punch
+                        // (the common case for regular clock in/out) isn't
+                        // silently skipped by this update.
                         tc_update_strings(
                             "info",
                             array("timestamp" => $new_tstamp[$x]),
-                            "(fullname = ?) and (`inout` = ?) and (timestamp = ?) and (notes = ?)",
-                            array($final_username[$x], $final_inout[$x], $final_mysql_timestamp[$x], $final_notes[$x])
+                            "(fullname = ?) and (`inout` = ?) and (timestamp = ?) and ((notes = ?) or (notes is null and ? = ''))",
+                            array($final_username[$x], $final_inout[$x], $final_mysql_timestamp[$x], $final_notes[$x], $final_notes[$x])
                         );
 
                         // add the results to the audit table
@@ -728,11 +732,11 @@ if ($request == 'GET') {
                     size='7' maxlength='$timefmt_size' name='edit_time_textbox[$x]'></td>\n";
                 echo "                <td nowrap align=left style='width:7%;padding-left:15px;background-color:$row_color;color:" . htmlspecialchars($statuscolor) . "'>$inout[$x]</td>\n";
                 echo "                <td nowrap align=left style='padding-left:20px;' width=4% bgcolor='$row_color'>$time[$x]</td>\n";
-                echo "                <td style='padding-left:25px;' bgcolor='$row_color'>$notes[$x]</td>\n";
+                echo "                <td style='padding-left:25px;' bgcolor='$row_color'>" . htmlspecialchars($notes[$x]) . "</td>\n";
                 echo "              </tr>\n";
-                echo "              <input type='hidden' name='final_username[$x]' value=\"$username[$x]\">\n";
-                echo "              <input type='hidden' name='final_inout[$x]' value=\"$inout[$x]\">\n";
-                echo "              <input type='hidden' name='final_notes[$x]' value=\"$notes[$x]\">\n";
+                echo "              <input type='hidden' name='final_username[$x]' value=\"" . htmlspecialchars($username[$x]) . "\">\n";
+                echo "              <input type='hidden' name='final_inout[$x]' value=\"" . htmlspecialchars($inout[$x]) . "\">\n";
+                echo "              <input type='hidden' name='final_notes[$x]' value=\"" . htmlspecialchars($notes[$x]) . "\">\n";
                 echo "              <input type='hidden' name='final_mysql_timestamp[$x]' value=\"$mysql_timestamp[$x]\">\n";
                 echo "              <input type='hidden' name='final_time[$x]' value=\"$time[$x]\">\n";
                 $row_count++;
