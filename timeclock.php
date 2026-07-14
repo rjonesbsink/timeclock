@@ -168,4 +168,9 @@ if (!isset($_GET['printer_friendly'])) {
     echo "  </div>\n";
     echo "</div>\n";
     include_once 'footer_bootstrap.php';
+} else {
+    // printer_friendly mode skips the shared footer (same as the original
+    // header.php/footer.php pair), but still needs to close out the document.
+    echo "</body>\n";
+    echo "</html>\n";
 }

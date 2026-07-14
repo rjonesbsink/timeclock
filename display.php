@@ -2,6 +2,7 @@
 
 $row_count = 0;
 $page_count = 0;
+$table_opened = false;
 
 while ($row = mysqli_fetch_array($result)) {
     $display_stamp = "" . $row["timestamp"] . "";
@@ -9,14 +10,20 @@ while ($row = mysqli_fetch_array($result)) {
     $date = date($datefmt, $display_stamp);
 
     if ($row_count == 0) {
+        $table_opened = true;
+
         if ($page_count == 0) {
             // display sortable column headings for main page //
+
+            $column_count = 5
+                + ($display_office_name == "yes" ? 1 : 0)
+                + ($display_group_name == "yes" ? 1 : 0);
 
             echo "<table class=\"table table-sm align-middle\">\n";
             echo "  <thead>\n";
 
             if (!isset($_GET['printer_friendly'])) {
-                echo "    <tr class=\"notprint\"><td colspan=7 class=\"text-end\">
+                echo "    <tr class=\"notprint\"><td colspan=$column_count class=\"text-end\">
                             <a href='timeclock.php?printer_friendly=true'>printer friendly page</a></td></tr>\n";
             }
 
@@ -106,7 +113,9 @@ while ($row = mysqli_fetch_array($result)) {
     }
 }
 
-echo "  </tbody>\n";
-echo "</table>\n";
+if ($table_opened) {
+    echo "  </tbody>\n";
+    echo "</table>\n";
+}
 
 ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
