@@ -356,6 +356,43 @@ final class FunctionsPureTest extends TestCase
         $this->assertSame([], compute_day_exceptions($date, $schedule, $punches, 10));
     }
 
+    public function testComputeDayExceptionsDoesNotFlagEarlyForALunchBreak(): void
+    {
+        // An earlier "out" (lunch break) followed by a later "in" must not
+        // be mistaken for the day's departure -- only the day's truly last
+        // punch (still "in" here, since they haven't clocked out yet for
+        // the day) determines whether they left early.
+        $date = mktime(0, 0, 0, 1, 6, 2026);
+        $schedule = ['start_time' => '09:00:00', 'end_time' => '17:00:00'];
+        $punches = [
+            ['in_or_out' => 1, 'timestamp' => mktime(9, 0, 0, 1, 6, 2026)],
+            ['in_or_out' => 0, 'timestamp' => mktime(12, 0, 0, 1, 6, 2026)], // lunch out
+            ['in_or_out' => 1, 'timestamp' => mktime(13, 0, 0, 1, 6, 2026)], // lunch in
+        ];
+
+        $this->assertSame([], compute_day_exceptions($date, $schedule, $punches, 10));
+    }
+
+    public function testComputeDayExceptionsFlagsEarlyDepartureAfterALunchBreak(): void
+    {
+        // Same lunch break, but this time followed by a genuine early
+        // departure -- the lunch "out" at noon must not be the one compared
+        // against the scheduled end.
+        $date = mktime(0, 0, 0, 1, 6, 2026);
+        $schedule = ['start_time' => '09:00:00', 'end_time' => '17:00:00'];
+        $punches = [
+            ['in_or_out' => 1, 'timestamp' => mktime(9, 0, 0, 1, 6, 2026)],
+            ['in_or_out' => 0, 'timestamp' => mktime(12, 0, 0, 1, 6, 2026)], // lunch out
+            ['in_or_out' => 1, 'timestamp' => mktime(13, 0, 0, 1, 6, 2026)], // lunch in
+            ['in_or_out' => 0, 'timestamp' => mktime(16, 20, 0, 1, 6, 2026)], // 40 min early
+        ];
+
+        $this->assertSame(
+            [['type' => 'early', 'minutes' => 40]],
+            compute_day_exceptions($date, $schedule, $punches, 10)
+        );
+    }
+
     public function testComputeDayExceptionsGraceBoundaryIsExactNotOverBy1Second(): void
     {
         // Exactly at the grace boundary (10:00 sharp with a 10-minute grace

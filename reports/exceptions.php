@@ -100,20 +100,20 @@ if ($request == 'GET') {
                   style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;' width=80% >
                   <input type='text' size='10' maxlength='10' name='from_date' style='color:#27408b'>&nbsp;*&nbsp;&nbsp;
                   <a href=\"#\" onclick=\"form.from_date.value='';cal.select(document.forms['form'].from_date,'from_date_anchor','$js_datefmt');
-                  return false;\" name=\"from_date_anchor\" id=\"from_date_anchor\" style='font-size:11px;color:#27408b;'>Pick Date</a></td><tr>\n";
+                  return false;\" name=\"from_date_anchor\" id=\"from_date_anchor\" style='font-size:11px;color:#27408b;'>Pick Date</a></td></tr>\n";
     echo "              <tr><td class=table_rows style='padding-left:32px;' width=20% nowrap>To Date: ($tmp_datefmt)</td><td
                   style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;' width=80% >
                   <input type='text' size='10' maxlength='10' name='to_date' style='color:#27408b'>&nbsp;*&nbsp;&nbsp;
                   <a href=\"#\" onclick=\"form.to_date.value='';cal.select(document.forms['form'].to_date,'to_date_anchor','$js_datefmt');
-                  return false;\" name=\"to_date_anchor\" id=\"to_date_anchor\" style='font-size:11px;color:#27408b;'>Pick Date</a></td><tr>\n";
+                  return false;\" name=\"to_date_anchor\" id=\"to_date_anchor\" style='font-size:11px;color:#27408b;'>Pick Date</a></td></tr>\n";
     echo "              <tr><td class=table_rows align=right colspan=3 style='color:red;font-family:Tahoma;font-size:10px;'>*&nbsp;required&nbsp;</td></tr>\n";
     echo "            </table>\n";
     echo "            <div style=\"position:absolute;visibility:hidden;background-color:#ffffff;layer-background-color:#ffffff;\" id=\"mydiv\"
              height=200>&nbsp;</div>\n";
     echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
     echo "              <tr><td height=20></td></tr>\n";
-    echo "              <tr><td width=30><input type='image' name='submit' value='Run Report' src='../images/buttons/next_button.png'></td>
-              <td><a href='index.php'><img src='../images/buttons/cancel_button.png' border='0'></td></tr></table></form></td></tr>\n";
+    echo "              <tr><td width=30><input type='image' name='submit' value='Run Report' alt='Run Report' src='../images/buttons/next_button.png'></td>
+              <td><a href='index.php'><img src='../images/buttons/cancel_button.png' border='0' alt='Cancel'></a></td></tr></table></form></td></tr>\n";
     include_once '../footer.php';
     exit;
 }
@@ -146,6 +146,15 @@ if ($from_local === null || $to_local === null) {
     echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
     echo "              <tr><td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
               A valid From Date and To Date are both required.</td></tr>\n";
+    echo "            </table>\n";
+    include_once '../footer.php';
+    exit;
+}
+
+if ($from_local > $to_local) {
+    echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
+    echo "              <tr><td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
+              From Date must not be later than To Date.</td></tr>\n";
     echo "            </table>\n";
     include_once '../footer.php';
     exit;

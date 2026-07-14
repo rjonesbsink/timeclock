@@ -258,12 +258,9 @@ function compute_day_exceptions($date_timestamp, $schedule_day, $punches, $grace
     $scheduled_end = $date_timestamp + $end_secs + ($end_secs <= $start_secs ? 86400 : 0);
 
     $in_timestamps = array();
-    $out_timestamps = array();
     foreach ($punches as $punch) {
         if ($punch['in_or_out'] == 1) {
             $in_timestamps[] = $punch['timestamp'];
-        } else {
-            $out_timestamps[] = $punch['timestamp'];
         }
     }
 
@@ -282,14 +279,20 @@ function compute_day_exceptions($date_timestamp, $schedule_day, $punches, $grace
         );
     }
 
-    if (!empty($out_timestamps)) {
-        $last_out = max($out_timestamps);
-        if ($last_out < $scheduled_end - $grace_seconds) {
-            $exceptions[] = array(
-                'type' => 'early',
-                'minutes' => (int) round(($scheduled_end - $last_out) / 60),
-            );
+    // Only the day's truly last punch can represent when they left for the
+    // day -- an earlier "out" (e.g. a lunch break) followed by a later "in"
+    // must not be mistaken for an early departure.
+    $last_punch = $punches[0];
+    foreach ($punches as $punch) {
+        if ($punch['timestamp'] > $last_punch['timestamp']) {
+            $last_punch = $punch;
         }
+    }
+    if ($last_punch['in_or_out'] == 0 && $last_punch['timestamp'] < $scheduled_end - $grace_seconds) {
+        $exceptions[] = array(
+            'type' => 'early',
+            'minutes' => (int) round(($scheduled_end - $last_punch['timestamp']) / 60),
+        );
     }
 
     return $exceptions;
@@ -302,36 +305,57 @@ function get_employee_exceptions($empfullname, $from_timestamp, $to_timestamp, $
     // client/server timezone offset $tzo the same way the rest of the
     // reports/ pages do. Returns a flat list of exceptions, each augmented
     // with 'date' (Ymd, local) and 'empfullname'.
-    global $db_prefix;
+    global $db_prefix, $default_in_or_out;
 
     $schedule = get_employee_schedule($empfullname);
+    $fallback_in_or_out = $default_in_or_out ?? 1;
 
     $query = "select {$db_prefix}info.timestamp as timestamp,
-                     coalesce({$db_prefix}punchlist.in_or_out, 1) as in_or_out
+                     coalesce({$db_prefix}punchlist.in_or_out, $fallback_in_or_out) as in_or_out
               from {$db_prefix}info
               left join {$db_prefix}punchlist on {$db_prefix}info.inout = {$db_prefix}punchlist.punchitems
               where {$db_prefix}info.fullname = ? and {$db_prefix}info.timestamp >= ? and {$db_prefix}info.timestamp < ?
               order by {$db_prefix}info.timestamp";
     $result = tc_query($query, array($empfullname, $from_timestamp, $to_timestamp));
 
-    $punches_by_date = array();
+    $punches = array();
     while ($row = mysqli_fetch_array($result)) {
-        $local_timestamp = (int) $row['timestamp'] + $tzo;
-        $date = date('Ymd', $local_timestamp);
-        $punches_by_date[$date][] = array(
+        $punches[] = array(
             'in_or_out' => (int) $row['in_or_out'],
-            'timestamp' => $local_timestamp,
+            'timestamp' => (int) $row['timestamp'] + $tzo,
         );
     }
 
     $exceptions = array();
     $day_timestamp = day_start_timestamp($from_timestamp + $tzo);
     $end_day_timestamp = day_start_timestamp($to_timestamp + $tzo);
+    // Rolls forward to the end of the previous day's punch window -- kept
+    // even with, not always equal to, that day's own midnight, so an
+    // overnight shift's post-midnight closing punch is claimed by the day
+    // it belongs to instead of bleeding into the next day's window too.
+    $window_start = $day_timestamp;
     while ($day_timestamp < $end_day_timestamp) {
         $date = date('Ymd', $day_timestamp);
         $day_of_week = (int) date('w', $day_timestamp);
         $schedule_day = $schedule[$day_of_week] ?? null;
-        $day_punches = $punches_by_date[$date] ?? array();
+
+        $window_end = $day_timestamp + 86400;
+        if ($schedule_day !== null) {
+            $start_secs = time_of_day_to_seconds($schedule_day['start_time']);
+            $end_secs = time_of_day_to_seconds($schedule_day['end_time']);
+            if ($end_secs <= $start_secs) {
+                // Overnight shift: extend the window through the scheduled
+                // end time on the following calendar day.
+                $window_end = $day_timestamp + 86400 + $end_secs;
+            }
+        }
+
+        $day_punches = array_values(array_filter(
+            $punches,
+            function ($punch) use ($window_start, $window_end) {
+                return $punch['timestamp'] >= $window_start && $punch['timestamp'] < $window_end;
+            }
+        ));
 
         foreach (compute_day_exceptions($day_timestamp, $schedule_day, $day_punches, $grace_minutes) as $exception) {
             $exception['date'] = $date;
@@ -339,6 +363,7 @@ function get_employee_exceptions($empfullname, $from_timestamp, $to_timestamp, $
             $exceptions[] = $exception;
         }
 
+        $window_start = $window_end;
         $day_timestamp += 86400;
     }
 

@@ -340,4 +340,31 @@ final class FunctionsDbTest extends DatabaseTestCase
             $exceptions
         );
     }
+
+    public function testGetEmployeeExceptionsAttributesAnOvernightShiftsClosingPunchToTheCorrectDay(): void
+    {
+        // Monday is an overnight shift (22:00-06:00); Tuesday is a normal
+        // 9-5 shift. The punch that closes out Monday's shift physically
+        // happens after midnight, on the Tuesday calendar date -- it must
+        // be attributed to Monday's early-departure check, not bleed into
+        // (or get confused with) Tuesday's own on-time 9-5 shift.
+        set_employee_schedule(self::EMPFULLNAME_EXCEPTIONS, [
+            1 => ['start_time' => '22:00', 'end_time' => '06:00'], // Monday, overnight
+            2 => ['start_time' => '09:00', 'end_time' => '17:00'], // Tuesday, normal
+        ]);
+        $this->insertExceptionPunch('in', mktime(22, 0, 0, 1, 6, 2020)); // Monday 22:00, on time
+        $this->insertExceptionPunch('out', mktime(5, 30, 0, 1, 7, 2020)); // Tuesday 05:30 -- 30 min early for Monday's shift
+        $this->insertExceptionPunch('in', mktime(9, 0, 0, 1, 7, 2020)); // Tuesday 09:00, on time
+        $this->insertExceptionPunch('out', mktime(17, 0, 0, 1, 7, 2020)); // Tuesday 17:00, on time
+
+        $from = mktime(0, 0, 0, 1, 6, 2020);
+        $to = mktime(0, 0, 0, 1, 8, 2020);
+
+        $exceptions = get_employee_exceptions(self::EMPFULLNAME_EXCEPTIONS, $from, $to, 0, 10);
+
+        $this->assertSame(
+            [['type' => 'early', 'minutes' => 30, 'date' => '20200106', 'empfullname' => self::EMPFULLNAME_EXCEPTIONS]],
+            $exceptions
+        );
+    }
 }
