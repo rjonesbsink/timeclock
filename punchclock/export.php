@@ -33,6 +33,7 @@ if (reports_or_admin_login_required()) {
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     // Report parameters entry
     setcookie('dragtable-export_table', '', time() - 3600, $_SERVER['PHP_SELF']); // delete cookie, put columns in default order
+    $h_self = htmlentities($_SERVER['PHP_SELF']);
 
     $PAGE_TITLE = "Export - $title";
     include "header_reports.php";
@@ -46,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
       <table width="100%" border="0" cellpadding="10" cellspacing="1" style="margin-top:12px;">
         <tr class="right_main_text">
           <td valign="top">
-            <form name="form" action="{$_SERVER['PHP_SELF']}" method="post" onsubmit="return isFromOrToDate();">
+            <form name="form" action="{$h_self}" method="post" onsubmit="return isFromOrToDate();">
             <input type="hidden" name="date_format" value="$js_datefmt" />
             <table align="center" class="table_border" width="60%" border="0" cellpadding="3" cellspacing="0">
               <tr>

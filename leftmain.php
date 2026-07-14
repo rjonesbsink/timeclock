@@ -3,7 +3,7 @@
 include 'config.inc.php';
 require_once 'lib/csrf.php';
 
-$self = $_SERVER['PHP_SELF'];
+$self = htmlentities($_SERVER['PHP_SELF']);
 $request = $_SERVER['REQUEST_METHOD'];
 
 // set cookie if 'Remember Me?' checkbox is checked, or reset cookie if 'Reset Cookie?' is checked //

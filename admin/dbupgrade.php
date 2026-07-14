@@ -93,7 +93,7 @@ function ensure_index($table, $field)
 }
 
 
-$self = $_SERVER['PHP_SELF'];
+$self = htmlentities($_SERVER['PHP_SELF']);
 $request = $_SERVER['REQUEST_METHOD'];
 
 require_once '../lib/auth.php';

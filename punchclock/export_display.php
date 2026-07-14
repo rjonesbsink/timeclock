@@ -121,6 +121,7 @@ $chk_group = $c_group ? CHECKED_ATTR : '';
 $chk_office = $c_office ? CHECKED_ATTR : '';
 $options_style = isset($_POST['redo']) ? '' : ' style="display:none"';
 $options_link_class = isset($_POST['redo']) ? ' class="open"' : '';
+$h_self = htmlentities($_SERVER['PHP_SELF']);
 
 print <<<End_Of_HTML
 <div class="export">
@@ -130,7 +131,7 @@ print <<<End_Of_HTML
 <div class="options">
 <a href="javascript:;"$options_link_class onclick="$(this).toggleClass('open');$('#options').slideToggle()">Options</a>
 <div id="options"$options_style>
-<form method="post" action="{$_SERVER['PHP_SELF']}">
+<form method="post" action="{$h_self}">
 <input type="hidden" name="from_date" value="$h_from_date" />
 <input type="hidden" name="to_date" value="$h_to_date" />
 <input type="hidden" name="user_name" value="$h_user_name" />

@@ -63,8 +63,9 @@ if ($use_client_tz == "yes") {
         $tzo = $tzo * 60;
     } else {
         // Return to browser so it can set cookie identifying its local timezone.
+        $h_return_url = htmlentities($_SERVER['REQUEST_URI']);
         echo "<html><head>\n";
-        echo "<meta http-equiv=\"refresh\" content=\"0;URL={$SERVER['PHP_SELF']}?{$SERVER['QUERY_STRING']}\">\n";
+        echo "<meta http-equiv=\"refresh\" content=\"0;URL=$h_return_url\">\n";
         include "$TIMECLOCK_PATH/tzoffset.php";
         echo "</head><body></body></html>\n";
         exit;

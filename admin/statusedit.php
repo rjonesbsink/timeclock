@@ -8,7 +8,7 @@ include_once 'header_colorpick.php';
 include_once 'topmain.php';
 echo "<title>$title - Edit Status</title>\n";
 
-$self = $_SERVER['PHP_SELF'];
+$self = htmlentities($_SERVER['PHP_SELF']);
 $request = $_SERVER['REQUEST_METHOD'];
 
 const WHERE_PUNCHITEMS = "punchitems = ?";
