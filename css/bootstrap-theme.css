@@ -1,0 +1,9 @@
+/* Small overrides for pages using the new Bootstrap-based layout
+   (header_bootstrap.php / topmain_bootstrap.php / footer_bootstrap.php).
+   Bootstrap itself (css/bootstrap.min.css) is vendored, unmodified. */
+
+@media print {
+    .notprint {
+        display: none;
+    }
+}
