@@ -90,122 +90,108 @@ if ($request == 'POST') {
 
 
 
-echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
-echo "  <tr valign=top>\n";
-echo "    <td class=left_main width=200 align=left scope=col>\n";
-echo "      <table class=hide width=100% border=0 cellpadding=1 cellspacing=0>\n";
+echo "<div class=\"col-md-3 mb-4\">\n";
 
 // display links in top left of each page //
 
-if ($links == "none") {
-    echo "        <tr></tr>\n";
-} else {
-    echo "        <tr><td class=left_rows height=7 align=left valign=middle></td></tr>\n";
+if ($links != "none") {
+    echo "  <ul class=\"list-unstyled small\">\n";
 
     for ($x = 0; $x < count($display_links); $x++) {
-        echo "        <tr><td class=left_rows height=18 align=left valign=middle><a class=admin_headings href='$links[$x]' target='_new'>$display_links[$x]</a></td>
-                      </tr>\n";
+        echo "    <li><a href='$links[$x]' target='_new'>$display_links[$x]</a></li>\n";
     }
+
+    echo "  </ul>\n";
 }
 
 // display form to submit signin/signout information //
 
-echo "        <form name='timeclock' action='$self' autocomplete='off' method='post'>\n";
+echo "  <form name='timeclock' action='$self' autocomplete='off' method='post'>\n";
 echo csrf_field() . "\n";
-
-if ($links == "none") {
-    echo "        <tr><td height=7></td></tr>\n";
-} else {
-    echo "        <tr><td height=20></td></tr>\n";
-}
 
 if (yes_no_bool($barcode_clockin)) {
     echo <<<BARCODE_CLOCKIN
-        <tr><td height="4" align="left" valign="middle" class="misc_items">Barcode:</td></tr>
-        <tr><td height="4" align="left" valign="middle" class="misc_items">
-            <input type="text" id="left_barcode" name="left_barcode" maxlength="250" size="17" value="" autocomplete="off" autofocus>
-            <input type="text" style="display:none;"><!-- prevent login name auto-fill due to password field below -->
-        </td></tr>
-        <tr><td height="7"></td></tr>
+    <div class="mb-3">
+        <label for="left_barcode" class="form-label">Barcode</label>
+        <input type="text" id="left_barcode" name="left_barcode" maxlength="250" class="form-control" value="" autocomplete="off" autofocus>
+        <input type="text" style="display:none;"><!-- prevent login name auto-fill due to password field below -->
+    </div>
 BARCODE_CLOCKIN;
 }
 
 if (yes_no_bool($barcode_clockin) and yes_no_bool($manual_clockin)) {
-    echo '<tr><td height="7"><hr></td></tr>';
+    echo "    <hr>\n";
 }
 
 if (yes_no_bool($manual_clockin)) {
-    echo "        <tr><td class=title_underline height=4 align=left valign=middle style='padding-left:10px;'>Please sign in below:</td></tr>\n";
-    echo "        <tr><td height=7></td></tr>\n";
-    echo "        <tr><td height=4 align=left valign=middle class=misc_items>Name:</td></tr>\n";
-    echo "        <tr><td height=4 align=left valign=middle class=misc_items>\n";
+    echo "    <p class=\"fw-bold\">Please sign in below:</p>\n";
+    echo "    <div class=\"mb-3\">\n";
+    echo "      <label for=\"left_name_select\" class=\"form-label\">Name</label>\n";
 
     // query to populate dropdown with employee names //
 
     if ($show_display_name == "yes") {
-        echo "              <select name='left_displayname'>\n";
+        echo "      <select id=\"left_name_select\" class=\"form-select\" name='left_displayname'>\n";
     } else {
-        echo "              <select name='left_fullname'>\n";
+        echo "      <select id=\"left_name_select\" class=\"form-select\" name='left_fullname'>\n";
     }
 
-    echo "              <option value =''>...</option>\n";
+    echo "        <option value =''>...</option>\n";
     echo html_options(
         tc_select($emp_name_field, "employees", "disabled <> '1' AND empfullname <> 'admin' ORDER BY $emp_name_field"),
         @$_COOKIE['remember_me']
     );
-    echo "              </select></td></tr>\n";
-    echo "        <tr><td height=7></td></tr>\n";
+    echo "      </select>\n";
+    echo "    </div>\n";
 
     // determine whether to use encrypted passwords or not //
 
     if ($use_passwd == "yes") {
-        echo "        <tr><td height=4 align=left valign=middle class=misc_items>Password:</td></tr>\n";
-        echo "        <tr><td height=4 align=left valign=middle class=misc_items>";
-        echo "<input type='password' name='employee_passwd' maxlength='25' size='17'></td></tr>\n";
-        echo "        <tr><td height=7></td></tr>\n";
+        echo "    <div class=\"mb-3\">\n";
+        echo "      <label for=\"employee_passwd\" class=\"form-label\">Password</label>\n";
+        echo "      <input type='password' id=\"employee_passwd\" class=\"form-control\" name='employee_passwd' maxlength='25'>\n";
+        echo "    </div>\n";
     }
 
-    echo "        <tr><td height=4 align=left valign=middle class=misc_items>In/Out:</td></tr>\n";
-    echo "        <tr><td height=4 align=left valign=middle class=misc_items>\n";
+    echo "    <div class=\"mb-3\">\n";
+    echo "      <label for=\"left_inout_select\" class=\"form-label\">In/Out</label>\n";
 
     // populate dropdown with punchlist items //
 
-    echo "              <select name='left_inout'>\n";
-    echo "              <option value =''>...</option>\n";
+    echo "      <select id=\"left_inout_select\" class=\"form-select\" name='left_inout'>\n";
+    echo "        <option value =''>...</option>\n";
     echo html_options(tc_select("punchitems", "punchlist"));
-    echo "              </select></td></tr>\n";
+    echo "      </select>\n";
+    echo "    </div>\n";
 
-    echo "        <tr><td height=7></td></tr>\n";
-    echo "        <tr><td height=4 align=left valign=middle class=misc_items>Notes:</td></tr>\n";
-    echo "        <tr><td height=4 align=left valign=middle class=misc_items>";
-    echo "<input type='text' name='left_notes' maxlength='250' size='17'></td></tr>\n";
+    echo "    <div class=\"mb-3\">\n";
+    echo "      <label for=\"left_notes\" class=\"form-label\">Notes</label>\n";
+    echo "      <input type='text' id=\"left_notes\" class=\"form-control\" name='left_notes' maxlength='250'>\n";
+    echo "    </div>\n";
 
     if (!isset($_COOKIE['remember_me'])) {
-        echo "        <tr><td width=100%><table width=100% border=0 cellpadding=0 cellspacing=0>
-                      <tr><td nowrap height=4 align=left valign=middle class=misc_items width=10%>Remember&nbsp;Me?</td><td width=90% align=left
-                        class=misc_items style='padding-left:0px;padding-right:0px;'><input type='checkbox' name='remember_me' value='1'></td></tr>
-                        </table></td><tr>\n";
+        echo "    <div class=\"form-check mb-3\">\n";
+        echo "      <input type='checkbox' class=\"form-check-input\" id=\"remember_me\" name='remember_me' value='1'>\n";
+        echo "      <label class=\"form-check-label\" for=\"remember_me\">Remember Me?</label>\n";
+        echo "    </div>\n";
     } elseif (isset($_COOKIE['remember_me'])) {
-        echo "        <tr><td width=100%><table width=100% border=0 cellpadding=0 cellspacing=0>
-                      <tr><td nowrap height=4 align=left valign=middle class=misc_items width=10%>Reset&nbsp;Cookie?</td><td width=90% align=left
-                        class=misc_items style='padding-left:0px;padding-right:0px;'><input type='checkbox' name='reset_cookie' value='1'></td></tr>
-                        </table></td><tr>\n";
+        echo "    <div class=\"form-check mb-3\">\n";
+        echo "      <input type='checkbox' class=\"form-check-input\" id=\"reset_cookie\" name='reset_cookie' value='1'>\n";
+        echo "      <label class=\"form-check-label\" for=\"reset_cookie\">Reset Cookie?</label>\n";
+        echo "    </div>\n";
     }
-    echo "        <tr><td height=7></td></tr>\n";
 }
 
-echo "        <tr><td height=4 align=left valign=middle class=misc_items><input type='submit' name='submit_button' value='Submit' align='center'></td></tr></form>\n";
-
+echo "    <button type='submit' class=\"btn btn-primary\" name='submit_button' value='Submit'>Submit</button>\n";
+echo "  </form>\n";
 
 if (yes_no_bool($display_weather)) {
-    echo '<tr><td>';
+    echo "  <div class=\"mt-3\">\n";
     include 'sidebar-metar-display.php';
-    echo '</td></tr>';
+    echo "  </div>\n";
 }
 
-
-
-echo "      </table></td>\n";
+echo "</div>\n";
 
 if ($request == 'POST') {
     // signin/signout data passed over from timeclock.php //
@@ -251,13 +237,12 @@ QUERY
     }
 
     if (!empty($errors)) {
-        echo "    <td align=left class=right_main scope=col>\n";
-        echo "      <table width=100% height=100% border=0 cellpadding=10 cellspacing=1>\n";
-        echo "        <tr class=right_main_text>\n";
-        echo "          <td valign=top>\n";
-        echo "<br />\n";
-        echo implode("<br>\n", $errors);
-        include 'footer.php';
+        echo "    <div class=\"col-md-9\">\n";
+        echo "      <div class=\"alert alert-danger\">" . implode("<br>\n", $errors) . "</div>\n";
+        echo "    </div>\n";
+        echo "  </div>\n";
+        echo "</div>\n";
+        include 'footer_bootstrap.php';
         exit;
     }
 
@@ -315,13 +300,13 @@ QUERY
             echo "<meta http-equiv='refresh' content=0;url=index.php>\n";
             echo "</head>\n";
         } else {
-            echo "    <td align=left class=right_main scope=col>\n";
-            echo "      <table width=100% height=100% border=0 cellpadding=10 cellspacing=1>\n";
-            echo "        <tr class=right_main_text>\n";
-            echo "          <td valign=top>\n";
-            echo "<br />\n";
-            echo "You have entered the wrong password for $emp_name. Please try again.";
-            include 'footer.php';
+            echo "    <div class=\"col-md-9\">\n";
+            echo "      <div class=\"alert alert-danger\">You have entered the wrong password for "
+                . htmlentities($emp_name) . ". Please try again.</div>\n";
+            echo "    </div>\n";
+            echo "  </div>\n";
+            echo "</div>\n";
+            include 'footer_bootstrap.php';
             exit;
         }
     }

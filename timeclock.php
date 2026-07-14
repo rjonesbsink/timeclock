@@ -4,14 +4,16 @@ require_once 'lib/session.php';
 start_secure_session();
 
 include 'config.inc.php';
-include 'header.php';
+include 'header_bootstrap.php';
 
 if (!isset($_GET['printer_friendly'])) {
     if (isset($_SESSION['valid_user'])) {
         $set_logout = "1";
     }
 
-    include 'topmain.php';
+    include 'topmain_bootstrap.php';
+    echo "<div class=\"container-fluid mt-3\">\n";
+    echo "  <div class=\"row\">\n";
     include 'leftmain.php';
 }
 
@@ -19,10 +21,7 @@ echo "<title>$title</title>\n";
 $current_page = "timeclock.php";
 
 if (!isset($_GET['printer_friendly'])) {
-    echo "    <td align=left class=right_main scope=col>\n";
-    echo "      <table width=100% height=100% border=0 cellpadding=5 cellspacing=1>\n";
-    echo "        <tr class=right_main_text>\n";
-    echo "          <td valign=top>\n";
+    echo "    <div class=\"col-md-9\">\n";
 }
 
 // code to allow sorting by Name, In/Out, Date, Notes //
@@ -159,19 +158,14 @@ $tclock_time = date($timefmt, $tclock_stamp);
 $tclock_date = date($datefmt, $tclock_stamp);
 $report_name = "Current Status Report";
 
-echo "            <table width=100% align=center class=misc_items border=0 cellpadding=3 cellspacing=0>\n";
+$report_line_class = isset($_GET['printer_friendly']) ? "" : " display_hide";
+echo "<div class=\"small$report_line_class\">$report_name &nbsp;----&gt;&nbsp; As of: $tclock_time, $tclock_date</div>\n";
 
-if (!isset($_GET['printer_friendly'])) {
-    echo "              <tr class=display_hide>\n";
-} else {
-    echo "              <tr>\n";
-}
-
-echo "                <td nowrap style='font-size:9px;color:#000000;padding-left:10px;'>$report_name&nbsp;&nbsp;---->&nbsp;&nbsp;As of: $tclock_time, 
-                    $tclock_date</td></tr>\n";
-echo "            </table>\n";
 include 'display.php';
 
 if (!isset($_GET['printer_friendly'])) {
-    include 'footer.php';
+    echo "    </div>\n";
+    echo "  </div>\n";
+    echo "</div>\n";
+    include 'footer_bootstrap.php';
 }

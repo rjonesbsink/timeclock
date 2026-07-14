@@ -7,3 +7,16 @@
         display: none;
     }
 }
+
+/* Mirrors default.css's screen-only media='screen' link scoping: the plain-
+   text print header row (.notdisplay) stays hidden on screen and only
+   appears when the page is actually printed. */
+@media screen {
+    .notdisplay {
+        display: none;
+    }
+
+    .display_hide {
+        display: none;
+    }
+}
