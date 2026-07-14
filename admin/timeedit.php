@@ -552,11 +552,16 @@ if ($request == 'GET') {
                             }
                         }
 
+                        // A punch with no notes typed stores notes as NULL
+                        // (not ''), but $final_notes[$x] round-trips as ''
+                        // either way -- match either so a NULL-notes punch
+                        // (the common case for regular clock in/out) isn't
+                        // silently skipped by this update.
                         tc_update_strings(
                             "info",
                             array("timestamp" => $new_tstamp[$x]),
-                            "(fullname = ?) and (`inout` = ?) and (timestamp = ?) and (notes = ?)",
-                            array($final_username[$x], $final_inout[$x], $final_mysql_timestamp[$x], $final_notes[$x])
+                            "(fullname = ?) and (`inout` = ?) and (timestamp = ?) and ((notes = ?) or (notes is null and ? = ''))",
+                            array($final_username[$x], $final_inout[$x], $final_mysql_timestamp[$x], $final_notes[$x], $final_notes[$x])
                         );
 
                         // add the results to the audit table

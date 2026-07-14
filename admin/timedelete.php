@@ -331,11 +331,15 @@ if ($request == 'GET') {
 
                 $final_username[$x] = addslashes($final_username[$x]);
 
+                // A punch with no notes typed stores notes as NULL (not ''),
+                // but $final_notes[$x] round-trips as '' either way -- match
+                // either so a NULL-notes punch (the common case for regular
+                // clock in/out) isn't treated as "not found".
                 $result5 = tc_select(
                     "*",
                     "info",
-                    "(fullname = ?) and (timestamp = ?) and (`inout` = ?) and (notes = ?)",
-                    array($final_username[$x], $final_mysql_timestamp[$x], $final_inout[$x], $final_notes[$x])
+                    "(fullname = ?) and (timestamp = ?) and (`inout` = ?) and ((notes = ?) or (notes is null and ? = ''))",
+                    array($final_username[$x], $final_mysql_timestamp[$x], $final_inout[$x], $final_notes[$x], $final_notes[$x])
                 );
                 @$tmp_num_rows = mysqli_num_rows($result5);
 
