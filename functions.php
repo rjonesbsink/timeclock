@@ -957,3 +957,15 @@ function admin_schedule_left_nav($get_user)
         . "                alt='Upgrade Database' />&nbsp;&nbsp;&nbsp;<a class=admin_headings href='dbupgrade.php'>Upgrade Database</a></td></tr>\n"
         . "      </table></td>\n";
 }
+
+// One sidebar link for admin/leftnav_bootstrap.php, highlighted "active" when
+// $href matches the page currently being rendered.
+function admin_leftnav_link($href, $label, $current)
+{
+    // Bootstrap's built-in .active sets a solid background + white text,
+    // which fights with the flush/transparent list style used here (and
+    // reads as white-on-white). Bold + a text color reads as "current page"
+    // without that clash.
+    $active = ($current === $href) ? ' fw-bold text-primary' : '';
+    echo "    <a href=\"$href\" class=\"list-group-item list-group-item-action bg-transparent$active\">$label</a>\n";
+}
