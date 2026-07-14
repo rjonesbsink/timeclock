@@ -167,5 +167,5 @@ if (!isset($_GET['printer_friendly'])) {
     echo "    </div>\n";
     echo "  </div>\n";
     echo "</div>\n";
-    include 'footer_bootstrap.php';
+    include_once 'footer_bootstrap.php';
 }

@@ -242,7 +242,7 @@ QUERY
         echo "    </div>\n";
         echo "  </div>\n";
         echo "</div>\n";
-        include 'footer_bootstrap.php';
+        include_once 'footer_bootstrap.php';
         exit;
     }
 
@@ -306,7 +306,7 @@ QUERY
             echo "    </div>\n";
             echo "  </div>\n";
             echo "</div>\n";
-            include 'footer_bootstrap.php';
+            include_once 'footer_bootstrap.php';
             exit;
         }
     }
