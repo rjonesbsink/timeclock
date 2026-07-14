@@ -505,8 +505,8 @@ if ($request == 'GET') {
                 echo "                <td nowrap align=right style='padding-left:20px;' width=4% bgcolor='$row_color'>$time[$x]</td>\n";
                 echo "                <td style='padding-left:25px;' bgcolor='$row_color'>" . htmlspecialchars($notes[$x]) . "</td>\n";
                 echo "              </tr>\n";
-                echo "              <input type='hidden' name='final_username[$x]' value=\"$username[$x]\">\n";
-                echo "              <input type='hidden' name='final_inout[$x]' value=\"$inout[$x]\">\n";
+                echo "              <input type='hidden' name='final_username[$x]' value=\"" . htmlspecialchars($username[$x]) . "\">\n";
+                echo "              <input type='hidden' name='final_inout[$x]' value=\"" . htmlspecialchars($inout[$x]) . "\">\n";
                 echo "              <input type='hidden' name='final_notes[$x]' value=\"" . htmlspecialchars($notes[$x]) . "\">\n";
                 echo "              <input type='hidden' name='final_mysql_timestamp[$x]' value=\"$mysql_timestamp[$x]\">\n";
                 echo "              <input type='hidden' name='final_time[$x]' value=\"$time[$x]\">\n";
@@ -655,8 +655,8 @@ if ($request == 'GET') {
                 echo "                <td nowrap align=right style='padding-left:20px;' width=4% bgcolor='$row_color'>$time[$x]</td>\n";
                 echo "                <td style='padding-left:25px;' bgcolor='$row_color'>" . htmlspecialchars($notes[$x]) . "</td>\n";
                 echo "              </tr>\n";
-                echo "              <input type='hidden' name='final_username[$x]' value=\"$username[$x]\">\n";
-                echo "              <input type='hidden' name='final_inout[$x]' value=\"$inout[$x]\">\n";
+                echo "              <input type='hidden' name='final_username[$x]' value=\"" . htmlspecialchars($username[$x]) . "\">\n";
+                echo "              <input type='hidden' name='final_inout[$x]' value=\"" . htmlspecialchars($inout[$x]) . "\">\n";
                 echo "              <input type='hidden' name='final_notes[$x]' value=\"" . htmlspecialchars($notes[$x]) . "\">\n";
                 echo "              <input type='hidden' name='final_mysql_timestamp[$x]' value=\"$mysql_timestamp[$x]\">\n";
                 echo "              <input type='hidden' name='final_time[$x]' value=\"$time[$x]\">\n";
