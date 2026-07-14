@@ -4,8 +4,8 @@ require_once 'lib/session.php';
 start_secure_session();
 
 include 'config.inc.php';
-include 'header.php';
-include 'topmain.php';
+include 'header_bootstrap.php';
+include 'topmain_bootstrap.php';
 require_once 'lib/csrf.php';
 echo "<title>$title - Admin Login</title>\n";
 
@@ -50,22 +50,37 @@ if (isset($_SESSION['valid_user'])) {
 } else {
     // build form
 
-    echo "<form name='auth' method='post' action='$self'>\n";
+    echo "<div class=\"container\">\n";
+    echo "  <div class=\"row justify-content-center\">\n";
+    echo "    <div class=\"col-12 col-sm-8 col-md-5 col-lg-4 mt-5\">\n";
+    echo "      <div class=\"card shadow-sm\">\n";
+    echo "        <div class=\"card-body p-4\">\n";
+    echo "          <h1 class=\"h5 card-title text-center mb-4\">PHP Timeclock Admin Login</h1>\n";
+    echo "          <form name='auth' method='post' action='$self'>\n";
     echo csrf_field() . "\n";
-    echo "<table align=center width=210 border=0 cellpadding=7 cellspacing=1>\n";
-    echo "  <tr class=right_main_text><td colspan=2 height=35 align=center valign=top class=title_underline>PHP Timeclock Admin Login</td></tr>\n";
-    echo "  <tr class=right_main_text><td align=left>Username:</td><td align=right><input type='text' name='login_userid'></td></tr>\n";
-    echo "  <tr class=right_main_text><td align=left>Password:</td><td align=right><input type='password' name='login_password'></td></tr>\n";
-    echo "  <tr class=right_main_text><td align=center colspan=2><input type='submit' onClick='admin.php' value='Log In'></td></tr>\n";
 
     if (isset($login_userid)) {
-        echo "  <tr class=right_main_text><td align=center colspan=2>Could not log you in. Either your username or password is incorrect.</td></tr>\n";
+        echo "            <div class=\"alert alert-danger py-2\" role=\"alert\">Could not log you in. Either your username or password is incorrect.</div>\n";
     }
 
-    echo "</table>\n";
-    echo "</form>\n";
+    echo "            <div class=\"mb-3\">\n";
+    echo "              <label for=\"login_userid\" class=\"form-label\">Username</label>\n";
+    echo "              <input type='text' class=\"form-control\" id=\"login_userid\" name='login_userid'>\n";
+    echo "            </div>\n";
+    echo "            <div class=\"mb-3\">\n";
+    echo "              <label for=\"login_password\" class=\"form-label\">Password</label>\n";
+    echo "              <input type='password' class=\"form-control\" id=\"login_password\" name='login_password'>\n";
+    echo "            </div>\n";
+    echo "            <div class=\"d-grid\">\n";
+    echo "              <input type='submit' class=\"btn btn-primary\" value='Log In'>\n";
+    echo "            </div>\n";
+    echo "          </form>\n";
+    echo "        </div>\n";
+    echo "      </div>\n";
+    echo "    </div>\n";
+    echo "  </div>\n";
+    echo "</div>\n";
     echo "<script language=\"javascript\">document.forms['auth'].login_userid.focus();</script>\n";
 }
 
-echo "</body>\n";
-echo "</html>\n";
+include_once 'footer_bootstrap.php';
