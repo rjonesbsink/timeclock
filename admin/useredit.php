@@ -5,13 +5,13 @@ start_secure_session();
 
 $self = htmlentities($_SERVER['PHP_SELF']);
 $request = $_SERVER['REQUEST_METHOD'];
-const FOOTER_PHP = '../footer.php';
+const FOOTER_PHP = 'footer_bootstrap.php';
 const WHERE_EMPFULLNAME = "empfullname = ?";
 
 include_once '../config.inc.php';
 if ($request !== 'POST') {
-    include_once 'header_get.php';
-    include_once 'topmain.php';
+    include_once 'header_get_bootstrap.php';
+    include_once 'topmain_bootstrap.php';
 }
 echo "<title>$title - Edit User</title>\n";
 
@@ -21,70 +21,25 @@ require_once '../lib/csrf.php';
 
 if ($request == 'GET') {
     if (!isset($_GET['username'])) {
-        echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
-        echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Error!</td></tr>\n";
-        echo "  <tr class=right_main_text>\n";
-        echo "    <td align=center valign=top scope=row>\n";
-        echo "      <table width=300 border=0 cellpadding=5 cellspacing=0>\n";
-        echo "        <tr class=right_main_text><td align=center>How did you get here?</td></tr>\n";
-        echo "        <tr class=right_main_text><td align=center>Go back to the <a class=admin_headings href='useradmin.php'>User Summary</a> page to edit users.
-                </td></tr>\n";
-        echo "      </table><br /></td></tr></table>\n";
+        echo "<div class=\"container-fluid mt-3\">\n";
+        echo "  <div class=\"alert alert-danger\">\n";
+        echo "    <h5>PHP Timeclock Error!</h5>\n";
+        echo "    <p>How did you get here?</p>\n";
+        echo "    <p>Go back to the <a href='useradmin.php'>User Summary</a> page to edit users.</p>\n";
+        echo "  </div>\n";
+        echo "</div>\n";
+        include_once FOOTER_PHP;
         exit;
     }
 
     $get_user = htmlentities(get_string('username'));
     $get_office = htmlentities(get_string('officename'));
 
-    echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
-    echo "  <tr valign=top>\n";
-    echo "    <td class=left_main width=180 align=left scope=col>\n";
-    echo "      <table class=hide width=100% border=0 cellpadding=1 cellspacing=0>\n";
-    echo "        <tr><td class=left_rows height=11></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle>Users</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/user.png' alt='User Summary' />&nbsp;&nbsp;
-                <a class=admin_headings href='useradmin.php'>User Summary</a></td></tr>\n";
-    echo "        <tr><td class=current_left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Edit User' />
-                &nbsp;&nbsp;<a class=admin_headings href=\"useredit.php?username=$get_user&officename=$get_office\">Edit User</a></td></tr>\n";
-    echo "        <tr><td class=left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Change Password' />
-                &nbsp;&nbsp;<a class=admin_headings href=\"chngpasswd.php?username=$get_user&officename=$get_office\">Change Password</a></td></tr>\n";
-    echo "        <tr><td class=left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Delete User' />
-                &nbsp;&nbsp;<a class=admin_headings href=\"userdelete.php?username=$get_user&officename=$get_office\">Delete User</a></td></tr>\n";
-    echo "        <tr><td class=left_rows_border_top height=18 align=left valign=middle><img src='../images/icons/user_add.png' alt='Create New User' />
-                &nbsp;&nbsp;<a class=admin_headings href='usercreate.php'>Create New User</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/magnifier.png' alt='User Search' />&nbsp;&nbsp;
-                <a class=admin_headings href='usersearch.php'>User Search</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=33></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle>Offices</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/brick.png' alt='Office Summary' />&nbsp;&nbsp;
-                <a class=admin_headings href='officeadmin.php'>Office Summary</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/brick_add.png' alt='Create New Office' />&nbsp;&nbsp;
-                <a class=admin_headings href='officecreate.php'>Create New Office</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=33></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle>Groups</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/group.png' alt='Group Summary' />&nbsp;&nbsp;
-                <a class=admin_headings href='groupadmin.php'>Group Summary</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/group_add.png' alt='Create New Group' />&nbsp;&nbsp;
-                <a class=admin_headings href='groupcreate.php'>Create New Group</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=33></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle colspan=2>In/Out Status</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application.png' alt='Status Summary' />
-                &nbsp;&nbsp;<a class=admin_headings href='statusadmin.php'>Status Summary</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application_add.png' alt='Create Status' />&nbsp;&nbsp;
-                <a class=admin_headings href='statuscreate.php'>Create Status</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=33></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle colspan=2>Miscellaneous</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/clock.png' alt='Add/Edit/Delete Time' />
-                &nbsp;&nbsp;<a class=admin_headings href='timeadmin.php'>Add/Edit/Delete Time</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application_edit.png' alt='Edit System Settings' />
-                &nbsp;&nbsp;<a class=admin_headings href='sysedit.php'>Edit System Settings</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/database_go.png'
-                alt='Upgrade Database' />&nbsp;&nbsp;&nbsp;<a class=admin_headings href='dbupgrade.php'>Upgrade Database</a></td></tr>\n";
-    echo "      </table></td>\n";
-    echo "    <td align=left class=right_main scope=col>\n";
-    echo "      <table width=100% height=100% border=0 cellpadding=10 cellspacing=1>\n";
-    echo "        <tr class=right_main_text>\n";
-    echo "          <td valign=top>\n";
+    echo "<div class=\"container-fluid mt-3\">\n";
+    echo "  <div class=\"row\">\n";
+    $admin_leftnav_user_context = array('username' => $get_user, 'officename' => $get_office, 'current' => 'useredit.php');
+    include_once 'leftnav_bootstrap.php';
+    echo "    <div class=\"col-md-9\">\n";
 
     $row_count = 0;
     $result = tc_select("*", "employees", WHERE_EMPFULLNAME, $get_user);
@@ -114,112 +69,131 @@ if ($request == 'GET') {
             $evil = "1";
         }
     }
-    if (isset($evil)) {
-        echo "            <br />\n";
-        echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-        echo "              <tr>\n";
-        echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    Cannot edit the Sys Admin properties of this user as this user is the last Sys Admin User in the system. Go back and give another user
-                    Sys Admin privileges before attempting to edit the Sys Admin properties of this user.</td></tr>\n";
-        echo "            </table>\n";
-    }
-    echo "            <br />\n";
-    echo "            <form name='form' action='$self' method='post'>\n";
-    echo csrf_field() . "\n";
-    echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
-    echo "              <tr>\n";
-    echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/user_edit.png' />&nbsp;&nbsp;&nbsp;Edit User</th>\n";
-    echo "              </tr>\n";
-    echo "              <tr><td height=15></td></tr>\n";
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Username:</td><td align=left class=table_rows
-                      colspan=2 width=80% style='padding-left:20px;'><input type='hidden' name='post_username' value=\"$username\">$username</td></tr>\n";
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Display Name:</td><td colspan=2 width=80%
-                      style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
-                      <input type='text' size='25' maxlength='50' name='display_name' value=\"$displayname\">&nbsp;*</td></tr>\n";
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Email Address:</td><td colspan=2 width=80%
-                      style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
-                      <input type='text' size='25' maxlength='75' name='email_addy' value='$user_email'>&nbsp;*</td></tr>\n";
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Barcode:</td><td colspan=2 width=80%
-                      style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
-                      <input type='text' size='25' maxlength='75' name='barcode' value='$user_barcode'></td></tr>\n";
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Office:</td><td colspan=2 width=80%
-                      style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
-                      <select name='office_name' onchange='group_names();'>
-                        <option selected>$office</option>\n";
-    echo "                      </select>&nbsp;*</td></tr>\n";
-    if ($groups_tmp == "") {
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Group:</td><td colspan=2 width=80%
-                      style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
-                      <select name='group_name' onfocus='group_names();'>
-                        <option selected>&nbsp;</option>\n";
-    } else {
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Group:</td><td colspan=2 width=80%
-                      style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
-                      <select name='group_name' onfocus='group_names();'>
-                        <option selected>$groups_tmp</option>\n";
-    }
-    echo "                      </select>&nbsp;*</td></tr>\n";
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Sys Admin User?</td>\n";
+
+    echo "      <h5><img src='../images/icons/user_edit.png'> Edit User</h5>\n";
 
     if (isset($evil)) {
-        if ($admin == "1") {
-            echo "                  <td class=table_rows align=left width=80% style='padding-left:20px;'><input disabled type='radio' name='admin_perms' value='1'
-                      checked>&nbsp;Yes&nbsp;<input disabled type='radio' name='admin_perms' value='0'>&nbsp;No</td></tr>\n";
-        } else {
-            echo "                  <td class=table_rows align=left width=80% style='padding-left:20px;'><input disabled type='radio' name='admin_perms' value='1'
-                      >&nbsp;Yes&nbsp;<input disabled type='radio' name='admin_perms' value='0' checked>&nbsp;No</td></tr>\n";
-        }
-    } else {
-        if ($admin == "1") {
-            echo "                  <td class=table_rows align=left width=80% style='padding-left:20px;'><input type='radio' name='admin_perms' value='1'
-                      checked>&nbsp;Yes&nbsp;<input type='radio' name='admin_perms' value='0'>&nbsp;No</td></tr>\n";
-        } else {
-            echo "                  <td class=table_rows align=left width=80% style='padding-left:20px;'><input type='radio' name='admin_perms' value='1'
-                      >&nbsp;Yes&nbsp;<input type='radio' name='admin_perms' value='0' checked>&nbsp;No</td></tr>\n";
-        }
+        echo "      <div class=\"alert alert-danger\">Cannot edit the Sys Admin properties of this user as this user is the last Sys Admin User
+                in the system. Go back and give another user Sys Admin privileges before attempting to edit the Sys Admin properties of this
+                user.</div>\n";
     }
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Time Admin User?</td>\n";
+
+    echo "      <form name='form' action='$self' method='post'>\n";
+    echo csrf_field() . "\n";
+    echo "        <div class=\"mb-3\">\n";
+    echo "          <label class=\"form-label\">Username</label>\n";
+    echo "          <input type='hidden' name='post_username' value=\"$username\">\n";
+    echo "          <div class=\"form-control-plaintext\">$username</div>\n";
+    echo "        </div>\n";
+    echo "        <div class=\"mb-3\">\n";
+    echo "          <label class=\"form-label\">Display Name <span class=\"text-danger\">*</span></label>\n";
+    echo "          <input type='text' class=\"form-control\" maxlength='50' name='display_name' value=\"$displayname\">\n";
+    echo "        </div>\n";
+    echo "        <div class=\"mb-3\">\n";
+    echo "          <label class=\"form-label\">Email Address <span class=\"text-danger\">*</span></label>\n";
+    echo "          <input type='text' class=\"form-control\" maxlength='75' name='email_addy' value='$user_email'>\n";
+    echo "        </div>\n";
+    echo "        <div class=\"mb-3\">\n";
+    echo "          <label class=\"form-label\">Barcode</label>\n";
+    echo "          <input type='text' class=\"form-control\" maxlength='75' name='barcode' value='$user_barcode'>\n";
+    echo "        </div>\n";
+    echo "        <div class=\"mb-3\">\n";
+    echo "          <label class=\"form-label\">Office <span class=\"text-danger\">*</span></label>\n";
+    echo "          <select class=\"form-select\" name='office_name' onchange='group_names();'>\n";
+    echo "            <option selected>$office</option>\n";
+    echo "          </select>\n";
+    echo "        </div>\n";
+    echo "        <div class=\"mb-3\">\n";
+    echo "          <label class=\"form-label\">Group <span class=\"text-danger\">*</span></label>\n";
+    if ($groups_tmp == "") {
+        echo "          <select class=\"form-select\" name='group_name' onfocus='group_names();'>\n";
+        echo "            <option selected>&nbsp;</option>\n";
+    } else {
+        echo "          <select class=\"form-select\" name='group_name' onfocus='group_names();'>\n";
+        echo "            <option selected>$groups_tmp</option>\n";
+    }
+    echo "          </select>\n";
+    echo "        </div>\n";
+
+    echo "        <div class=\"mb-3\">\n";
+    echo "          <label class=\"form-label d-block\">Sys Admin User?</label>\n";
+    $disabled_attr = isset($evil) ? " disabled" : "";
+    if ($admin == "1") {
+        echo "          <div class=\"form-check form-check-inline\"><input$disabled_attr type='radio' class=\"form-check-input\" name='admin_perms' value='1'
+                    checked id='admin_perms_y'><label class=\"form-check-label\" for='admin_perms_y'>Yes</label></div>\n";
+        echo "          <div class=\"form-check form-check-inline\"><input$disabled_attr type='radio' class=\"form-check-input\" name='admin_perms' value='0'
+                    id='admin_perms_n'><label class=\"form-check-label\" for='admin_perms_n'>No</label></div>\n";
+    } else {
+        echo "          <div class=\"form-check form-check-inline\"><input$disabled_attr type='radio' class=\"form-check-input\" name='admin_perms' value='1'
+                    id='admin_perms_y'><label class=\"form-check-label\" for='admin_perms_y'>Yes</label></div>\n";
+        echo "          <div class=\"form-check form-check-inline\"><input$disabled_attr type='radio' class=\"form-check-input\" name='admin_perms' value='0'
+                    checked id='admin_perms_n'><label class=\"form-check-label\" for='admin_perms_n'>No</label></div>\n";
+    }
+    echo "        </div>\n";
+
+    echo "        <div class=\"mb-3\">\n";
+    echo "          <label class=\"form-label d-block\">Time Admin User?</label>\n";
     if ($time_admin == "1") {
-        echo "                  <td class=table_rows align=left width=80% style='padding-left:20px;'><input type='radio' name='time_admin_perms' value='1'
-                      checked>&nbsp;Yes&nbsp;<input type='radio' name='time_admin_perms' value='0'>&nbsp;No</td></tr>\n";
+        echo "          <div class=\"form-check form-check-inline\"><input type='radio' class=\"form-check-input\" name='time_admin_perms' value='1'
+                    checked id='time_admin_perms_y'><label class=\"form-check-label\" for='time_admin_perms_y'>Yes</label></div>\n";
+        echo "          <div class=\"form-check form-check-inline\"><input type='radio' class=\"form-check-input\" name='time_admin_perms' value='0'
+                    id='time_admin_perms_n'><label class=\"form-check-label\" for='time_admin_perms_n'>No</label></div>\n";
     } else {
-        echo "                  <td class=table_rows align=left width=80% style='padding-left:20px;'><input type='radio' name='time_admin_perms' value='1'>&nbsp;Yes
-                      <input type='radio' name='time_admin_perms' value='0' checked>&nbsp;No</td></tr>\n";
+        echo "          <div class=\"form-check form-check-inline\"><input type='radio' class=\"form-check-input\" name='time_admin_perms' value='1'
+                    id='time_admin_perms_y'><label class=\"form-check-label\" for='time_admin_perms_y'>Yes</label></div>\n";
+        echo "          <div class=\"form-check form-check-inline\"><input type='radio' class=\"form-check-input\" name='time_admin_perms' value='0'
+                    checked id='time_admin_perms_n'><label class=\"form-check-label\" for='time_admin_perms_n'>No</label></div>\n";
     }
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Reports User?</td>\n";
+    echo "        </div>\n";
+
+    echo "        <div class=\"mb-3\">\n";
+    echo "          <label class=\"form-label d-block\">Reports User?</label>\n";
     if ($reports == "1") {
-        echo "                  <td class=table_rows align=left width=80% style='padding-left:20px;'><input type='radio' name='reports_perms' value='1'
-                      checked>&nbsp;Yes&nbsp;<input type='radio' name='reports_perms' value='0'>&nbsp;No</td></tr>\n";
+        echo "          <div class=\"form-check form-check-inline\"><input type='radio' class=\"form-check-input\" name='reports_perms' value='1'
+                    checked id='reports_perms_y'><label class=\"form-check-label\" for='reports_perms_y'>Yes</label></div>\n";
+        echo "          <div class=\"form-check form-check-inline\"><input type='radio' class=\"form-check-input\" name='reports_perms' value='0'
+                    id='reports_perms_n'><label class=\"form-check-label\" for='reports_perms_n'>No</label></div>\n";
     } else {
-        echo "                  <td class=table_rows align=left width=80% style='padding-left:20px;'><input type='radio' name='reports_perms' value='1'>&nbsp;Yes
-                      <input type='radio' name='reports_perms' value='0' checked>&nbsp;No</td></tr>\n";
+        echo "          <div class=\"form-check form-check-inline\"><input type='radio' class=\"form-check-input\" name='reports_perms' value='1'
+                    id='reports_perms_y'><label class=\"form-check-label\" for='reports_perms_y'>Yes</label></div>\n";
+        echo "          <div class=\"form-check form-check-inline\"><input type='radio' class=\"form-check-input\" name='reports_perms' value='0'
+                    checked id='reports_perms_n'><label class=\"form-check-label\" for='reports_perms_n'>No</label></div>\n";
     }
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>User Account Disabled?</td>\n";
+    echo "        </div>\n";
+
+    echo "        <div class=\"mb-3\">\n";
+    echo "          <label class=\"form-label d-block\">User Account Disabled?</label>\n";
     if ($disabled == "1") {
-        echo "                  <td class=table_rows align=left width=80% style='padding-left:20px;'><input type='radio' name='disabled' value='1'
-                      checked>&nbsp;Yes&nbsp;<input type='radio' name='disabled' value='0'>&nbsp;No</td></tr>\n";
+        echo "          <div class=\"form-check form-check-inline\"><input type='radio' class=\"form-check-input\" name='disabled' value='1'
+                    checked id='disabled_y'><label class=\"form-check-label\" for='disabled_y'>Yes</label></div>\n";
+        echo "          <div class=\"form-check form-check-inline\"><input type='radio' class=\"form-check-input\" name='disabled' value='0'
+                    id='disabled_n'><label class=\"form-check-label\" for='disabled_n'>No</label></div>\n";
     } else {
-        echo "                  <td class=table_rows align=left width=80% style='padding-left:20px;'><input type='radio' name='disabled' value='1'>&nbsp;Yes
-                      <input type='radio' name='disabled' value='0' checked>&nbsp;No</td></tr>\n";
+        echo "          <div class=\"form-check form-check-inline\"><input type='radio' class=\"form-check-input\" name='disabled' value='1'
+                    id='disabled_y'><label class=\"form-check-label\" for='disabled_y'>Yes</label></div>\n";
+        echo "          <div class=\"form-check form-check-inline\"><input type='radio' class=\"form-check-input\" name='disabled' value='0'
+                    checked id='disabled_n'><label class=\"form-check-label\" for='disabled_n'>No</label></div>\n";
     }
-    echo "              <tr><td class=table_rows align=right colspan=3 style='color:red;font-family:Tahoma;font-size:10px;'>*&nbsp;required&nbsp;</td></tr>\n";
-    echo "            </table>\n";
+    echo "        </div>\n";
+
+    echo "        <p class=\"small text-muted\">* required</p>\n";
     if (isset($evil)) {
-        echo "<input type='hidden' name='evil' value='$evil'>\n";
+        echo "        <input type='hidden' name='evil' value='$evil'>\n";
     }
-    echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
-    echo "              <tr><td height=40>&nbsp;</td></tr>\n";
-    echo "                  <input type='hidden' name='get_office' value='$get_office'>\n";
-    echo "              <tr><td width=30><input type='image' name='submit' value='Edit User' align='middle'
-                      src='../images/buttons/next_button.png'></td><td><a href='useradmin.php'><img src='../images/buttons/cancel_button.png'
-                      border='0'></td></tr></table></form></td></tr>\n";
+    echo "        <input type='hidden' name='get_office' value='$get_office'>\n";
+    echo "        <button type='submit' class=\"btn btn-primary\" name='submit' value='Edit User'>Edit User</button>\n";
+    echo "        <a href='useradmin.php' class=\"btn btn-outline-secondary\">Cancel</a>\n";
+    echo "      </form>\n";
+    echo "    </div>\n";
+    echo "  </div>\n";
+    echo "</div>\n";
     include_once FOOTER_PHP;
     exit;
 } elseif ($request == 'POST') {
     require_csrf_token();
 
-    include_once 'header_post.php';
-    include_once 'topmain.php';
+    include_once 'header_post_bootstrap.php';
+    include_once 'topmain_bootstrap.php';
 
     $post_username = post_string('post_username');
     $display_name = post_string('display_name');
@@ -262,126 +236,38 @@ if ($request == 'GET') {
         (($reports_perms != '1') && (!empty($reports_perms))) || (($time_admin_perms != '1') && (!empty($time_admin_perms))) || (($post_disabled != '1') &&
                                                                                                                                  (!empty($post_disabled))) || (!empty($string))
     ) {
-        echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
-        echo "  <tr valign=top>\n";
-        echo "    <td class=left_main width=180 align=left scope=col>\n";
-        echo "      <table class=hide width=100% border=0 cellpadding=1 cellspacing=0>\n";
-        echo "        <tr><td class=left_rows height=11></td></tr>\n";
-        echo "        <tr><td class=left_rows_headings height=18 valign=middle>Users</td></tr>\n";
-        echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/user.png' alt='User Summary' />&nbsp;&nbsp;
-                <a class=admin_headings href='useradmin.php'>User Summary</a></td></tr>\n";
-        echo "        <tr><td class=current_left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Edit User' />
-                &nbsp;&nbsp;<a class=admin_headings href=\"useredit.php?username=$tmp_username&officename=$get_office\">Edit User</a></td></tr>\n";
-        echo "        <tr><td class=left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Change Password' />
-                &nbsp;&nbsp;<a class=admin_headings href=\"chngpasswd.php?username=$tmp_username&officename=$get_office\">Change Password</a></td>
-                </tr>\n";
-        echo "        <tr><td class=left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Delete User' />
-                &nbsp;&nbsp;<a class=admin_headings href=\"userdelete.php?username=$tmp_username&officename=$get_office\">Delete User</a></td></tr>\n";
-        echo "        <tr><td class=left_rows_border_top height=18 align=left valign=middle><img src='../images/icons/user_add.png' alt='Create New User' />
-                &nbsp;&nbsp;<a class=admin_headings href='usercreate.php'>Create New User</a></td></tr>\n";
-        echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/magnifier.png' alt='User Search' />&nbsp;&nbsp;
-                <a class=admin_headings href='usersearch.php'>User Search</a></td></tr>\n";
-        echo "        <tr><td class=left_rows height=33></td></tr>\n";
-        echo "        <tr><td class=left_rows_headings height=18 valign=middle>Offices</td></tr>\n";
-        echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/brick.png' alt='Office Summary' />&nbsp;&nbsp;
-                <a class=admin_headings href='officeadmin.php'>Office Summary</a></td></tr>\n";
-        echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/brick_add.png' alt='Create New Office' />&nbsp;&nbsp;
-                <a class=admin_headings href='officecreate.php'>Create New Office</a></td></tr>\n";
-        echo "        <tr><td class=left_rows height=33></td></tr>\n";
-        echo "        <tr><td class=left_rows_headings height=18 valign=middle>Groups</td></tr>\n";
-        echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/group.png' alt='Group Summary' />&nbsp;&nbsp;
-                <a class=admin_headings href='groupadmin.php'>Group Summary</a></td></tr>\n";
-        echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/group_add.png' alt='Create New Group' />&nbsp;&nbsp;
-                <a class=admin_headings href='groupcreate.php'>Create New Group</a></td></tr>\n";
-        echo "        <tr><td class=left_rows height=33></td></tr>\n";
-        echo "        <tr><td class=left_rows_headings height=18 valign=middle colspan=2>In/Out Status</td></tr>\n";
-        echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application.png' alt='Status Summary' />
-                &nbsp;&nbsp;<a class=admin_headings href='statusadmin.php'>Status Summary</a></td></tr>\n";
-        echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application_add.png' alt='Create Status' />&nbsp;&nbsp;
-                <a class=admin_headings href='statuscreate.php'>Create Status</a></td></tr>\n";
-        echo "        <tr><td class=left_rows height=33></td></tr>\n";
-        echo "        <tr><td class=left_rows_headings height=18 valign=middle colspan=2>Miscellaneous</td></tr>\n";
-        echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/clock.png' alt='Add/Edit/Delete Time' />
-                &nbsp;&nbsp;<a class=admin_headings href='timeadmin.php'>Add/Edit/Delete Time</a></td></tr>\n";
-        echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application_edit.png' alt='Edit System Settings' />
-                &nbsp;&nbsp;<a class=admin_headings href='sysedit.php'>Edit System Settings</a></td></tr>\n";
-        echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/database_go.png'
-                alt='Upgrade Database' />&nbsp;&nbsp;&nbsp;<a class=admin_headings href='dbupgrade.php'>Upgrade Database</a></td></tr>\n";
-        echo "      </table></td>\n";
-        echo "    <td align=left class=right_main scope=col>\n";
-        echo "      <table width=100% height=100% border=0 cellpadding=10 cellspacing=1>\n";
-        echo "        <tr class=right_main_text>\n";
-        echo "          <td valign=top>\n";
-        echo "            <br />\n";
+        echo "<div class=\"container-fluid mt-3\">\n";
+        echo "  <div class=\"row\">\n";
+        $admin_leftnav_user_context = array('username' => $tmp_username, 'officename' => $get_office, 'current' => 'useredit.php');
+        include_once 'leftnav_bootstrap.php';
+        echo "    <div class=\"col-md-9\">\n";
 
         // begin post validation //
 
         if (empty($display_name)) {
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr>\n";
-            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    A Display Name is required.</td></tr>\n";
-            echo "            </table>\n";
+            echo "      <div class=\"alert alert-danger\">A Display Name is required.</div>\n";
         } elseif (empty($email_addy)) {
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr>\n";
-            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    An Email Address is required.</td></tr>\n";
-            echo "            </table>\n";
+            echo "      <div class=\"alert alert-danger\">An Email Address is required.</div>\n";
         } elseif (empty($office_name)) {
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr>\n";
-            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    An Office is required.</td></tr>\n";
-            echo "            </table>\n";
+            echo "      <div class=\"alert alert-danger\">An Office is required.</div>\n";
         } elseif (empty($group_name)) {
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr>\n";
-            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    A Group is required.</td></tr>\n";
-            echo "            </table>\n";
+            echo "      <div class=\"alert alert-danger\">A Group is required.</div>\n";
         } elseif (!empty($string)) {
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr>\n";
-            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    Double Quotes are not allowed when creating an Username.</td></tr>\n";
-            echo "            </table>\n";
+            echo "      <div class=\"alert alert-danger\">Double Quotes are not allowed when creating an Username.</div>\n";
         } elseif (!preg_match('/' . "^([[:alnum:]]| |-|'|,)+$" . '/i', $display_name)) {
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr>\n";
-            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    Alphanumeric characters, hyphens, apostrophes, commas, and spaces are allowed when creating a Display Name.</td></tr>\n";
-            echo "            </table>\n";
+            echo "      <div class=\"alert alert-danger\">Alphanumeric characters, hyphens, apostrophes, commas, and spaces are allowed
+                    when creating a Display Name.</div>\n";
         } elseif (!preg_match('/' . "^([[:alnum:]]|_|\.|-)+@([[:alnum:]]|\.|-)+(\.)([a-z]{2,4})$" . '/i', $email_addy)) {
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr>\n";
-            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    Alphanumeric characters, underscores, periods, and hyphens are allowed when creating an Email Address.</td></tr>\n";
-            echo "            </table>\n";
+            echo "      <div class=\"alert alert-danger\">Alphanumeric characters, underscores, periods, and hyphens are allowed
+                    when creating an Email Address.</div>\n";
         } elseif (($admin_perms != '1') && (!empty($admin_perms))) {
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr>\n";
-            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    Choose \"yes\" or \"no\" for Sys Admin Perms.</td></tr>\n";
-            echo "            </table>\n";
+            echo "      <div class=\"alert alert-danger\">Choose \"yes\" or \"no\" for Sys Admin Perms.</div>\n";
         } elseif (($reports_perms != '1') && (!empty($reports_perms))) {
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr>\n";
-            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    Choose \"yes\" or \"no\" for Reports Perms.</td></tr>\n";
-            echo "            </table>\n";
+            echo "      <div class=\"alert alert-danger\">Choose \"yes\" or \"no\" for Reports Perms.</div>\n";
         } elseif (($time_admin_perms != '1') && (!empty($time_admin_perms))) {
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr>\n";
-            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    Choose \"yes\" or \"no\" for Time Admin Perms.</td></tr>\n";
-            echo "            </table>\n";
+            echo "      <div class=\"alert alert-danger\">Choose \"yes\" or \"no\" for Time Admin Perms.</div>\n";
         } elseif (($post_disabled != '1') && (!empty($post_disabled))) {
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr>\n";
-            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    Choose \"yes\" or \"no\" for User Account Disabled.</td></tr>\n";
-            echo "            </table>\n";
+            echo "      <div class=\"alert alert-danger\">Choose \"yes\" or \"no\" for User Account Disabled.</div>\n";
         }
 
         if (
@@ -407,82 +293,113 @@ if ($request == 'GET') {
         $h_email_addy = htmlentities($email_addy);
         $h_user_barcode = htmlentities($user_barcode ?? '');
 
-        echo "            <br />\n";
-        echo "            <form name='form' action='$self' method='post'>\n";
+        echo "      <form name='form' action='$self' method='post'>\n";
         echo csrf_field() . "\n";
-        echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
-        echo "              <tr>\n";
-        echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/user_edit.png' />&nbsp;&nbsp;&nbsp;Edit User</th>\n";
-        echo "              </tr>\n";
-        echo "              <tr><td height=15></td></tr>\n";
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Username:</td><td align=left class=table_rows
-                      colspan=2 width=80% style='padding-left:20px;'><input type='hidden' name='post_username'
-                      value=\"$h_post_username\">$tmp_username</td></tr>\n";
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Display Name:</td><td colspan=2 width=80%
-                      style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
-                      <input type='text' size='25' maxlength='50' name='display_name' value=\"$h_display_name\">&nbsp;*</td></tr>\n";
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Email Address:</td><td colspan=2 width=80%
-                      style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
-                      <input type='text' size='25' maxlength='75' name='email_addy' value='$h_email_addy'>&nbsp;*</td></tr>\n";
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Barcode:</td><td colspan=2 width=80%
-                      style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
-                      <input type='text' size='25' maxlength='75' name='barcode' value='$h_user_barcode'></td></tr>\n";
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Office:</td><td colspan=2 width=80%
-                      style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
-                      <select name='office_name' onchange='group_names();'>\n";
-        echo "                      </select>&nbsp;*</td></tr>\n";
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Group:</td><td colspan=2 width=80%
-                      style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
-                      <select name='group_name' onfocus='group_names();'>
-                        <option selected>$group_name</option>\n";
-        echo "                      </select>&nbsp;*</td></tr>\n";
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Sys Admin User?</td>\n";
-        if (isset($evil)) {
-            echo "                  <td class=table_rows align=left width=80% style='padding-left:20px;'><input disabled type='radio' name='admin_perms' value='1'
-                      checked>&nbsp;Yes&nbsp;<input disabled type='radio' name='admin_perms' value='0'>&nbsp;No</td></tr>\n";
-        } elseif ($admin_perms == "1") {
-            echo "                  <td class=table_rows align=left width=80% style='padding-left:20px;'><input type='radio' name='admin_perms' value='1'
-                      checked>&nbsp;Yes<input type='radio' name='admin_perms' value='0'>&nbsp;No</td></tr>\n";
-        } else {
-            echo "                  <td class=table_rows align=left width=80% style='padding-left:20px;'><input type='radio' name='admin_perms' value='1'>&nbsp;Yes
-                      <input type='radio' name='admin_perms' value='0' checked>&nbsp;No</td></tr>\n";
-        }
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Time Admin User?</td>\n";
-        if ($time_admin_perms == "1") {
-            echo "                  <td class=table_rows align=left width=80% style='padding-left:20px;'><input type='radio' name='time_admin_perms' value='1'
-                      checked>&nbsp;Yes<input type='radio' name='time_admin_perms' value='0'>&nbsp;No</td></tr>\n";
-        } else {
-            echo "                  <td class=table_rows align=left width=80% style='padding-left:20px;'><input type='radio' name='time_admin_perms' value='1'>&nbsp;Yes
-                      <input type='radio' name='time_admin_perms' value='0' checked>&nbsp;No</td></tr>\n";
-        }
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Reports User?</td>\n";
-        if ($reports_perms == "1") {
-            echo "                  <td class=table_rows align=left width=80% style='padding-left:20px;'><input type='radio' name='reports_perms' value='1'
-                      checked>&nbsp;Yes<input type='radio' name='reports_perms' value='0'>&nbsp;No</td></tr>\n";
-        } else {
-            echo "                  <td class=table_rows align=left width=80% style='padding-left:20px;'><input type='radio' name='reports_perms' value='1'>&nbsp;Yes
-                      <input type='radio' name='reports_perms' value='0' checked>&nbsp;No</td></tr>\n";
-        }
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>User Account Disabled?</td>\n";
-        if ($post_disabled == "1") {
-            echo "                  <td class=table_rows align=left width=80% style='padding-left:20px;'><input type='radio' name='disabled' value='1'
-                      checked>&nbsp;Yes<input type='radio' name='disabled' value='0'>&nbsp;No</td></tr>\n";
-        } else {
-            echo "                  <td class=table_rows align=left width=80% style='padding-left:20px;'><input type='radio' name='disabled' value='1'>&nbsp;Yes
-                      <input type='radio' name='disabled' value='0' checked>&nbsp;No</td></tr>\n";
-        }
+        echo "        <div class=\"mb-3\">\n";
+        echo "          <label class=\"form-label\">Username</label>\n";
+        echo "          <input type='hidden' name='post_username' value=\"$h_post_username\">\n";
+        echo "          <div class=\"form-control-plaintext\">" . htmlentities($tmp_username) . "</div>\n";
+        echo "        </div>\n";
+        echo "        <div class=\"mb-3\">\n";
+        echo "          <label class=\"form-label\">Display Name <span class=\"text-danger\">*</span></label>\n";
+        echo "          <input type='text' class=\"form-control\" maxlength='50' name='display_name' value=\"$h_display_name\">\n";
+        echo "        </div>\n";
+        echo "        <div class=\"mb-3\">\n";
+        echo "          <label class=\"form-label\">Email Address <span class=\"text-danger\">*</span></label>\n";
+        echo "          <input type='text' class=\"form-control\" maxlength='75' name='email_addy' value='$h_email_addy'>\n";
+        echo "        </div>\n";
+        echo "        <div class=\"mb-3\">\n";
+        echo "          <label class=\"form-label\">Barcode</label>\n";
+        echo "          <input type='text' class=\"form-control\" maxlength='75' name='barcode' value='$h_user_barcode'>\n";
+        echo "        </div>\n";
+        echo "        <div class=\"mb-3\">\n";
+        echo "          <label class=\"form-label\">Office <span class=\"text-danger\">*</span></label>\n";
+        echo "          <select class=\"form-select\" name='office_name' onchange='group_names();'>\n";
+        echo "          </select>\n";
+        echo "        </div>\n";
+        echo "        <div class=\"mb-3\">\n";
+        echo "          <label class=\"form-label\">Group <span class=\"text-danger\">*</span></label>\n";
+        echo "          <select class=\"form-select\" name='group_name' onfocus='group_names();'>\n";
+        echo "            <option selected>" . htmlentities($group_name) . "</option>\n";
+        echo "          </select>\n";
+        echo "        </div>\n";
 
-        echo "              <tr><td class=table_rows align=right colspan=3 style='color:red;font-family:Tahoma;font-size:10px;'>*&nbsp&nbsp;;required</td></tr>\n";
-        echo "            </table>\n";
+        echo "        <div class=\"mb-3\">\n";
+        echo "          <label class=\"form-label d-block\">Sys Admin User?</label>\n";
         if (isset($evil)) {
-            echo "<input type='hidden' name='evil' value='$evil'>\n";
+            echo "          <div class=\"form-check form-check-inline\"><input disabled type='radio' class=\"form-check-input\" name='admin_perms' value='1'
+                    checked id='admin_perms_y'><label class=\"form-check-label\" for='admin_perms_y'>Yes</label></div>\n";
+            echo "          <div class=\"form-check form-check-inline\"><input disabled type='radio' class=\"form-check-input\" name='admin_perms' value='0'
+                    id='admin_perms_n'><label class=\"form-check-label\" for='admin_perms_n'>No</label></div>\n";
+        } elseif ($admin_perms == "1") {
+            echo "          <div class=\"form-check form-check-inline\"><input type='radio' class=\"form-check-input\" name='admin_perms' value='1'
+                    checked id='admin_perms_y'><label class=\"form-check-label\" for='admin_perms_y'>Yes</label></div>\n";
+            echo "          <div class=\"form-check form-check-inline\"><input type='radio' class=\"form-check-input\" name='admin_perms' value='0'
+                    id='admin_perms_n'><label class=\"form-check-label\" for='admin_perms_n'>No</label></div>\n";
+        } else {
+            echo "          <div class=\"form-check form-check-inline\"><input type='radio' class=\"form-check-input\" name='admin_perms' value='1'
+                    id='admin_perms_y'><label class=\"form-check-label\" for='admin_perms_y'>Yes</label></div>\n";
+            echo "          <div class=\"form-check form-check-inline\"><input type='radio' class=\"form-check-input\" name='admin_perms' value='0'
+                    checked id='admin_perms_n'><label class=\"form-check-label\" for='admin_perms_n'>No</label></div>\n";
         }
-        echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
-        echo "              <tr><td height=40>&nbsp;</td></tr>\n";
-        echo "                  <input type='hidden' name='get_office' value='$get_office'>\n";
-        echo "              <tr><td width=30><input type='image' name='submit' value='Edit User' align='middle'
-                      src='../images/buttons/next_button.png'></td><td><a href='useradmin.php'><img src='../images/buttons/cancel_button.png'
-                      border='0'></td></tr></table></form></td></tr>\n";
+        echo "        </div>\n";
+
+        echo "        <div class=\"mb-3\">\n";
+        echo "          <label class=\"form-label d-block\">Time Admin User?</label>\n";
+        if ($time_admin_perms == "1") {
+            echo "          <div class=\"form-check form-check-inline\"><input type='radio' class=\"form-check-input\" name='time_admin_perms' value='1'
+                    checked id='time_admin_perms_y'><label class=\"form-check-label\" for='time_admin_perms_y'>Yes</label></div>\n";
+            echo "          <div class=\"form-check form-check-inline\"><input type='radio' class=\"form-check-input\" name='time_admin_perms' value='0'
+                    id='time_admin_perms_n'><label class=\"form-check-label\" for='time_admin_perms_n'>No</label></div>\n";
+        } else {
+            echo "          <div class=\"form-check form-check-inline\"><input type='radio' class=\"form-check-input\" name='time_admin_perms' value='1'
+                    id='time_admin_perms_y'><label class=\"form-check-label\" for='time_admin_perms_y'>Yes</label></div>\n";
+            echo "          <div class=\"form-check form-check-inline\"><input type='radio' class=\"form-check-input\" name='time_admin_perms' value='0'
+                    checked id='time_admin_perms_n'><label class=\"form-check-label\" for='time_admin_perms_n'>No</label></div>\n";
+        }
+        echo "        </div>\n";
+
+        echo "        <div class=\"mb-3\">\n";
+        echo "          <label class=\"form-label d-block\">Reports User?</label>\n";
+        if ($reports_perms == "1") {
+            echo "          <div class=\"form-check form-check-inline\"><input type='radio' class=\"form-check-input\" name='reports_perms' value='1'
+                    checked id='reports_perms_y'><label class=\"form-check-label\" for='reports_perms_y'>Yes</label></div>\n";
+            echo "          <div class=\"form-check form-check-inline\"><input type='radio' class=\"form-check-input\" name='reports_perms' value='0'
+                    id='reports_perms_n'><label class=\"form-check-label\" for='reports_perms_n'>No</label></div>\n";
+        } else {
+            echo "          <div class=\"form-check form-check-inline\"><input type='radio' class=\"form-check-input\" name='reports_perms' value='1'
+                    id='reports_perms_y'><label class=\"form-check-label\" for='reports_perms_y'>Yes</label></div>\n";
+            echo "          <div class=\"form-check form-check-inline\"><input type='radio' class=\"form-check-input\" name='reports_perms' value='0'
+                    checked id='reports_perms_n'><label class=\"form-check-label\" for='reports_perms_n'>No</label></div>\n";
+        }
+        echo "        </div>\n";
+
+        echo "        <div class=\"mb-3\">\n";
+        echo "          <label class=\"form-label d-block\">User Account Disabled?</label>\n";
+        if ($post_disabled == "1") {
+            echo "          <div class=\"form-check form-check-inline\"><input type='radio' class=\"form-check-input\" name='disabled' value='1'
+                    checked id='disabled_y'><label class=\"form-check-label\" for='disabled_y'>Yes</label></div>\n";
+            echo "          <div class=\"form-check form-check-inline\"><input type='radio' class=\"form-check-input\" name='disabled' value='0'
+                    id='disabled_n'><label class=\"form-check-label\" for='disabled_n'>No</label></div>\n";
+        } else {
+            echo "          <div class=\"form-check form-check-inline\"><input type='radio' class=\"form-check-input\" name='disabled' value='1'
+                    id='disabled_y'><label class=\"form-check-label\" for='disabled_y'>Yes</label></div>\n";
+            echo "          <div class=\"form-check form-check-inline\"><input type='radio' class=\"form-check-input\" name='disabled' value='0'
+                    checked id='disabled_n'><label class=\"form-check-label\" for='disabled_n'>No</label></div>\n";
+        }
+        echo "        </div>\n";
+
+        echo "        <p class=\"small text-muted\">* required</p>\n";
+        if (isset($evil)) {
+            echo "        <input type='hidden' name='evil' value='$evil'>\n";
+        }
+        echo "        <input type='hidden' name='get_office' value='$get_office'>\n";
+        echo "        <button type='submit' class=\"btn btn-primary\" name='submit' value='Edit User'>Edit User</button>\n";
+        echo "        <a href='useradmin.php' class=\"btn btn-outline-secondary\">Cancel</a>\n";
+        echo "      </form>\n";
+        echo "    </div>\n";
+        echo "  </div>\n";
+        echo "</div>\n";
         include_once FOOTER_PHP;
         exit;
     }
@@ -499,68 +416,13 @@ if ($request == 'GET') {
         'disabled'    => $post_disabled
     ), WHERE_EMPFULLNAME, $post_username);
 
-    echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
-    echo "  <tr valign=top>\n";
-    echo "    <td class=left_main width=180 align=left scope=col>\n";
-    echo "      <table class=hide width=100% border=0 cellpadding=1 cellspacing=0>\n";
-    echo "        <tr><td class=left_rows height=11></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle>Users</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/user.png' alt='User Summary' />&nbsp;&nbsp;
-                <a class=admin_headings href='useradmin.php'>User Summary</a></td></tr>\n";
-    echo "        <tr><td class=current_left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Edit User' />
-                &nbsp;&nbsp;<a class=admin_headings href=\"useredit.php?username=$tmp_username&officename=$office_name\">Edit User</a></td></tr>\n";
-    echo "        <tr><td class=left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Change Password' />
-                &nbsp;&nbsp;<a class=admin_headings href=\"chngpasswd.php?username=$tmp_username&officename=$office_name\">Change Password</a></td>
-                </tr>\n";
-    echo "        <tr><td class=left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Delete User' />
-                &nbsp;&nbsp;<a class=admin_headings href=\"userdelete.php?username=$tmp_username&officename=$office_name\">Delete User</a></td></tr>\n";
-    echo "        <tr><td class=left_rows_border_top height=18 align=left valign=middle><img src='../images/icons/user_add.png' alt='Create New User' />
-                &nbsp;&nbsp;<a class=admin_headings href='usercreate.php'>Create New User</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/magnifier.png' alt='User Search' />&nbsp;&nbsp;
-                <a class=admin_headings href='usersearch.php'>User Search</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=33></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle>Offices</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/brick.png' alt='Office Summary' />&nbsp;&nbsp;
-                <a class=admin_headings href='officeadmin.php'>Office Summary</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/brick_add.png' alt='Create New Office' />&nbsp;&nbsp;
-                <a class=admin_headings href='officecreate.php'>Create New Office</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=33></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle>Groups</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/group.png' alt='Group Summary' />&nbsp;&nbsp;
-                <a class=admin_headings href='groupadmin.php'>Group Summary</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/group_add.png' alt='Create New Group' />&nbsp;&nbsp;
-                <a class=admin_headings href='groupcreate.php'>Create New Group</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=33></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle colspan=2>In/Out Status</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application.png' alt='Status Summary' />
-                &nbsp;&nbsp;<a class=admin_headings href='statusadmin.php'>Status Summary</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application_add.png' alt='Create Status' />&nbsp;&nbsp;
-                <a class=admin_headings href='statuscreate.php'>Create Status</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=33></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle colspan=2>Miscellaneous</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/clock.png' alt='Add/Edit/Delete Time' />
-                &nbsp;&nbsp;<a class=admin_headings href='timeadmin.php'>Add/Edit/Delete Time</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application_edit.png' alt='Edit System Settings' />
-                &nbsp;&nbsp;<a class=admin_headings href='sysedit.php'>Edit System Settings</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/database_go.png'
-                alt='Upgrade Database' />&nbsp;&nbsp;&nbsp;<a class=admin_headings href='dbupgrade.php'>Upgrade Database</a></td></tr>\n";
-    echo "      </table></td>\n";
-    echo "    <td align=left class=right_main scope=col>\n";
-    echo "      <table width=100% height=100% border=0 cellpadding=10 cellspacing=1>\n";
-    echo "        <tr class=right_main_text>\n";
-    echo "          <td valign=top>\n";
-    echo "            <br />\n";
-    echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-    echo "              <tr>\n";
-    echo "                <td class=table_rows width=20 align=center><img src='../images/icons/accept.png' /></td>
-                <td class=table_rows_green>&nbsp;User properties updated successfully.</td></tr>\n";
-    echo "            </table>\n";
-    echo "            <br />\n";
-    echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
-    echo "              <tr>\n";
-    echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/user_edit.png' />&nbsp;&nbsp;&nbsp;Edit User</th>\n";
-    echo "              </tr>\n";
-    echo "              <tr><td height=15></td></tr>\n";
+    echo "<div class=\"container-fluid mt-3\">\n";
+    echo "  <div class=\"row\">\n";
+    $admin_leftnav_user_context = array('username' => $tmp_username, 'officename' => $office_name, 'current' => 'useredit.php');
+    include_once 'leftnav_bootstrap.php';
+    echo "    <div class=\"col-md-9\">\n";
+    echo "      <div class=\"alert alert-success\">User properties updated successfully.</div>\n";
+    echo "      <h5><img src='../images/icons/user_edit.png'> Edit User</h5>\n";
 
     $result4 = tc_select(
         "empfullname, displayname, email, barcode, `groups`, office, admin, reports, time_admin, disabled",
@@ -582,52 +444,27 @@ if ($request == 'GET') {
     }
     ((mysqli_free_result($result4) || (is_object($result4) && (get_class($result4) == "mysqli_result"))) ? true : false);
 
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Username:</td><td align=left class=table_rows
-                      colspan=2 width=80% style='padding-left:20px;'>$username</td></tr>\n";
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Display Name:</td><td align=left class=table_rows
-                      colspan=2 width=80% style='padding-left:20px;'>$displayname</td></tr>\n";
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Email Address:</td><td align=left class=table_rows
-                      colspan=2 width=80% style='padding-left:20px;'>$user_email</td></tr>\n";
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Barcode:</td><td align=left class=table_rows
-                      colspan=2 width=80% style='padding-left:20px;'>$user_barcode</td></tr>\n";
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Office:</td><td align=left class=table_rows
-                      colspan=2 width=80% style='padding-left:20px;'>$office</td></tr>\n";
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Group:</td><td align=left class=table_rows
-                      colspan=2 width=80% style='padding-left:20px;'>$groups</td></tr>\n";
-    if ($admin == "1") {
-        $admin = "Yes";
-    } else {
-        $admin = "No";
-    }
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Sys Admin User?</td><td align=left class=table_rows
-                      colspan=2 width=80% style='padding-left:20px;'>$admin</td></tr>\n";
-    if ($time_admin == "1") {
-        $time_admin = "Yes";
-    } else {
-        $time_admin = "No";
-    }
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Time Admin User?</td><td align=left class=table_rows
-                      colspan=2 width=80% style='padding-left:20px;'>$time_admin</td></tr>\n";
-    if ($reports == "1") {
-        $reports = "Yes";
-    } else {
-        $reports = "No";
-    }
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Reports User?</td><td align=left class=table_rows
-                      colspan=2 width=80% style='padding-left:20px;'>$reports</td></tr>\n";
-    if ($disabled == "1") {
-        $disabled = "Yes";
-    } else {
-        $disabled = "No";
-    }
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>User Account Disabled?</td><td align=left
-class=table_rows
-                      colspan=2 width=80% style='padding-left:20px;'>$disabled</td></tr>\n";
-    echo "              <tr><td height=15></td></tr>\n";
-    echo "            </table>\n";
-    echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
-    echo "              <tr><td height=20 align=left>&nbsp;</td></tr>\n";
-    echo "              <tr><td><a href='useradmin.php'><img src='../images/buttons/done_button.png' border='0'></a></td></tr></table></td></tr>\n";
+    echo "      <table class=\"table table-sm table-bordered w-auto\">\n";
+    echo "        <tr><th>Username:</th><td>$username</td></tr>\n";
+    echo "        <tr><th>Display Name:</th><td>$displayname</td></tr>\n";
+    echo "        <tr><th>Email Address:</th><td>$user_email</td></tr>\n";
+    echo "        <tr><th>Barcode:</th><td>$user_barcode</td></tr>\n";
+    echo "        <tr><th>Office:</th><td>$office</td></tr>\n";
+    echo "        <tr><th>Group:</th><td>$groups</td></tr>\n";
+
+    $admin = ($admin == "1") ? "Yes" : "No";
+    echo "        <tr><th>Sys Admin User?</th><td>$admin</td></tr>\n";
+    $time_admin = ($time_admin == "1") ? "Yes" : "No";
+    echo "        <tr><th>Time Admin User?</th><td>$time_admin</td></tr>\n";
+    $reports = ($reports == "1") ? "Yes" : "No";
+    echo "        <tr><th>Reports User?</th><td>$reports</td></tr>\n";
+    $disabled = ($disabled == "1") ? "Yes" : "No";
+    echo "        <tr><th>User Account Disabled?</th><td>$disabled</td></tr>\n";
+    echo "      </table>\n";
+    echo "      <a href='useradmin.php' class=\"btn btn-primary\">Done</a>\n";
+    echo "    </div>\n";
+    echo "  </div>\n";
+    echo "</div>\n";
     include_once FOOTER_PHP;
     exit;
 }
