@@ -411,7 +411,7 @@ if ($request == 'GET') {
         ((mysqli_free_result($result2) || (is_object($result2) && (get_class($result2) == "mysqli_result"))) ? true : false);
 
         echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Notes:</td><td align=left colspan=2 width=80%
-                      style='padding-left:20px;'><input type='text' size='17' maxlength='250' name='post_notes' value='" . htmlspecialchars($post_notes) . "'></td></tr>\n";
+                      style='padding-left:20px;'><input type='text' size='17' maxlength='250' name='post_notes' value='" . htmlspecialchars($post_notes, ENT_QUOTES) . "'></td></tr>\n";
         echo "              <tr><td class=table_rows align=right colspan=3 style='color:red;font-family:Tahoma;font-size:10px;'>*&nbsp;required&nbsp;</td></tr>\n";
         echo "            </table>\n";
         echo "            <div style=\"position:absolute;visibility:hidden;background-color:#ffffff;layer-background-color:#ffffff;\" id=\"mydiv\"
@@ -504,7 +504,7 @@ if ($request == 'GET') {
                 ((mysqli_free_result($result2) || (is_object($result2) && (get_class($result2) == "mysqli_result"))) ? true : false);
 
                 echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Notes:</td><td align=left colspan=2 width=80%
-                      style='padding-left:20px;'><input type='text' size='17' maxlength='250' name='post_notes' value='" . htmlspecialchars($post_notes) . "'></td></tr>\n";
+                      style='padding-left:20px;'><input type='text' size='17' maxlength='250' name='post_notes' value='" . htmlspecialchars($post_notes, ENT_QUOTES) . "'></td></tr>\n";
                 echo "              <tr><td class=table_rows align=right colspan=3 style='color:red;font-family:Tahoma;font-size:10px;'>*&nbsp;required&nbsp;</td></tr>\n";
                 echo "            </table>\n";
                 echo "            <div style=\"position:absolute;visibility:hidden;background-color:#ffffff;layer-background-color:#ffffff;\" id=\"mydiv\"
