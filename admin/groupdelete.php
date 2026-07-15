@@ -7,14 +7,14 @@ $self = htmlentities($_SERVER['PHP_SELF']);
 $request = $_SERVER['REQUEST_METHOD'];
 
 const WHERE_OFFICE_AND_GROUPS = "office = ? and `groups` = ?";
-const FOOTER_PHP = '../footer.php';
+const FOOTER_PHP = 'footer_bootstrap.php';
 const MSG_OFFICE_NOT_DEFINED = "Office name is not defined for this group.\n";
 const MSG_GROUP_NOT_DEFINED = "Group name is not defined for this group.\n";
 
 include_once '../config.inc.php';
 if ($request !== 'POST') {
-    include_once 'header_get.php';
-    include_once 'topmain.php';
+    include_once 'header_get_bootstrap.php';
+    include_once 'topmain_bootstrap.php';
 }
 echo "<title>$title - Delete Group</title>\n";
 
@@ -23,73 +23,30 @@ require_valid_user();
 require_once '../lib/csrf.php';
 
 if ($request == 'GET') {
-    if ((!isset($_GET['groupname'])) && (!isset($_GET['officename']))) {
-        echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
-        echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Error!</td></tr>\n";
-        echo "  <tr class=right_main_text>\n";
-        echo "    <td align=center valign=top scope=row>\n";
-        echo "      <table width=300 border=0 cellpadding=5 cellspacing=0>\n";
-        echo "        <tr class=right_main_text><td align=center>How did you get here?</td></tr>\n";
-        echo "        <tr class=right_main_text><td align=center>Go back to the <a class=admin_headings href='groupadmin.php'>Group Summary</a> page to edit groups.
-            </td></tr>\n";
-        echo "      </table><br /></td></tr></table>\n";
+    if ((!isset($_GET['groupname'])) || (!isset($_GET['officename']))) {
+        echo "<div class=\"container-fluid mt-3\">\n";
+        echo "  <div class=\"alert alert-danger\">\n";
+        echo "    <h5>PHP Timeclock Error!</h5>\n";
+        echo "    <p>How did you get here?</p>\n";
+        echo "    <p>Go back to the <a href='groupadmin.php'>Group Summary</a> page to delete groups.</p>\n";
+        echo "  </div>\n";
+        echo "</div>\n";
+        include_once FOOTER_PHP;
         exit;
     }
 
-    $get_group = htmlentities(get_string('groupname'));
-    $get_office = htmlentities(get_string('officename'));
+    $get_group = get_string('groupname');
+    $get_office = get_string('officename');
+    $h_get_group = htmlentities($get_group);
+    $h_get_office = htmlentities($get_office);
 
-    echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
-    echo "  <tr valign=top>\n";
-    echo "    <td class=left_main width=180 align=left scope=col>\n";
-    echo "      <table class=hide width=100% border=0 cellpadding=1 cellspacing=0>\n";
-
-    // display links in top left of each page //
-
-    echo "        <tr><td class=left_rows height=11></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle>Users</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/user.png' alt='User Summary' />&nbsp;&nbsp;
-                <a class=admin_headings href='useradmin.php'>User Summary</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/user_add.png' alt='Create New User' />&nbsp;&nbsp;
-                <a class=admin_headings href='usercreate.php'>Create New User</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/magnifier.png' alt='User Search' />&nbsp;&nbsp;
-                <a class=admin_headings href='usersearch.php'>User Search</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=33></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle>Offices</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/brick.png' alt='Office Summary' />&nbsp;&nbsp;
-                <a class=admin_headings href='officeadmin.php'>Office Summary</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/brick_add.png' alt='Create New Office' />&nbsp;&nbsp;
-                <a class=admin_headings href='officecreate.php'>Create New Office</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=33></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle>Groups</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/group.png' alt='Group Summary' />&nbsp;&nbsp;
-                <a class=admin_headings href='groupadmin.php'>Group Summary</a></td></tr>\n";
-    echo "        <tr><td class=left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Edit Group' />&nbsp;&nbsp;
-                <a class=admin_headings href=\"groupedit.php?groupname=$get_group&officename=$get_office\">Edit Group</a></td></tr>\n";
-    echo "        <tr><td class=current_left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Delete Group' />
-                &nbsp;&nbsp;<a class=admin_headings href=\"groupdelete.php?groupname=$get_group&officename=$get_office\">Delete Group</a></td></tr>\n";
-    echo "        <tr><td class=left_rows_border_top height=18 align=left valign=middle><img src='../images/icons/group_add.png' alt='Create New Group' />
-                &nbsp;&nbsp;<a class=admin_headings href='groupcreate.php'>Create New Group</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=33></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle colspan=2>In/Out Status</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application.png' alt='Status Summary' />
-                &nbsp;&nbsp;<a class=admin_headings href='statusadmin.php'>Status Summary</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application_add.png' alt='Create Status' />&nbsp;&nbsp;
-                <a class=admin_headings href='statuscreate.php'>Create Status</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=33></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle colspan=2>Miscellaneous</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/clock.png' alt='Add/Edit/Delete Time' />
-                &nbsp;&nbsp;<a class=admin_headings href='timeadmin.php'>Add/Edit/Delete Time</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application_edit.png' alt='Edit System Settings' />
-                &nbsp;&nbsp;<a class=admin_headings href='sysedit.php'>Edit System Settings</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/database_go.png'
-                alt='Upgrade Database' />&nbsp;&nbsp;&nbsp;<a class=admin_headings href='dbupgrade.php'>Upgrade Database</a></td></tr>\n";
-    echo "      </table></td>\n";
-    echo "    <td align=left class=right_main scope=col>\n";
-    echo "      <table width=100% height=100% border=0 cellpadding=10 cellspacing=1>\n";
-    echo "        <tr class=right_main_text>\n";
-    echo "          <td valign=top>\n";
-    echo "            <br />\n";
+    echo "<div class=\"container-fluid mt-3\">\n";
+    echo "  <div class=\"row\">\n";
+    // admin_leftnav_group_context needs raw (unescaped) values -- see the
+    // doc-comment in leftnav_bootstrap.php.
+    $admin_leftnav_group_context = array('groupname' => $get_group, 'officename' => $get_office, 'current' => 'groupdelete.php');
+    include_once 'leftnav_bootstrap.php';
+    echo "    <div class=\"col-md-9\">\n";
 
     $result = tc_select("*", "`groups`, " . $db_prefix . "offices", "officename = ? and groupname = ?", array($get_office, $get_group));
 
@@ -112,68 +69,59 @@ if ($request == 'GET') {
     $result2 = tc_select("*", "employees", WHERE_OFFICE_AND_GROUPS, array($get_office, $get_group));
     @$user_cnt = mysqli_num_rows($result2);
 
+    echo "      <h5><img src='../images/icons/group_delete.png'> Delete Group</h5>\n";
+
     if ($user_cnt > 0) {
-        echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-        echo "              <tr>\n";
-        echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td>";
         if ($user_cnt == 1) {
-            echo "<td class=table_rows_red>This group contains $user_cnt user. This user must be moved to another group before it can be deleted.</td></tr>\n";
+            echo "      <div class=\"alert alert-danger\">This group contains $user_cnt user. This user must be moved to another group
+                    before it can be deleted.</div>\n";
         } else {
-            echo "<td class=table_rows_red>This group contains $user_cnt users. These users must be moved to another group before it can be deleted.</td></tr>\n";
+            echo "      <div class=\"alert alert-danger\">This group contains $user_cnt users. These users must be moved to another
+                    group before it can be deleted.</div>\n";
         }
-        echo "            </table>\n";
-        echo "            <br />\n";
     }
-    echo "            <form name='form' action='$self' method='post'>\n";
+
+    echo "      <form name='form' action='$self' method='post'>\n";
     echo csrf_field() . "\n";
-    echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
-    echo "              <tr>\n";
-    echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/group_delete.png' />&nbsp;&nbsp;&nbsp;Delete Group
-                </th>\n";
-    echo "              </tr>\n";
-    echo "              <tr><td height=15></td></tr>\n";
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Group Name:</td><td align=left width=80%
-                      style='padding-left:20px;' class=table_rows><input type='hidden' name='post_groupname' 
-                      value=\"$groupname\">$get_group</td></tr>\n";
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Parent Office:</td><td align=left width=80%
-                      style='padding-left:20px;' class=table_rows width=66%><input type='hidden' name='post_officename' 
-                      value=\"$officename\">$get_office</td></tr>\n";
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>User Count:</td><td align=left width=80%
-                      style='padding-left:20px;' class=table_rows><input type='hidden' name='user_cnt' 
-                      value=\"$user_cnt\">$user_cnt</td></tr>\n";
-    echo "              <tr><td height=15></td></tr>\n";
-    echo "            </table>\n";
-    echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
+    echo "      <table class=\"table table-sm table-bordered w-auto\">\n";
+    echo "        <tr><th>Group Name:</th><td><input type='hidden' name='post_groupname' value=\"" . htmlentities($groupname) . "\">$h_get_group</td></tr>\n";
+    echo "        <tr><th>Parent Office:</th><td><input type='hidden' name='post_officename' value=\"" . htmlentities($officename) . "\">$h_get_office</td></tr>\n";
+    echo "        <tr><th>User Count:</th><td><input type='hidden' name='user_cnt' value=\"$user_cnt\">$user_cnt</td></tr>\n";
+    echo "      </table>\n";
+
     if ($user_cnt == 0) {
-        echo "              <tr><td height=40></td></tr></table>\n";
-        echo "              <input type='hidden' name='group_name_no_users'>\n";
-        echo "              <input type='hidden' name='office_name_no_users'>\n";
-    } elseif ($user_cnt == 1) {
-        echo "              <tr><td class=table_rows height=53>Move this user to which office?&nbsp;&nbsp;&nbsp;\n";
+        echo "      <input type='hidden' name='group_name_no_users'>\n";
+        echo "      <input type='hidden' name='office_name_no_users'>\n";
     } else {
-        echo "              <tr><td class=table_rows height=53>Move these users to which office?&nbsp;&nbsp;&nbsp;\n";
+        $move_msg = ($user_cnt == 1) ? "Move this user to which office?" : "Move these users to which office?";
+        echo "      <div class=\"mb-3\">\n";
+        echo "        <label class=\"form-label\">$move_msg</label>\n";
+        echo "        <select class=\"form-select\" name='office_name' onchange='group_names();'>\n";
+        echo "        </select>\n";
+        echo "      </div>\n";
+        echo "      <div class=\"mb-3\">\n";
+        echo "        <label class=\"form-label\">Which Group?</label>\n";
+        echo "        <select class=\"form-select\" name='group_name' onfocus='group_names();'>\n";
+        echo "          <option selected></option>\n";
+        echo "        </select>\n";
+        echo "      </div>\n";
     }
 
-    if ($user_cnt > '0') {
-        echo "                <select name='office_name' onchange='group_names();'>\n";
-        echo "                </select>&nbsp;&nbsp;&nbsp;Which Group?\n";
-        echo "                <select name='group_name' onfocus='group_names();'>
-                  <option selected></option>\n";
-        echo "                </select></td></tr></table>\n";
-    }
-
-    echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
-    echo "              <input type='hidden' name='post_officeid' value=\"$officeid\">\n";
-    echo "              <input type='hidden' name='post_groupid' value=\"$groupid\">\n";
-    echo "              <tr><td width=30><input type='image' name='submit' value='Delete Group' src='../images/buttons/next_button.png'></td>
-                  <td><a href='groupadmin.php'><img src='../images/buttons/cancel_button.png' border='0'></td></tr></table></form></td></tr>\n";
+    echo "      <input type='hidden' name='post_officeid' value=\"$officeid\">\n";
+    echo "      <input type='hidden' name='post_groupid' value=\"$groupid\">\n";
+    echo "      <button type='submit' class=\"btn btn-danger\" name='submit' value='Delete Group'>Delete Group</button>\n";
+    echo "      <a href='groupadmin.php' class=\"btn btn-outline-secondary\">Cancel</a>\n";
+    echo "      </form>\n";
+    echo "    </div>\n";
+    echo "  </div>\n";
+    echo "</div>\n";
     include_once FOOTER_PHP;
     exit;
 } elseif ($request == 'POST') {
     require_csrf_token();
 
-    include_once 'header_post.php';
-    include_once 'topmain.php';
+    include_once 'header_post_bootstrap.php';
+    include_once 'topmain_bootstrap.php';
 
     $post_officename = post_string('post_officename');
     $post_officeid = post_string('post_officeid');
@@ -263,146 +211,74 @@ if ($request == 'GET') {
 
     // end post validation //
 
-    $post_officename = htmlentities($post_officename);
-    $post_groupname = htmlentities($post_groupname);
+    $h_post_officename = htmlentities($post_officename);
+    $h_post_groupname = htmlentities($post_groupname);
 
-    echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
-    echo "  <tr valign=top>\n";
-    echo "    <td class=left_main width=180 align=left scope=col>\n";
-    echo "      <table class=hide width=100% border=0 cellpadding=1 cellspacing=0>\n";
+    $evil_delete = ((isset($office_name)) && (empty($office_name))) || ((isset($group_name)) && (empty($group_name))) ||
+        (($group_name == $post_groupname) && ($office_name == $post_officename));
 
-    // display links in top left of each page //
-
-    echo "        <tr><td class=left_rows height=11></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle>Users</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/user.png' alt='User Summary' />&nbsp;&nbsp;
-                <a class=admin_headings href='useradmin.php'>User Summary</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/user_add.png' alt='Create New User' />&nbsp;&nbsp;
-                <a class=admin_headings href='usercreate.php'>Create New User</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/magnifier.png' alt='User Search' />&nbsp;&nbsp;
-                <a class=admin_headings href='usersearch.php'>User Search</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=33></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle>Offices</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/brick.png' alt='Office Summary' />&nbsp;&nbsp;
-                <a class=admin_headings href='officeadmin.php'>Office Summary</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/brick_add.png' alt='Create New Office' />&nbsp;&nbsp;
-                <a class=admin_headings href='officecreate.php'>Create New Office</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=33></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle>Groups</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/group.png' alt='Group Summary' />&nbsp;&nbsp;
-                <a class=admin_headings href='groupadmin.php'>Group Summary</a></td></tr>\n";
-
-    if (
-        ((isset($office_name)) && (empty($office_name))) || ((isset($group_name)) && (empty($group_name))) ||
-        (($group_name == $post_groupname) && ($office_name == $post_officename))
-    ) {
-        echo "        <tr><td class=left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Edit Group' />&nbsp;&nbsp;
-                <a class=admin_headings href=\"groupedit.php?groupname=$post_groupname&officename=$post_officename\">Edit Group</a></td></tr>\n";
-        echo "        <tr><td class=current_left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Delete Group' />
-                &nbsp;&nbsp;<a class=admin_headings href=\"groupdelete.php?groupname=$post_groupname&officename=$post_officename\">Delete Group</a></td>
-                </tr>\n";
+    echo "<div class=\"container-fluid mt-3\">\n";
+    echo "  <div class=\"row\">\n";
+    if ($evil_delete) {
+        // admin_leftnav_group_context needs raw (unescaped) values -- see the
+        // doc-comment in leftnav_bootstrap.php. The group still exists (the
+        // delete was rejected), so its Edit/Delete sub-links stay live.
+        $admin_leftnav_group_context = array('groupname' => $post_groupname, 'officename' => $post_officename, 'current' => 'groupdelete.php');
+        include_once 'leftnav_bootstrap.php';
     } else {
-        echo "        <tr><td class=left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Edit Group' />&nbsp;&nbsp;
-                Edit Group</td></tr>\n";
-        echo "        <tr><td class=current_left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Delete Group' />
-                &nbsp;&nbsp;Delete Group</td></tr>\n";
+        // The group no longer exists after a successful delete -- fall back
+        // to the plain sidebar instead of linking to a now-dead group.
+        $admin_leftnav_current = 'groupadmin.php';
+        include_once 'leftnav_bootstrap.php';
     }
+    echo "    <div class=\"col-md-9\">\n";
 
-    echo "        <tr><td class=left_rows_border_top height=18 align=left valign=middle><img src='../images/icons/group_add.png' alt='Create New Group' />
-                &nbsp;&nbsp;<a class=admin_headings href='groupcreate.php'>Create New Group</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=33></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle colspan=2>In/Out Status</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application.png' alt='Status Summary' />
-                &nbsp;&nbsp;<a class=admin_headings href='statusadmin.php'>Status Summary</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application_add.png' alt='Create Status' />&nbsp;&nbsp;
-                <a class=admin_headings href='statuscreate.php'>Create Status</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=33></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle colspan=2>Miscellaneous</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/clock.png' alt='Add/Edit/Delete Time' />
-                &nbsp;&nbsp;<a class=admin_headings href='timeadmin.php'>Add/Edit/Delete Time</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application_edit.png' alt='Edit System Settings' />
-                &nbsp;&nbsp;<a class=admin_headings href='sysedit.php'>Edit System Settings</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/database_go.png'
-                alt='Upgrade Database' />&nbsp;&nbsp;&nbsp;<a class=admin_headings href='dbupgrade.php'>Upgrade Database</a></td></tr>\n";
-    echo "      </table></td>\n";
-    echo "    <td align=left class=right_main scope=col>\n";
-    echo "      <table width=100% height=100% border=0 cellpadding=10 cellspacing=1>\n";
-    echo "        <tr class=right_main_text>\n";
-    echo "          <td valign=top>\n";
-    echo "            <br />\n";
-    echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-    echo "              <tr>\n";
+    echo "      <h5><img src='../images/icons/group_delete.png'> Delete Group</h5>\n";
 
-    if (
-        ((isset($office_name)) && (empty($office_name))) || ((isset($group_name)) && (empty($group_name))) ||
-        (($group_name == $post_groupname) && ($office_name == $post_officename))
-    ) {
-        echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td>\n";
-    } else {
-        echo "                <td class=table_rows width=20 align=center><img src='../images/icons/accept.png' /></td><td class=table_rows_green>Group
-                    deleted successfully.</td></tr></table>\n";
-    }
-
-    if (((isset($office_name)) && (empty($office_name))) || ((isset($group_name)) && (empty($group_name)))) {
-        echo "                <td class=table_rows_red>To delete this group, you must choose to move its' current users to another
-                      office <b>AND/OR</b> group.</td></tr></table>\n";
-    } elseif (($group_name == $post_groupname) && ($office_name == $post_officename)) {
-        echo "                <td class=table_rows_red>To delete this group, you must choose to move its' current users to <b>ANOTHER</b>
-                      group.</td></tr></table>\n";
-    }
-
-    echo "            <br />\n";
-    echo "            <form name='form' action='$self' method='post'>\n";
-    echo csrf_field() . "\n";
-    echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
-    echo "              <tr>\n";
-    echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/group_delete.png' />&nbsp;&nbsp;&nbsp;Delete Group
-              </th>\n";
-    echo "              </tr>\n";
-    echo "              <tr><td height=15></td></tr>\n";
-
-    if (
-        ((isset($office_name)) && (empty($office_name))) || ((isset($group_name)) && (empty($group_name))) ||
-        (($group_name == $post_groupname) && ($office_name == $post_officename))
-    ) {
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Group Name:</td><td align=left width=80%
-                      style='padding-left:20px;' class=table_rows><input type='hidden' name='post_groupname' 
-                      value=\"$post_groupname\">$post_groupname</td></tr>\n";
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Parent Office:</td><td align=left width=80%
-                      style='padding-left:20px;' class=table_rows><input type='hidden' name='post_officename' 
-                      value=\"$post_officename\">$post_officename</td></tr>\n";
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>User Count:</td><td align=left width=80%
-                      style='padding-left:20px;' class=table_rows><input type='hidden' name='user_cnt' 
-                      value=\"$user_cnt\">$user_cnt</td></tr>\n";
-        echo "              <tr><td height=15></td></tr>\n";
-        echo "            </table>\n";
-        echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
-
-        if ($user_cnt == 0) {
-            echo "              <tr><td height=40></td>\n";
-        } elseif ($user_cnt == 1) {
-            echo "              <tr><td class=table_rows height=53>Move this user to which office?&nbsp;&nbsp;&nbsp;\n";
-        } else {
-            echo "              <tr><td class=table_rows height=53>Move these users to which office?&nbsp;&nbsp;&nbsp;\n";
+    if ($evil_delete) {
+        if (((isset($office_name)) && (empty($office_name))) || ((isset($group_name)) && (empty($group_name)))) {
+            echo "      <div class=\"alert alert-danger\">To delete this group, you must choose to move its' current users to
+                    another office <b>AND/OR</b> group.</div>\n";
+        } elseif (($group_name == $post_groupname) && ($office_name == $post_officename)) {
+            echo "      <div class=\"alert alert-danger\">To delete this group, you must choose to move its' current users to
+                    <b>ANOTHER</b> group.</div>\n";
         }
 
-        if ($user_cnt > '0') {
-            echo "                <select name='office_name' onchange='group_names();'>\n";
-            echo "                </select>&nbsp;&nbsp;&nbsp;Which Group?\n";
-            echo "                <select name='group_name' onfocus='group_names();'>
-                  <option selected></option>\n";
-            echo "                </select></td></tr></table>\n";
+        echo "      <form name='form' action='$self' method='post'>\n";
+        echo csrf_field() . "\n";
+        echo "      <table class=\"table table-sm table-bordered w-auto\">\n";
+        echo "        <tr><th>Group Name:</th><td><input type='hidden' name='post_groupname' value=\"$h_post_groupname\">$h_post_groupname</td></tr>\n";
+        echo "        <tr><th>Parent Office:</th><td><input type='hidden' name='post_officename' value=\"$h_post_officename\">$h_post_officename</td></tr>\n";
+        echo "        <tr><th>User Count:</th><td><input type='hidden' name='user_cnt' value=\"$user_cnt\">$user_cnt</td></tr>\n";
+        echo "      </table>\n";
+
+        if ($user_cnt > 0) {
+            $move_msg = ($user_cnt == 1) ? "Move this user to which office?" : "Move these users to which office?";
+            echo "      <div class=\"mb-3\">\n";
+            echo "        <label class=\"form-label\">$move_msg</label>\n";
+            echo "        <select class=\"form-select\" name='office_name' onchange='group_names();'>\n";
+            echo "        </select>\n";
+            echo "      </div>\n";
+            echo "      <div class=\"mb-3\">\n";
+            echo "        <label class=\"form-label\">Which Group?</label>\n";
+            echo "        <select class=\"form-select\" name='group_name' onfocus='group_names();'>\n";
+            echo "          <option selected></option>\n";
+            echo "        </select>\n";
+            echo "      </div>\n";
         }
 
-        echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
-        echo "              <input type='hidden' name='post_officeid' value=\"$post_officeid\">\n";
-        echo "              <input type='hidden' name='post_groupid' value=\"$post_groupid\">\n";
-        echo "              <tr><td width=30><input type='image' name='submit' value='Delete Group' src='../images/buttons/next_button.png'></td>
-                  <td><a href='groupadmin.php'><img src='../images/buttons/cancel_button.png' border='0'></td></tr></table></form></td></tr>\n";
+        echo "      <input type='hidden' name='post_officeid' value=\"$post_officeid\">\n";
+        echo "      <input type='hidden' name='post_groupid' value=\"$post_groupid\">\n";
+        echo "      <button type='submit' class=\"btn btn-danger\" name='submit' value='Delete Group'>Delete Group</button>\n";
+        echo "      <a href='groupadmin.php' class=\"btn btn-outline-secondary\">Cancel</a>\n";
+        echo "      </form>\n";
+        echo "    </div>\n";
+        echo "  </div>\n";
+        echo "</div>\n";
         include_once FOOTER_PHP;
         exit;
     } else {
-        if ($user_cnt > '0') {
+        if ($user_cnt > 0) {
             tc_update_strings(
                 "employees",
                 array("office" => $office_name, "groups" => $group_name),
@@ -413,17 +289,16 @@ if ($request == 'GET') {
 
         tc_delete("groups", "groupid = ?", $post_groupid);
 
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Group Name:</td><td align=left width=80%
-                      style='padding-left:20px;' class=table_rows>$post_groupname</td></tr>\n";
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Parent Office:</td><td align=left width=80%
-                      style='padding-left:20px;' class=table_rows>$post_officename</td></tr>\n";
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>User Count:</td><td align=left width=80%
-                      style='padding-left:20px;' class=table_rows>$user_cnt</td></tr>\n";
-        echo "              <tr><td height=15></td></tr>\n";
-        echo "            </table>\n";
-        echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
-        echo "              <tr><td height=20 align=left>&nbsp;</td></tr>\n";
-        echo "              <tr><td><a href='groupadmin.php'><img src='../images/buttons/done_button.png' border='0'></td></tr></table></td></tr>\n";
+        echo "      <div class=\"alert alert-success\">Group deleted successfully.</div>\n";
+        echo "      <table class=\"table table-sm table-bordered w-auto\">\n";
+        echo "        <tr><th>Group Name:</th><td>$h_post_groupname</td></tr>\n";
+        echo "        <tr><th>Parent Office:</th><td>$h_post_officename</td></tr>\n";
+        echo "        <tr><th>User Count:</th><td>$user_cnt</td></tr>\n";
+        echo "      </table>\n";
+        echo "      <a href='groupadmin.php' class=\"btn btn-primary\">Done</a>\n";
+        echo "    </div>\n";
+        echo "  </div>\n";
+        echo "</div>\n";
         include_once FOOTER_PHP;
         exit;
     }
