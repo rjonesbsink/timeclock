@@ -4,13 +4,13 @@ require_once '../lib/session.php';
 start_secure_session();
 
 include_once '../config.inc.php';
-include_once 'header.php';
-include_once 'topmain.php';
+include_once 'header_bootstrap.php';
+include_once 'topmain_bootstrap.php';
 echo "<title>$title - Create Office</title>\n";
 
 $self = htmlentities($_SERVER['PHP_SELF']);
 $request = $_SERVER['REQUEST_METHOD'];
-const FOOTER_PHP = '../footer.php';
+const FOOTER_PHP = 'footer_bootstrap.php';
 const OFFICENAME_PATTERN = "^([[:alnum:]]| |-|_|\.)+$";
 
 require_once '../lib/auth.php';
@@ -18,75 +18,38 @@ require_valid_user();
 require_once '../lib/csrf.php';
 
 if ($request == 'GET') {
-    echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
-    echo "  <tr valign=top>\n";
-    echo "    <td class=left_main width=180 align=left scope=col>\n";
-    echo "      <table class=hide width=100% border=0 cellpadding=1 cellspacing=0>\n";
-    echo "        <tr><td class=left_rows height=11></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle>Users</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/user.png' alt='User Summary' />&nbsp;&nbsp;
-                <a class=admin_headings href='useradmin.php'>User Summary</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/user_add.png' alt='Create New User' />
-                &nbsp;&nbsp;<a class=admin_headings href='usercreate.php'>Create New User</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/magnifier.png' alt='User Search' />&nbsp;&nbsp;
-                <a class=admin_headings href='usersearch.php'>User Search</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=33></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle>Offices</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/brick.png' alt='Office Summary' />&nbsp;&nbsp;
-                <a class=admin_headings href='officeadmin.php'>Office Summary</a></td></tr>\n";
-    echo "        <tr><td class=current_left_rows height=18 align=left valign=middle><img src='../images/icons/brick_add.png' alt='Create New Office' />
-                &nbsp;&nbsp;<a class=admin_headings href='officecreate.php'>Create New Office</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=33></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle>Groups</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/group.png' alt='Group Summary' />&nbsp;&nbsp;
-                <a class=admin_headings href='groupadmin.php'>Group Summary</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/group_add.png' alt='Create New Group' />&nbsp;&nbsp;
-                <a class=admin_headings href='groupcreate.php'>Create New Group</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=33></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle colspan=2>In/Out Status</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application.png' alt='Status Summary' />
-                &nbsp;&nbsp;<a class=admin_headings href='statusadmin.php'>Status Summary</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application_add.png' alt='Create Status' />&nbsp;&nbsp;
-                <a class=admin_headings href='statuscreate.php'>Create Status</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=33></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle colspan=2>Miscellaneous</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/clock.png' alt='Add/Edit/Delete Time' />
-                &nbsp;&nbsp;<a class=admin_headings href='timeadmin.php'>Add/Edit/Delete Time</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application_edit.png' alt='Edit System Settings' />
-                &nbsp;&nbsp;<a class=admin_headings href='sysedit.php'>Edit System Settings</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/database_go.png'
-                alt='Upgrade Database' />&nbsp;&nbsp;&nbsp;<a class=admin_headings href='dbupgrade.php'>Upgrade Database</a></td></tr>\n";
-    echo "      </table></td>\n";
-    echo "    <td align=left class=right_main scope=col>\n";
-    echo "      <table width=100% height=100% border=0 cellpadding=10 cellspacing=1>\n";
-    echo "        <tr class=right_main_text>\n";
-    echo "          <td valign=top>\n";
-    echo "            <br />\n";
-    echo "            <form name='form' action='$self' method='post'>\n";
+    echo "<div class=\"container-fluid mt-3\">\n";
+    echo "  <div class=\"row\">\n";
+    $admin_leftnav_current = 'officecreate.php';
+    include_once 'leftnav_bootstrap.php';
+    echo "    <div class=\"col-md-9\">\n";
+    echo "      <h5><img src='../images/icons/brick_add.png'> Create Office</h5>\n";
+    echo "      <form name='form' action='$self' method='post'>\n";
     echo csrf_field() . "\n";
-    echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
-    echo "              <tr>\n";
-    echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/brick_add.png' />&nbsp;&nbsp;&nbsp;Create Office
-                </th></tr>\n";
-    echo "              <tr><td height=15></td></tr>\n";
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Office Name:</td><td colspan=2 width=80%
-                      style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
-                      <input type='text' size='25' maxlength='50' name='post_officename'>&nbsp;*</td></tr>\n";
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Create Groups Within This Office?</td>\n";
-    echo "                  <td class=table_rows align=left width=80% style='padding-left:20px;'><input type='radio' name='create_groups' value='1'
-                      onFocus=\"javascript:form.how_many.disabled=false;form.how_many.style.background='#ffffff';\">Yes
-                      <input checked type='radio' name='create_groups' value='0'
-                      onFocus=\"javascript:form.how_many.disabled=true;form.how_many.style.background='#eeeeee';\">No</td></tr>\n";
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>How Many?</td><td colspan=2 width=80%
-                      style='padding-left:20px;'>
-                      <input disabled type='text' size='2' maxlength='1' name='how_many' style='background:#eeeeee;'></td></tr>\n";
-    echo "              <tr><td class=table_rows align=right colspan=3 style='color:red;font-family:Tahoma;font-size:10px;'>*&nbsp;required&nbsp;</td></tr>\n";
-    echo "            </table>\n";
-    echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
-    echo "              <tr><td height=40>&nbsp;</td></tr>\n";
-    echo "              <tr><td width=30><input type='image' name='submit' value='Create Office' align='middle'
-                      src='../images/buttons/next_button.png'></td><td><a href='officeadmin.php'><img src='../images/buttons/cancel_button.png' 
-                      border='0'></td></tr></table></form></td></tr>\n";
+    echo "        <div class=\"mb-3\">\n";
+    echo "          <label class=\"form-label\">Office Name <span class=\"text-danger\">*</span></label>\n";
+    echo "          <input type='text' class=\"form-control\" maxlength='50' name='post_officename'>\n";
+    echo "        </div>\n";
+    echo "        <div class=\"mb-3\">\n";
+    echo "          <label class=\"form-label d-block\">Create Groups Within This Office?</label>\n";
+    echo "          <div class=\"form-check form-check-inline\"><input type='radio' class=\"form-check-input\" name='create_groups' value='1' id='create_groups_y'
+                onFocus=\"javascript:form.how_many.disabled=false;form.how_many.style.background='#ffffff';\">
+                <label class=\"form-check-label\" for='create_groups_y'>Yes</label></div>\n";
+    echo "          <div class=\"form-check form-check-inline\"><input checked type='radio' class=\"form-check-input\" name='create_groups' value='0' id='create_groups_n'
+                onFocus=\"javascript:form.how_many.disabled=true;form.how_many.style.background='#eeeeee';\">
+                <label class=\"form-check-label\" for='create_groups_n'>No</label></div>\n";
+    echo "        </div>\n";
+    echo "        <div class=\"mb-3\">\n";
+    echo "          <label class=\"form-label\">How Many?</label>\n";
+    echo "          <input disabled type='text' class=\"form-control\" size='2' maxlength='1' name='how_many' style='background:#eeeeee;'>\n";
+    echo "        </div>\n";
+    echo "        <p class=\"small text-muted\">* required</p>\n";
+    echo "        <button type='submit' class=\"btn btn-primary\" name='submit' value='Create Office'>Create Office</button>\n";
+    echo "        <a href='officeadmin.php' class=\"btn btn-outline-secondary\">Cancel</a>\n";
+    echo "      </form>\n";
+    echo "    </div>\n";
+    echo "  </div>\n";
+    echo "</div>\n";
     include_once FOOTER_PHP;
     exit;
 } elseif ($request == 'POST') {
@@ -117,50 +80,11 @@ if ($request == 'GET') {
         $how_many = '';
     }
 
-    echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
-    echo "  <tr valign=top>\n";
-    echo "    <td class=left_main width=180 align=left scope=col>\n";
-    echo "      <table class=hide width=100% border=0 cellpadding=1 cellspacing=0>\n";
-    echo "        <tr><td class=left_rows height=11></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle>Users</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/user.png' alt='User Summary' />&nbsp;&nbsp;
-                <a class=admin_headings href='useradmin.php'>User Summary</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/user_add.png' alt='Create New User' />
-                &nbsp;&nbsp;<a class=admin_headings href='usercreate.php'>Create New User</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/magnifier.png' alt='User Search' />&nbsp;&nbsp;
-                <a class=admin_headings href='usersearch.php'>User Search</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=33></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle>Offices</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/brick.png' alt='Office Summary' />&nbsp;&nbsp;
-                <a class=admin_headings href='officeadmin.php'>Office Summary</a></td></tr>\n";
-    echo "        <tr><td class=current_left_rows height=18 align=left valign=middle><img src='../images/icons/brick_add.png' alt='Create New Office' />
-                &nbsp;&nbsp;<a class=admin_headings href='officecreate.php'>Create New Office</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=33></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle>Groups</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/group.png' alt='Group Summary' />&nbsp;&nbsp;
-                <a class=admin_headings href='groupadmin.php'>Group Summary</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/group_add.png' alt='Create New Group' />&nbsp;&nbsp;
-                <a class=admin_headings href='groupcreate.php'>Create New Group</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=33></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle colspan=2>In/Out Status</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application.png' alt='Status Summary' />
-                &nbsp;&nbsp;<a class=admin_headings href='statusadmin.php'>Status Summary</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application_add.png' alt='Create Status' />&nbsp;&nbsp;
-                <a class=admin_headings href='statuscreate.php'>Create Status</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=33></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle colspan=2>Miscellaneous</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/clock.png' alt='Add/Edit/Delete Time' />
-                &nbsp;&nbsp;<a class=admin_headings href='timeadmin.php'>Add/Edit/Delete Time</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application_edit.png' alt='Edit System Settings' />
-                &nbsp;&nbsp;<a class=admin_headings href='sysedit.php'>Edit System Settings</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/database_go.png'
-                alt='Upgrade Database' />&nbsp;&nbsp;&nbsp;<a class=admin_headings href='dbupgrade.php'>Upgrade Database</a></td></tr>\n";
-    echo "      </table></td>\n";
-    echo "    <td align=left class=right_main scope=col>\n";
-    echo "      <table width=100% height=100% border=0 cellpadding=10 cellspacing=1>\n";
-    echo "        <tr class=right_main_text>\n";
-    echo "          <td valign=top>\n";
-    echo "            <br />\n";
+    echo "<div class=\"container-fluid mt-3\">\n";
+    echo "  <div class=\"row\">\n";
+    $admin_leftnav_current = 'officecreate.php';
+    include_once 'leftnav_bootstrap.php';
+    echo "    <div class=\"col-md-9\">\n";
 
     $post_officename = addslashes($post_officename);
 
@@ -181,61 +105,26 @@ if ($request == 'GET') {
         (!empty($string)) || (!empty($string2))
     ) {
         if (empty($post_officename)) {
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr>\n";
-            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    An Office Name is required.</td></tr>\n";
-            echo "            </table>\n";
+            echo "      <div class=\"alert alert-danger\">An Office Name is required.</div>\n";
         } elseif (!empty($string)) {
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr>\n";
-            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    Apostrohpes are not allowed when creating an Office Name.</td></tr>\n";
-            echo "            </table>\n";
+            echo "      <div class=\"alert alert-danger\">Apostrohpes are not allowed when creating an Office Name.</div>\n";
         } elseif (!empty($string2)) {
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr>\n";
-            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    Double Quotes are not allowed when creating an Office Name.</td></tr>\n";
-            echo "            </table>\n";
+            echo "      <div class=\"alert alert-danger\">Double Quotes are not allowed when creating an Office Name.</div>\n";
         } elseif ($office_name_exists) {
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr>\n";
-            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    Office already exists. Create another office.</td></tr>\n";
-            echo "            </table>\n";
+            echo "      <div class=\"alert alert-danger\">Office already exists. Create another office.</div>\n";
         } elseif (!preg_match('/' . OFFICENAME_PATTERN . '/i', $post_officename)) {
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr>\n";
-            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    Alphanumeric characters, hyphens, underscores, spaces, and periods are allowed when creating an Office Name.</td></tr>\n";
-            echo "            </table>\n";
+            echo "      <div class=\"alert alert-danger\">Alphanumeric characters, hyphens, underscores, spaces, and periods are allowed
+                    when creating an Office Name.</div>\n";
         } elseif (($create_groups == '1') && (empty($how_many))) {
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr>\n";
-            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    Please input the number of groups you wish to create within this new office.</td></tr>\n";
-            echo "            </table>\n";
+            echo "      <div class=\"alert alert-danger\">Please input the number of groups you wish to create within this new office.</div>\n";
         } elseif (($create_groups == '1') && ($how_many == '0')) {
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr>\n";
-            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    You have chosen to create groups within this new office. Please input a number other than '0' for 'How Many?'.</td></tr>\n";
-            echo "            </table>\n";
+            echo "      <div class=\"alert alert-danger\">You have chosen to create groups within this new office. Please input a number
+                    other than '0' for 'How Many?'.</div>\n";
         } elseif (!preg_match('/' . "^([0-9])$" . '/i', $how_many)) {
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr>\n";
-            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    Only numeric characters are allowed for an office count.</td></tr>\n";
-            echo "            </table>\n";
+            echo "      <div class=\"alert alert-danger\">Only numeric characters are allowed for an office count.</div>\n";
         } elseif (($create_groups != '1') && (!empty($create_groups))) {
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr>\n";
-            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    Choose \"yes\" or \"no\" to the <i>Create Groups Within This Office</i> question.</td></tr>\n";
-            echo "            </table>\n";
+            echo "      <div class=\"alert alert-danger\">Choose \"yes\" or \"no\" to the <i>Create Groups Within This Office</i> question.</div>\n";
         }
-        echo "            <br />\n";
 
         if (!empty($string)) {
             $post_officename = stripslashes($post_officename);
@@ -244,17 +133,12 @@ if ($request == 'GET') {
             $post_officename = stripslashes($post_officename);
         }
 
-        echo "            <form name='form' action='$self' method='post'>\n";
+        echo "      <form name='form' action='$self' method='post'>\n";
         echo csrf_field() . "\n";
-        echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
-        echo "              <tr>\n";
-        echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/brick_add.png' />&nbsp;&nbsp;&nbsp;Create Office
-                </th>\n";
-        echo "              </tr>\n";
-        echo "              <tr><td height=15></td></tr>\n";
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Office Name:</td><td colspan=2 width=80%
-                      style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
-                      <input type='text' size='25' maxlength='50' name='post_officename' value=\"" . htmlentities($post_officename) . "\">&nbsp;*</td></tr>\n";
+        echo "        <div class=\"mb-3\">\n";
+        echo "          <label class=\"form-label\">Office Name <span class=\"text-danger\">*</span></label>\n";
+        echo "          <input type='text' class=\"form-control\" maxlength='50' name='post_officename' value=\"" . htmlentities($post_officename) . "\">\n";
+        echo "        </div>\n";
 
         if (!empty($string)) {
             $post_officename = addslashes($post_officename);
@@ -263,35 +147,41 @@ if ($request == 'GET') {
             $post_officename = addslashes($post_officename);
         }
 
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Create Groups Within This Office?</td>\n";
+        echo "        <div class=\"mb-3\">\n";
+        echo "          <label class=\"form-label d-block\">Create Groups Within This Office?</label>\n";
         if ($create_groups == '1') {
-            echo "                  <td class=table_rows align=left width=80% style='padding-left:20px;'><input type='radio' name='create_groups' value='1' checked
-                      onFocus=\"javascript:form.how_many.disabled=false;form.how_many.style.background='#ffffff';\">Yes
-                      <input type='radio' name='create_groups' value='0'
-                      onFocus=\"javascript:form.how_many.disabled=true;form.how_many.style.background='#eeeeee';\">No</td></tr>\n";
+            echo "          <div class=\"form-check form-check-inline\"><input type='radio' class=\"form-check-input\" name='create_groups' value='1' checked
+                    id='create_groups_y' onFocus=\"javascript:form.how_many.disabled=false;form.how_many.style.background='#ffffff';\">
+                    <label class=\"form-check-label\" for='create_groups_y'>Yes</label></div>\n";
+            echo "          <div class=\"form-check form-check-inline\"><input type='radio' class=\"form-check-input\" name='create_groups' value='0'
+                    id='create_groups_n' onFocus=\"javascript:form.how_many.disabled=true;form.how_many.style.background='#eeeeee';\">
+                    <label class=\"form-check-label\" for='create_groups_n'>No</label></div>\n";
         } else {
-            echo "                  <td class=table_rows align=left width=80% style='padding-left:20px;'><input type='radio' name='create_groups' value='1'
-                      onFocus=\"javascript:form.how_many.disabled=false;form.how_many.style.background='#ffffff';\">Yes
-                      <input checked type='radio' name='create_groups' value='0'
-                      onFocus=\"javascript:form.how_many.disabled=true;form.how_many.style.background='#eeeeee';\">No</td></tr>\n";
+            echo "          <div class=\"form-check form-check-inline\"><input type='radio' class=\"form-check-input\" name='create_groups' value='1'
+                    id='create_groups_y' onFocus=\"javascript:form.how_many.disabled=false;form.how_many.style.background='#ffffff';\">
+                    <label class=\"form-check-label\" for='create_groups_y'>Yes</label></div>\n";
+            echo "          <div class=\"form-check form-check-inline\"><input checked type='radio' class=\"form-check-input\" name='create_groups' value='0'
+                    id='create_groups_n' onFocus=\"javascript:form.how_many.disabled=true;form.how_many.style.background='#eeeeee';\">
+                    <label class=\"form-check-label\" for='create_groups_n'>No</label></div>\n";
         }
+        echo "        </div>\n";
 
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>How Many?</td><td colspan=2 width=80%
-                      style='padding-left:20px;'>\n";
-
+        echo "        <div class=\"mb-3\">\n";
+        echo "          <label class=\"form-label\">How Many?</label>\n";
         if ($create_groups == '1') {
-            echo "                      <input type='text' size='2' maxlength='1' name='how_many' value='$how_many'></td></tr>\n";
+            echo "          <input type='text' class=\"form-control\" size='2' maxlength='1' name='how_many' value='$how_many'>\n";
         } else {
-            echo "                      <input disabled type='text' size='2' maxlength='1' name='how_many' style='background:#eeeeee;' value='$how_many'></td></tr>\n";
+            echo "          <input disabled type='text' class=\"form-control\" size='2' maxlength='1' name='how_many' style='background:#eeeeee;' value='$how_many'>\n";
         }
+        echo "        </div>\n";
 
-        echo "              <tr><td class=table_rows align=right colspan=3 style='color:red;font-family:Tahoma;font-size:10px;'>*&nbsp;required&nbsp;</td></tr>\n";
-        echo "            </table>\n";
-        echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
-        echo "              <tr><td height=40>&nbsp;</td></tr>\n";
-        echo "              <tr><td width=30><input type='image' name='submit' value='Create Office' align='middle'
-                      src='../images/buttons/next_button.png'></td><td><a href='officeadmin.php'><img src='../images/buttons/cancel_button.png' 
-                      border='0'></td></tr></table></form></td></tr>\n";
+        echo "        <p class=\"small text-muted\">* required</p>\n";
+        echo "        <button type='submit' class=\"btn btn-primary\" name='submit' value='Create Office'>Create Office</button>\n";
+        echo "        <a href='officeadmin.php' class=\"btn btn-outline-secondary\">Cancel</a>\n";
+        echo "      </form>\n";
+        echo "    </div>\n";
+        echo "  </div>\n";
+        echo "</div>\n";
         include_once FOOTER_PHP;
         exit;
     }
@@ -324,95 +214,68 @@ if ($request == 'GET') {
                 tc_insert_strings("groups", array("groupname" => $input_group_name[$y], "officeid" => $tmp_officeid));
             }
 
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr>\n";
-            echo "              <td class=table_rows width=20 align=center><img src='../images/icons/accept.png' /></td><td class=table_rows_green>
-                  &nbsp;Office created successfully.</td></tr>\n";
-            echo "            </table>\n";
-            echo "            <br />\n";
+            echo "      <div class=\"alert alert-success\">Office created successfully.</div>\n";
         }
 
-        echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
-        echo "            <form name='form' action='$self' method='post'>\n";
+        echo "      <form name='form' action='$self' method='post'>\n";
         echo csrf_field() . "\n";
-        echo "              <tr>\n";
-        echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/brick_add.png' />&nbsp;&nbsp;&nbsp;Create Office
-                </th>\n";
-        echo "              </tr>\n";
-        echo "              <tr><td height=15></td></tr>\n";
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Office Name:</td><td class=table_rows colspan=2
-                      width=80% style='padding-left:20px;'>
-                      <input type='hidden' name='post_officename' value='" . htmlentities($post_officename) . "'>" . htmlentities($post_officename) . "</td></tr>\n";
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Create Groups Within This Office?</td><td
-                      class=table_rows colspan=2 width=80% style='padding-left:20px;'>
-                      <input type='hidden' name='create_groups' value='" . htmlentities($create_groups) . "'>" . htmlentities($create_groups) . "</td></tr>\n";
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>How Many?</td><td class=table_rows colspan=2
-                      width=80% style='padding-left:20px;'>
-                      <input type='hidden' name='how_many' value='$how_many'>$how_many</td></tr>\n";
-        echo "              <tr><td height=15></td></tr>\n";
-        echo "            </table>\n";
-        echo "            <br /><br />\n";
+        echo "      <table class=\"table table-sm table-bordered w-auto\">\n";
+        echo "        <tr><th>Office Name:</th><td><input type='hidden' name='post_officename' value=\"" . htmlentities($post_officename) . "\">"
+            . htmlentities($post_officename) . "</td></tr>\n";
+        echo "        <tr><th>Create Groups Within This Office?</th><td><input type='hidden' name='create_groups' value=\""
+            . htmlentities($create_groups) . "\">" . htmlentities($create_groups) . "</td></tr>\n";
+        echo "        <tr><th>How Many?</th><td><input type='hidden' name='how_many' value='$how_many'>$how_many</td></tr>\n";
+        echo "      </table>\n";
 
         if (@$empty_groupname == '1') {
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr>\n";
-            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    A Group Name is required.</td></tr>\n";
-            echo "            </table>\n";
+            echo "      <div class=\"alert alert-danger\">A Group Name is required.</div>\n";
         } elseif (@$evil_groupname == '1') {
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr>\n";
-            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    Alphanumeric characters, hyphens, underscores, spaces, and periods are allowed when creating a Group Name.</td></tr>\n";
-            echo "            </table>\n";
+            echo "      <div class=\"alert alert-danger\">Alphanumeric characters, hyphens, underscores, spaces, and periods are allowed
+                    when creating a Group Name.</div>\n";
         } elseif (@$groupname_array_cnt != @$unique_groupname_array_cnt) {
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr>\n";
-            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    Duplicate Group Name exists.</td></tr>\n";
-            echo "            </table>\n";
+            echo "      <div class=\"alert alert-danger\">Duplicate Group Name exists.</div>\n";
         }
 
         if ((@$empty_groupname != '1') && (@$evil_groupname != '1') && (@$groupname_array_cnt == @$unique_groupname_array_cnt)) {
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr>\n";
             if ($how_many == '1') {
-                echo "              <td class=table_rows width=20 align=center><img src='../images/icons/accept.png' /></td><td class=table_rows_green>
-                  &nbsp;$how_many group was created within the <b>$post_officename</b> office successfully.</td></tr>\n";
+                echo "      <div class=\"alert alert-success\">$how_many group was created within the <b>" . htmlentities($post_officename)
+                    . "</b> office successfully.</div>\n";
             } elseif ($how_many > '1') {
-                echo "              <td class=table_rows width=20 align=center><img src='../images/icons/accept.png' /></td><td class=table_rows_green>
-                  &nbsp;$how_many groups were created within the <b>$post_officename</b> office successfully.</td></tr>\n";
+                echo "      <div class=\"alert alert-success\">$how_many groups were created within the <b>" . htmlentities($post_officename)
+                    . "</b> office successfully.</div>\n";
             }
-            echo "            </table>\n";
         }
 
-        echo "            <table align=center valign=top width=60% border=0 cellpadding=0 cellspacing=3>\n";
-        echo "              <tr><td height=15></td></tr>\n";
+        echo "      <table class=\"table table-sm table-bordered w-auto\">\n";
 
         for ($x = 0; $x < $how_many; $x++) {
             $y = $x + 1;
 
             if ((@$empty_groupname == '1') || (@$evil_groupname == '1') || (@$groupname_array_cnt != @$unique_groupname_array_cnt)) {
-                echo "              <tr><td class=table_rows colspan=2>$y.&nbsp;&nbsp;&nbsp;&nbsp;
-                      <input type='text' size='25' maxlength='50' name='input_group_name[$y]' value=\"$input_group_name[$y]\"></td></tr>\n";
+                echo "        <tr><td>$y.</td><td><input type='text' class=\"form-control\" size='25' maxlength='50' name='input_group_name[$y]'
+                        value=\"" . htmlentities($input_group_name[$y]) . "\"></td></tr>\n";
             } else {
-                echo "              <tr><td class=table_rows colspan=2>$y.&nbsp;&nbsp;&nbsp;&nbsp;$input_group_name[$y]</td></tr>\n";
+                echo "        <tr><td>$y.</td><td>" . htmlentities($input_group_name[$y]) . "</td></tr>\n";
             }
         } // end for loop
 
-        echo "            </table>\n";
-        echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
+        echo "      </table>\n";
 
         if ((@$empty_groupname == '1') || (@$evil_groupname == '1') || (@$groupname_array_cnt != @$unique_groupname_array_cnt)) {
-            echo "              <tr><td height=20>&nbsp;</td></tr>\n";
-            echo "              <tr><td width=30><input type='image' name='submit' value='Create Office' align='middle'
-                      src='../images/buttons/next_button.png'></td><td><a href='officeadmin.php'><img src='../images/buttons/cancel_button.png' 
-                      border='0'></td></tr></table></form></td></tr>\n";
+            echo "      <button type='submit' class=\"btn btn-primary\" name='submit' value='Create Office'>Create Office</button>\n";
+            echo "      <a href='officeadmin.php' class=\"btn btn-outline-secondary\">Cancel</a>\n";
+            echo "      </form>\n";
+            echo "    </div>\n";
+            echo "  </div>\n";
+            echo "</div>\n";
             include_once FOOTER_PHP;
             exit;
         } else {
-            echo "              <tr><td height=20 align=left>&nbsp;</td></tr>\n";
-            echo "              <tr><td><a href='officecreate.php'><img src='../images/buttons/done_button.png' border='0'></td></tr></table></td></tr>\n";
+            echo "      </form>\n";
+            echo "      <a href='officecreate.php' class=\"btn btn-primary\">Done</a>\n";
+            echo "    </div>\n";
+            echo "  </div>\n";
+            echo "</div>\n";
             include_once FOOTER_PHP;
             exit;
         }
@@ -420,70 +283,60 @@ if ($request == 'GET') {
         if (!isset($how_many)) {
             tc_insert_strings("offices", array("officename" => $post_officename));
 
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr>\n";
-            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/accept.png' /></td><td class=table_rows_green>
-                &nbsp;Office created successfully.</td></tr>\n";
-            echo "            </table>\n";
-            echo "            <br />\n";
+            echo "      <div class=\"alert alert-success\">Office created successfully.</div>\n";
         }
 
-        echo "            <form name='form' action='$self' method='post'>\n";
+        echo "      <form name='form' action='$self' method='post'>\n";
         echo csrf_field() . "\n";
-        echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
-        echo "              <tr>\n";
-        echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/brick_add.png' />&nbsp;&nbsp;&nbsp;Create Office
-                </th></tr>\n";
-        echo "              <tr><td height=15></td></tr>\n";
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Office Name:</td><td class=table_rows colspan=2
-                      width=80% style='padding-left:20px;'>
-                      <input type='hidden' name='post_officename' value='" . htmlentities($post_officename) . "'>" . htmlentities($post_officename) . "</td></tr>\n";
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Create Groups Within This Office?</td><td
-                      class=table_rows colspan=2 width=80% style='padding-left:20px;'>\n";
+        echo "      <table class=\"table table-sm table-bordered w-auto\">\n";
+        echo "        <tr><th>Office Name:</th><td><input type='hidden' name='post_officename' value=\"" . htmlentities($post_officename) . "\">"
+            . htmlentities($post_officename) . "</td></tr>\n";
 
         if ($create_groups == "1") {
             $tmp_create_groups = "Yes";
         } else {
             $tmp_create_groups = "No";
         }
-        echo "                      <input type='hidden' name='create_groups' value='" . htmlentities($create_groups) . "'>$tmp_create_groups</td></tr>\n";
+        echo "        <tr><th>Create Groups Within This Office?</th><td><input type='hidden' name='create_groups' value=\""
+            . htmlentities($create_groups) . "\">$tmp_create_groups</td></tr>\n";
 
         if (!isset($how_many)) {
-            echo "              <tr><td height=15></td></tr>\n";
-            echo "            </table>\n";
-            echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr><td height=20 align=left>&nbsp;</td></tr>\n";
-            echo "              <tr><td><a href='officecreate.php'><img src='../images/buttons/done_button.png' border='0'></td></tr></table></td></tr>\n";
+            echo "      </table>\n";
+            echo "      </form>\n";
+            echo "      <a href='officecreate.php' class=\"btn btn-primary\">Done</a>\n";
+            echo "    </div>\n";
+            echo "  </div>\n";
+            echo "</div>\n";
             include_once FOOTER_PHP;
             exit;
         }
 
         if (isset($how_many)) {
-            echo "              <tr><td class=table_rows height=20 width=20% style='padding-left:32px;' nowrap>How Many?</td><td class=table_rows colspan=2
-                      width=80% style='padding-left:20px;'>
-                      <input type='hidden' name='how_many' value='$how_many'>$how_many</td></tr>\n";
-            echo "              <tr><td height=15></td></tr>\n";
-            echo "            </table>\n";
-            echo "            <table align=center valign=top width=60% border=0 cellpadding=0 cellspacing=3>\n";
+            echo "        <tr><th>How Many?</th><td><input type='hidden' name='how_many' value='$how_many'>$how_many</td></tr>\n";
+            echo "      </table>\n";
 
             if ($how_many == '1') {
-                echo "              <tr><td height=40 class=table_rows colspan=2>You have chosen to create <b>$how_many</b> group within the
-                      <b>$post_officename</b> office. Please input the group name below.</td></tr>\n";
+                echo "      <p>You have chosen to create <b>$how_many</b> group within the <b>" . htmlentities($post_officename)
+                    . "</b> office. Please input the group name below.</p>\n";
             } elseif ($how_many > '1') {
-                echo "              <tr><td height=40 class=table_rows colspan=2>You have chosen to create <b>$how_many</b> groups within the
-                      <b>$post_officename</b> office. Please input the group names below.</td></tr>\n";
+                echo "      <p>You have chosen to create <b>$how_many</b> groups within the <b>" . htmlentities($post_officename)
+                    . "</b> office. Please input the group names below.</p>\n";
             }
 
+            echo "      <table class=\"table table-sm table-bordered w-auto\">\n";
             for ($x = 0; $x < $how_many; $x++) {
                 $y = $x + 1;
-                echo "              <tr><td class=table_rows colspan=2>$y.&nbsp;&nbsp;&nbsp;&nbsp;
-                      <input type='text' size='25' maxlength='50' name='input_group_name[$y]'></td></tr>\n";
+                echo "        <tr><td>$y.</td><td><input type='text' class=\"form-control\" size='25' maxlength='50' name='input_group_name[$y]'></td></tr>\n";
             }
+            echo "      </table>\n";
         }
-        echo "              <tr><td height=15></td></tr>\n";
-        echo "              <tr><td width=30><input type='image' name='submit' value='Create Office' align='middle'
-                      src='../images/buttons/next_button.png'></td><td><a href='officeadmin.php'><img src='../images/buttons/cancel_button.png' 
-                      border='0'></td></tr></table></form></td></tr>\n";
+
+        echo "      <button type='submit' class=\"btn btn-primary\" name='submit' value='Create Office'>Create Office</button>\n";
+        echo "      <a href='officeadmin.php' class=\"btn btn-outline-secondary\">Cancel</a>\n";
+        echo "      </form>\n";
+        echo "    </div>\n";
+        echo "  </div>\n";
+        echo "</div>\n";
         include_once FOOTER_PHP;
         exit;
     }
