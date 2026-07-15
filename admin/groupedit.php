@@ -144,7 +144,7 @@ function group_member_table($group, $office, $user_agent)
 }
 
 if ($request == 'GET') {
-    if ((!isset($_GET['groupname'])) && (!isset($_GET['officename']))) {
+    if ((!isset($_GET['groupname'])) || (!isset($_GET['officename']))) {
         echo "<div class=\"container-fluid mt-3\">\n";
         echo "  <div class=\"alert alert-danger\">\n";
         echo "    <h5>PHP Timeclock Error!</h5>\n";
@@ -427,7 +427,7 @@ if ($request == 'GET') {
         $h_post_officename = htmlentities($post_officename);
 
         echo "      <div class=\"alert alert-success\">Group properties updated successfully.</div>\n";
-        echo "      <h5><img src='../images/icons/group_edit.png'> Edit Group - $h_get_group</h5>\n";
+        echo "      <h5><img src='../images/icons/group_edit.png'> Edit Group - $h_post_groupname</h5>\n";
         echo "      <table class=\"table table-sm table-bordered w-auto\">\n";
         echo "        <tr><th>New Group Name:</th><td>$h_post_groupname</td></tr>\n";
         echo "        <tr><th>New Parent Office:</th><td>$h_post_officename</td></tr>\n";
