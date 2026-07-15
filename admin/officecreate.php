@@ -27,8 +27,8 @@ if ($request == 'GET') {
     echo "      <form name='form' action='$self' method='post'>\n";
     echo csrf_field() . "\n";
     echo "        <div class=\"mb-3\">\n";
-    echo "          <label class=\"form-label\">Office Name <span class=\"text-danger\">*</span></label>\n";
-    echo "          <input type='text' class=\"form-control\" maxlength='50' name='post_officename'>\n";
+    echo "          <label class=\"form-label\" for='post_officename'>Office Name <span class=\"text-danger\">*</span></label>\n";
+    echo "          <input type='text' id='post_officename' class=\"form-control\" maxlength='50' name='post_officename'>\n";
     echo "        </div>\n";
     echo "        <div class=\"mb-3\">\n";
     echo "          <label class=\"form-label d-block\">Create Groups Within This Office?</label>\n";
@@ -40,8 +40,8 @@ if ($request == 'GET') {
                 <label class=\"form-check-label\" for='create_groups_n'>No</label></div>\n";
     echo "        </div>\n";
     echo "        <div class=\"mb-3\">\n";
-    echo "          <label class=\"form-label\">How Many?</label>\n";
-    echo "          <input disabled type='text' class=\"form-control\" size='2' maxlength='1' name='how_many' style='background:#eeeeee;'>\n";
+    echo "          <label class=\"form-label\" for='how_many'>How Many?</label>\n";
+    echo "          <input disabled type='text' id='how_many' class=\"form-control\" size='2' maxlength='1' name='how_many' style='background:#eeeeee;'>\n";
     echo "        </div>\n";
     echo "        <p class=\"small text-muted\">* required</p>\n";
     echo "        <button type='submit' class=\"btn btn-primary\" name='submit' value='Create Office'>Create Office</button>\n";
@@ -136,8 +136,9 @@ if ($request == 'GET') {
         echo "      <form name='form' action='$self' method='post'>\n";
         echo csrf_field() . "\n";
         echo "        <div class=\"mb-3\">\n";
-        echo "          <label class=\"form-label\">Office Name <span class=\"text-danger\">*</span></label>\n";
-        echo "          <input type='text' class=\"form-control\" maxlength='50' name='post_officename' value=\"" . htmlentities($post_officename) . "\">\n";
+        echo "          <label class=\"form-label\" for='post_officename'>Office Name <span class=\"text-danger\">*</span></label>\n";
+        echo "          <input type='text' id='post_officename' class=\"form-control\" maxlength='50' name='post_officename' value=\""
+            . htmlentities($post_officename) . "\">\n";
         echo "        </div>\n";
 
         if (!empty($string)) {
@@ -167,11 +168,13 @@ if ($request == 'GET') {
         echo "        </div>\n";
 
         echo "        <div class=\"mb-3\">\n";
-        echo "          <label class=\"form-label\">How Many?</label>\n";
+        echo "          <label class=\"form-label\" for='how_many'>How Many?</label>\n";
+        $h_how_many = htmlentities($how_many);
         if ($create_groups == '1') {
-            echo "          <input type='text' class=\"form-control\" size='2' maxlength='1' name='how_many' value='$how_many'>\n";
+            echo "          <input type='text' id='how_many' class=\"form-control\" size='2' maxlength='1' name='how_many' value=\"$h_how_many\">\n";
         } else {
-            echo "          <input disabled type='text' class=\"form-control\" size='2' maxlength='1' name='how_many' style='background:#eeeeee;' value='$how_many'>\n";
+            echo "          <input disabled type='text' id='how_many' class=\"form-control\" size='2' maxlength='1' name='how_many'
+                    style='background:#eeeeee;' value=\"$h_how_many\">\n";
         }
         echo "        </div>\n";
 
@@ -224,7 +227,8 @@ if ($request == 'GET') {
             . htmlentities($post_officename) . "</td></tr>\n";
         echo "        <tr><th>Create Groups Within This Office?</th><td><input type='hidden' name='create_groups' value=\""
             . htmlentities($create_groups) . "\">" . htmlentities($create_groups) . "</td></tr>\n";
-        echo "        <tr><th>How Many?</th><td><input type='hidden' name='how_many' value='$how_many'>$how_many</td></tr>\n";
+        echo "        <tr><th>How Many?</th><td><input type='hidden' name='how_many' value=\"" . htmlentities($how_many) . "\">"
+            . htmlentities($how_many) . "</td></tr>\n";
         echo "      </table>\n";
 
         if (@$empty_groupname == '1') {
@@ -238,11 +242,11 @@ if ($request == 'GET') {
 
         if ((@$empty_groupname != '1') && (@$evil_groupname != '1') && (@$groupname_array_cnt == @$unique_groupname_array_cnt)) {
             if ($how_many == '1') {
-                echo "      <div class=\"alert alert-success\">$how_many group was created within the <b>" . htmlentities($post_officename)
-                    . "</b> office successfully.</div>\n";
+                echo "      <div class=\"alert alert-success\">" . htmlentities($how_many) . " group was created within the <b>"
+                    . htmlentities($post_officename) . "</b> office successfully.</div>\n";
             } elseif ($how_many > '1') {
-                echo "      <div class=\"alert alert-success\">$how_many groups were created within the <b>" . htmlentities($post_officename)
-                    . "</b> office successfully.</div>\n";
+                echo "      <div class=\"alert alert-success\">" . htmlentities($how_many) . " groups were created within the <b>"
+                    . htmlentities($post_officename) . "</b> office successfully.</div>\n";
             }
         }
 
@@ -312,15 +316,16 @@ if ($request == 'GET') {
         }
 
         if (isset($how_many)) {
-            echo "        <tr><th>How Many?</th><td><input type='hidden' name='how_many' value='$how_many'>$how_many</td></tr>\n";
+            echo "        <tr><th>How Many?</th><td><input type='hidden' name='how_many' value=\"" . htmlentities($how_many) . "\">"
+                . htmlentities($how_many) . "</td></tr>\n";
             echo "      </table>\n";
 
             if ($how_many == '1') {
-                echo "      <p>You have chosen to create <b>$how_many</b> group within the <b>" . htmlentities($post_officename)
-                    . "</b> office. Please input the group name below.</p>\n";
+                echo "      <p>You have chosen to create <b>" . htmlentities($how_many) . "</b> group within the <b>"
+                    . htmlentities($post_officename) . "</b> office. Please input the group name below.</p>\n";
             } elseif ($how_many > '1') {
-                echo "      <p>You have chosen to create <b>$how_many</b> groups within the <b>" . htmlentities($post_officename)
-                    . "</b> office. Please input the group names below.</p>\n";
+                echo "      <p>You have chosen to create <b>" . htmlentities($how_many) . "</b> groups within the <b>"
+                    . htmlentities($post_officename) . "</b> office. Please input the group names below.</p>\n";
             }
 
             echo "      <table class=\"table table-sm table-bordered w-auto\">\n";
