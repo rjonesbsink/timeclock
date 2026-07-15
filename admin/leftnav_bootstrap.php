@@ -19,15 +19,22 @@
  * before including this file to show them, matching the original's
  * class=current_left_rows_indent/left_rows_indent treatment.
  *
- * 'username' and 'officename' must be raw (unescaped) values, exactly as
- * read from $_GET/$_POST/the database -- this file urlencode()s them itself
- * to build each sub-link's href. Passing an already-htmlentities()'d value
- * double-encodes it, corrupting the link for any name containing a quote or
- * ampersand.
+ * Pages that operate on one specific group (groupedit.php, groupdelete.php)
+ * similarly show 2 indented sub-links -- Edit Group/Delete Group -- between
+ * "Group Summary" and "Create New Group". Set $admin_leftnav_group_context to
+ * an array with 'groupname', 'officename', and 'current' (one of
+ * 'groupedit.php'/'groupdelete.php') before including this file to show them.
+ *
+ * 'username'/'groupname' and 'officename' must be raw (unescaped) values,
+ * exactly as read from $_GET/$_POST/the database -- this file urlencode()s
+ * them itself to build each sub-link's href. Passing an already-
+ * htmlentities()'d value double-encodes it, corrupting the link for any name
+ * containing a quote or ampersand.
  */
 
 $admin_leftnav_current = $admin_leftnav_current ?? '';
 $admin_leftnav_user_context = $admin_leftnav_user_context ?? null;
+$admin_leftnav_group_context = $admin_leftnav_group_context ?? null;
 
 echo "<div class=\"col-md-3 mb-4\">\n";
 echo "  <div class=\"list-group list-group-flush small\">\n";
@@ -53,6 +60,15 @@ echo admin_leftnav_link('officecreate.php', 'Create New Office', $admin_leftnav_
 
 echo "    <div class=\"list-group-item bg-transparent fw-bold border-0 pb-0 mt-3\">Groups</div>\n";
 echo admin_leftnav_link('groupadmin.php', 'Group Summary', $admin_leftnav_current);
+
+if ($admin_leftnav_group_context) {
+    $g = urlencode($admin_leftnav_group_context['groupname']);
+    $go = urlencode($admin_leftnav_group_context['officename']);
+    $current_group_sub = $admin_leftnav_group_context['current'];
+    echo admin_leftnav_link("groupedit.php?groupname=$g&officename=$go", '→ Edit Group', $current_group_sub === 'groupedit.php' ? "groupedit.php?groupname=$g&officename=$go" : '');
+    echo admin_leftnav_link("groupdelete.php?groupname=$g&officename=$go", '→ Delete Group', $current_group_sub === 'groupdelete.php' ? "groupdelete.php?groupname=$g&officename=$go" : '');
+}
+
 echo admin_leftnav_link('groupcreate.php', 'Create New Group', $admin_leftnav_current);
 
 echo "    <div class=\"list-group-item bg-transparent fw-bold border-0 pb-0 mt-3\">In/Out Status</div>\n";
