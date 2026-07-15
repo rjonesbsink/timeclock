@@ -86,7 +86,8 @@ if ($request == 'GET') {
     echo "      <table class=\"table table-sm table-bordered w-auto\">\n";
     echo "        <tr><th>Group Name:</th><td><input type='hidden' name='post_groupname' value=\"" . htmlentities($groupname) . "\">$h_get_group</td></tr>\n";
     echo "        <tr><th>Parent Office:</th><td><input type='hidden' name='post_officename' value=\"" . htmlentities($officename) . "\">$h_get_office</td></tr>\n";
-    echo "        <tr><th>User Count:</th><td><input type='hidden' name='user_cnt' value=\"$user_cnt\">$user_cnt</td></tr>\n";
+    echo "        <tr><th>User Count:</th><td><input type='hidden' name='user_cnt' value=\"" . htmlentities($user_cnt) . "\">"
+        . htmlentities($user_cnt) . "</td></tr>\n";
     echo "      </table>\n";
 
     if ($user_cnt == 0) {
@@ -249,7 +250,8 @@ if ($request == 'GET') {
         echo "      <table class=\"table table-sm table-bordered w-auto\">\n";
         echo "        <tr><th>Group Name:</th><td><input type='hidden' name='post_groupname' value=\"$h_post_groupname\">$h_post_groupname</td></tr>\n";
         echo "        <tr><th>Parent Office:</th><td><input type='hidden' name='post_officename' value=\"$h_post_officename\">$h_post_officename</td></tr>\n";
-        echo "        <tr><th>User Count:</th><td><input type='hidden' name='user_cnt' value=\"$user_cnt\">$user_cnt</td></tr>\n";
+        echo "        <tr><th>User Count:</th><td><input type='hidden' name='user_cnt' value=\"" . htmlentities($user_cnt) . "\">"
+            . htmlentities($user_cnt) . "</td></tr>\n";
         echo "      </table>\n";
 
         if ($user_cnt > 0) {
@@ -293,7 +295,7 @@ if ($request == 'GET') {
         echo "      <table class=\"table table-sm table-bordered w-auto\">\n";
         echo "        <tr><th>Group Name:</th><td>$h_post_groupname</td></tr>\n";
         echo "        <tr><th>Parent Office:</th><td>$h_post_officename</td></tr>\n";
-        echo "        <tr><th>User Count:</th><td>$user_cnt</td></tr>\n";
+        echo "        <tr><th>User Count:</th><td>" . htmlentities($user_cnt) . "</td></tr>\n";
         echo "      </table>\n";
         echo "      <a href='groupadmin.php' class=\"btn btn-primary\">Done</a>\n";
         echo "    </div>\n";
