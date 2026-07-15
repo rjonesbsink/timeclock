@@ -205,8 +205,8 @@ if ($request == 'GET') {
     echo "        </div>\n";
     echo "        <div class=\"mb-3\">\n";
     echo "          <label class=\"form-label\">User Count</label>\n";
-    echo "          <input type='hidden' name='user_cnt' value=\"$user_cnt\">\n";
-    echo "          <div class=\"form-control-plaintext\">$user_cnt</div>\n";
+    echo "          <input type='hidden' name='user_cnt' value=\"" . htmlentities($user_cnt) . "\">\n";
+    echo "          <div class=\"form-control-plaintext\">" . htmlentities($user_cnt) . "</div>\n";
     echo "        </div>\n";
     echo "        <p class=\"small text-muted\">* required</p>\n";
     echo "        <input type='hidden' name='orig_officeid' value=\"$officeid\">\n";
@@ -388,8 +388,8 @@ if ($request == 'GET') {
         echo "        </div>\n";
         echo "        <div class=\"mb-3\">\n";
         echo "          <label class=\"form-label\">User Count</label>\n";
-        echo "          <input type='hidden' name='user_cnt' value=\"$user_cnt\">\n";
-        echo "          <div class=\"form-control-plaintext\">$user_cnt</div>\n";
+        echo "          <input type='hidden' name='user_cnt' value=\"" . htmlentities($user_cnt) . "\">\n";
+        echo "          <div class=\"form-control-plaintext\">" . htmlentities($user_cnt) . "</div>\n";
         echo "        </div>\n";
         echo "        <p class=\"small text-muted\">* required</p>\n";
         echo "        <input type='hidden' name='orig_officeid' value=\"$orig_officeid\">\n";
@@ -431,7 +431,7 @@ if ($request == 'GET') {
         echo "      <table class=\"table table-sm table-bordered w-auto\">\n";
         echo "        <tr><th>New Group Name:</th><td>$h_post_groupname</td></tr>\n";
         echo "        <tr><th>New Parent Office:</th><td>$h_post_officename</td></tr>\n";
-        echo "        <tr><th>User Count:</th><td>$user_cnt</td></tr>\n";
+        echo "        <tr><th>User Count:</th><td>" . htmlentities($user_cnt) . "</td></tr>\n";
         echo "      </table>\n";
         echo "      <a href='groupadmin.php' class=\"btn btn-primary\">Done</a>\n";
 
