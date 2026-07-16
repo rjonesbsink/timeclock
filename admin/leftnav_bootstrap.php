@@ -25,16 +25,24 @@
  * an array with 'groupname', 'officename', and 'current' (one of
  * 'groupedit.php'/'groupdelete.php') before including this file to show them.
  *
- * 'username'/'groupname' and 'officename' must be raw (unescaped) values,
- * exactly as read from $_GET/$_POST/the database -- this file urlencode()s
- * them itself to build each sub-link's href. Passing an already-
- * htmlentities()'d value double-encodes it, corrupting the link for any name
- * containing a quote or ampersand.
+ * Pages that operate on one specific status (statusedit.php,
+ * statusdelete.php) similarly show 2 indented sub-links -- Edit Status/Delete
+ * Status -- between "Status Summary" and "Create Status". Set
+ * $admin_leftnav_status_context to an array with 'statusname' and 'current'
+ * (one of 'statusedit.php'/'statusdelete.php') before including this file to
+ * show them.
+ *
+ * 'username'/'groupname'/'statusname' and 'officename' must be raw
+ * (unescaped) values, exactly as read from $_GET/$_POST/the database -- this
+ * file urlencode()s them itself to build each sub-link's href. Passing an
+ * already-htmlentities()'d value double-encodes it, corrupting the link for
+ * any name containing a quote or ampersand.
  */
 
 $admin_leftnav_current = $admin_leftnav_current ?? '';
 $admin_leftnav_user_context = $admin_leftnav_user_context ?? null;
 $admin_leftnav_group_context = $admin_leftnav_group_context ?? null;
+$admin_leftnav_status_context = $admin_leftnav_status_context ?? null;
 
 echo "<div class=\"col-md-3 mb-4\">\n";
 echo "  <div class=\"list-group list-group-flush small\">\n";
@@ -73,6 +81,14 @@ echo admin_leftnav_link('groupcreate.php', 'Create New Group', $admin_leftnav_cu
 
 echo "    <div class=\"list-group-item bg-transparent fw-bold border-0 pb-0 mt-3\">In/Out Status</div>\n";
 echo admin_leftnav_link('statusadmin.php', 'Status Summary', $admin_leftnav_current);
+
+if ($admin_leftnav_status_context) {
+    $s = urlencode($admin_leftnav_status_context['statusname']);
+    $current_status_sub = $admin_leftnav_status_context['current'];
+    echo admin_leftnav_link("statusedit.php?statusname=$s", '→ Edit Status', $current_status_sub === 'statusedit.php' ? "statusedit.php?statusname=$s" : '');
+    echo admin_leftnav_link("statusdelete.php?statusname=$s", '→ Delete Status', $current_status_sub === 'statusdelete.php' ? "statusdelete.php?statusname=$s" : '');
+}
+
 echo admin_leftnav_link('statuscreate.php', 'Create Status', $admin_leftnav_current);
 
 echo "    <div class=\"list-group-item bg-transparent fw-bold border-0 pb-0 mt-3\">Miscellaneous</div>\n";
