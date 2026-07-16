@@ -3,15 +3,16 @@
 require_once '../lib/session.php';
 start_secure_session();
 
+include_once '../config.inc.php';
+include_once 'header_bootstrap.php';
+include_once 'topmain_bootstrap.php';
+echo "<title>$title - Delete Status</title>\n";
+
 $self = htmlentities($_SERVER['PHP_SELF']);
 $request = $_SERVER['REQUEST_METHOD'];
 
 const WHERE_PUNCHITEMS = "punchitems = ?";
-
-include '../config.inc.php';
-include 'header.php';
-include 'topmain.php';
-echo "<title>$title - Delete Status</title>\n";
+const FOOTER_PHP = 'footer_bootstrap.php';
 
 require_once '../lib/auth.php';
 require_valid_user();
@@ -19,19 +20,19 @@ require_once '../lib/csrf.php';
 
 if ($request == 'GET') {
     if (!isset($_GET['statusname'])) {
-        echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
-        echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Error!</td></tr>\n";
-        echo "  <tr class=right_main_text>\n";
-        echo "    <td align=center valign=top scope=row>\n";
-        echo "      <table width=300 border=0 cellpadding=5 cellspacing=0>\n";
-        echo "        <tr class=right_main_text><td align=center>How did you get here?</td></tr>\n";
-        echo "        <tr class=right_main_text><td align=center>Go back to the <a class=admin_headings href='statusadmin.php'>Status Summary</a> page
-                to edit statuses.</td></tr>\n";
-        echo "      </table><br /></td></tr></table>\n";
+        echo "<div class=\"container-fluid mt-3\">\n";
+        echo "  <div class=\"alert alert-danger\">\n";
+        echo "    <h5>PHP Timeclock Error!</h5>\n";
+        echo "    <p>How did you get here?</p>\n";
+        echo "    <p>Go back to the <a href='statusadmin.php'>Status Summary</a> page to delete statuses.</p>\n";
+        echo "  </div>\n";
+        echo "</div>\n";
+        include_once FOOTER_PHP;
         exit;
     }
 
-    $get_status = htmlentities(get_string('statusname'));
+    $get_status = get_string('statusname');
+    $h_get_status = htmlentities($get_status);
 
     $result = tc_select("*", "punchlist", WHERE_PUNCHITEMS, $get_status);
 
@@ -50,79 +51,34 @@ if ($request == 'GET') {
         exit;
     }
 
-    echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
-    echo "  <tr valign=top>\n";
-    echo "    <td class=left_main width=180 align=left scope=col>\n";
-    echo "      <table class=hide width=100% border=0 cellpadding=1 cellspacing=0>\n";
-    echo "        <tr><td class=left_rows height=11></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle>Users</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/user.png' alt='User Summary' />&nbsp;&nbsp;
-                <a class=admin_headings href='useradmin.php'>User Summary</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/user_add.png' alt='Create New User' />&nbsp;&nbsp;
-                <a class=admin_headings href='usercreate.php'>Create New User</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/magnifier.png' alt='User Search' />&nbsp;&nbsp;
-                <a class=admin_headings href='usersearch.php'>User Search</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=33></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle>Offices</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/brick.png' alt='Office Summary' />&nbsp;&nbsp;
-                <a class=admin_headings href='officeadmin.php'>Office Summary</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/brick_add.png' alt='Create New Office' />&nbsp;&nbsp;
-                <a class=admin_headings href='officecreate.php'>Create New Office</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=33></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle>Groups</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/group.png' alt='Group Summary' />&nbsp;&nbsp;
-                <a class=admin_headings href='groupadmin.php'>Group Summary</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/group_add.png' alt='Create New Group' />&nbsp;&nbsp;
-                <a class=admin_headings href='groupcreate.php'>Create New Group</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=33></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle>In/Out Status</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application.png' alt='Status Summary' />
-                &nbsp;&nbsp;<a class=admin_headings href='statusadmin.php'>Status Summary</a></td></tr>\n";
-    echo "        <tr><td class=left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Edit Status' />
-                &nbsp;&nbsp;<a class=admin_headings href=\"statusedit.php?statusname=$get_status\">Edit Status</a></td></tr>\n";
-    echo "        <tr><td class=current_left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Delete Status' />
-                &nbsp;&nbsp;<a class=admin_headings href=\"statusdelete.php?statusname=$get_status\">Delete Status</a></td></tr>\n";
-    echo "        <tr><td class=left_rows_border_top height=18 align=left valign=middle><img src='../images/icons/application_add.png' alt='Create Status' />
-                &nbsp;&nbsp;<a class=admin_headings href='statuscreate.php'>Create Status</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=33></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle colspan=2>Miscellaneous</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/clock.png' alt='Add/Edit/Delete Time' />
-                &nbsp;&nbsp;<a class=admin_headings href='timeadmin.php'>Add/Edit/Delete Time</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application_edit.png' alt='Edit System Settings' />
-                &nbsp;&nbsp;<a class=admin_headings href='sysedit.php'>Edit System Settings</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/database_go.png'
-                alt='Upgrade Database' />&nbsp;&nbsp;&nbsp;<a class=admin_headings href='dbupgrade.php'>Upgrade Database</a></td></tr>\n";
-    echo "      </table></td>\n";
-    echo "    <td align=left class=right_main scope=col>\n";
-    echo "      <table width=100% height=100% border=0 cellpadding=10 cellspacing=1>\n";
-    echo "        <tr class=right_main_text>\n";
-    echo "          <td valign=top>\n";
-    echo "            <br />\n";
-    echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
-    echo "            <form name='form' action='$self' method='post'>\n";
+    echo "<div class=\"container-fluid mt-3\">\n";
+    echo "  <div class=\"row\">\n";
+    // admin_leftnav_status_context needs raw (unescaped) values -- see the
+    // doc-comment in leftnav_bootstrap.php.
+    $admin_leftnav_status_context = array('statusname' => $get_status, 'current' => 'statusdelete.php');
+    include_once 'leftnav_bootstrap.php';
+    echo "    <div class=\"col-md-9\">\n";
+
+    echo "      <h5><img src='../images/icons/application_delete.png'> Delete Status</h5>\n";
+    echo "      <form name='form' action='$self' method='post'>\n";
     echo csrf_field() . "\n";
-    echo "              <tr>\n";
-    echo "                <th class=rightside_heading nowrap halign=left colspan=3>
-                    <img src='../images/icons/application_delete.png' />&nbsp;&nbsp;&nbsp;Delete Status</th>\n";
-    echo "              </tr>\n";
-    echo "              <tr><td height=15></td></tr>\n";
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Status Name:</td><td align=left width=80%
-                      style='padding-left:20px;' class=table_rows><input type='hidden' name='post_statusname' value=\"$punchitem\">$punchitem</td></tr>\n";
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Color:</td><td align=left class=table_rows
-                      width=80% style='padding-left:20px;'><input type='hidden' name='post_color' value=\"$color\">$color</td></tr>\n";
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Is Status considered '<b>In</b>' or
-                      '<b>Out</b>'?</td><td align=left class=table_rows width=80% style='padding-left:20px;'>
-                      <input type='hidden' name='post_in_out' value=\"$in_or_out_tmp\">$in_or_out_tmp</td></tr>\n";
-    echo "              <tr><td height=15></td></tr>\n";
-    echo "            </table>\n";
-    echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
-    echo "              <tr><td class=table_rows height=53 align=left colspan=2 style='color:red;font-size:10px;'>
-                      Deleting this status does NOT delete it from the database history. It merely removes it from the list of status
-                      choices.</td></tr></table>\n";
-    echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
-    echo "              <tr><td width=30><input type='image' name='submit' value='Delete Status' src='../images/buttons/next_button.png'></td>
-                  <td><a href='statusadmin.php'><img src='../images/buttons/cancel_button.png' border='0'></td></tr></table></form></td></tr>\n";
-    include '../footer.php';
+    echo "      <table class=\"table table-sm table-bordered w-auto\">\n";
+    echo "        <tr><th>Status Name:</th><td><input type='hidden' name='post_statusname' value=\"" . htmlentities($punchitem) . "\">"
+        . htmlentities($punchitem) . "</td></tr>\n";
+    echo "        <tr><th>Color:</th><td><input type='hidden' name='post_color' value=\"" . htmlentities($color) . "\">"
+        . htmlentities($color) . "</td></tr>\n";
+    echo "        <tr><th>Is Status considered <b>In</b> or <b>Out</b>?</th><td><input type='hidden' name='post_in_out' value=\"$in_or_out_tmp\">"
+        . "$in_or_out_tmp</td></tr>\n";
+    echo "      </table>\n";
+    echo "      <div class=\"alert alert-warning\">Deleting this status does NOT delete it from the database history. It merely removes
+                it from the list of status choices.</div>\n";
+    echo "      <button type='submit' class=\"btn btn-danger\" name='submit' value='Delete Status'>Delete Status</button>\n";
+    echo "      <a href='statusadmin.php' class=\"btn btn-outline-secondary\">Cancel</a>\n";
+    echo "      </form>\n";
+    echo "    </div>\n";
+    echo "  </div>\n";
+    echo "</div>\n";
+    include_once FOOTER_PHP;
     exit;
 } elseif ($request == 'POST') {
     require_csrf_token();
@@ -151,9 +107,10 @@ if ($request == 'GET') {
         exit;
     }
 
-    $result2 = tc_delete("punchlist", WHERE_PUNCHITEMS, $post_statusname);
+    tc_delete("punchlist", WHERE_PUNCHITEMS, $post_statusname);
 
-    $post_statusname = htmlentities($post_statusname);
+    $h_post_statusname = htmlentities($post_statusname);
+    $h_post_color = htmlentities($post_color);
 
     if ($post_in_out == '1') {
         $post_in_out = 'In';
@@ -163,82 +120,22 @@ if ($request == 'GET') {
         exit;
     }
 
-    echo "<table width=100% height=89% border=0 cellpadding=0 cellspacing=1>\n";
-    echo "  <tr valign=top>\n";
-    echo "    <td class=left_main width=180 align=left scope=col>\n";
-    echo "      <table class=hide width=100% border=0 cellpadding=1 cellspacing=0>\n";
-    echo "        <tr><td class=left_rows height=11></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle>Users</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/user.png' alt='User Summary' />&nbsp;&nbsp;
-                <a class=admin_headings href='useradmin.php'>User Summary</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/user_add.png' alt='Create New User' />&nbsp;&nbsp;
-                <a class=admin_headings href='usercreate.php'>Create New User</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/magnifier.png' alt='User Search' />&nbsp;&nbsp;
-                <a class=admin_headings href='usersearch.php'>User Search</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=33></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle>Offices</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/brick.png' alt='Office Summary' />&nbsp;&nbsp;
-                <a class=admin_headings href='officeadmin.php'>Office Summary</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/brick_add.png' alt='Create New Office' />&nbsp;&nbsp;
-                <a class=admin_headings href='officecreate.php'>Create New Office</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=33></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle>Groups</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/group.png' alt='Group Summary' />&nbsp;&nbsp;
-                <a class=admin_headings href='groupadmin.php'>Group Summary</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/group_add.png' alt='Create New Group' />&nbsp;&nbsp;
-                <a class=admin_headings href='groupcreate.php'>Create New Group</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=33></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle>In/Out Status</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application.png' alt='Status Summary' />
-                &nbsp;&nbsp;<a class=admin_headings href='statusadmin.php'>Status Summary</a></td></tr>\n";
-    echo "        <tr><td class=left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Edit Status' />
-                &nbsp;&nbsp;Edit Status</td></tr>\n";
-    echo "        <tr><td class=current_left_rows_indent height=18 align=left valign=middle><img src='../images/icons/arrow_right.png' alt='Delete Status' />
-                &nbsp;&nbsp;Delete Status</td></tr>\n";
-    echo "        <tr><td class=left_rows_border_top height=18 align=left valign=middle><img src='../images/icons/application_add.png' alt='Create Status' />
-                &nbsp;&nbsp;<a class=admin_headings href='statuscreate.php'>Create Status</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=33></td></tr>\n";
-    echo "        <tr><td class=left_rows_headings height=18 valign=middle colspan=2>Miscellaneous</td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/clock.png' alt='Add/Edit/Delete Time' />
-                &nbsp;&nbsp;<a class=admin_headings href='timeadmin.php'>Add/Edit/Delete Time</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/application_edit.png' alt='Edit System Settings' />
-                &nbsp;&nbsp;<a class=admin_headings href='sysedit.php'>Edit System Settings</a></td></tr>\n";
-    echo "        <tr><td class=left_rows height=18 align=left valign=middle><img src='../images/icons/database_go.png'
-                alt='Upgrade Database' />&nbsp;&nbsp;&nbsp;<a class=admin_headings href='dbupgrade.php'>Upgrade Database</a></td></tr>\n";
-    echo "      </table></td>\n";
-    echo "    <td align=left class=right_main scope=col>\n";
-    echo "      <table width=100% height=100% border=0 cellpadding=10 cellspacing=1>\n";
-    echo "        <tr class=right_main_text>\n";
-    echo "          <td valign=top>\n";
-    echo "            <br />\n";
-    echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-    echo "              <tr>\n";
-    echo "                <td class=table_rows width=20 align=center><img src='../images/icons/accept.png' /></td><td class=table_rows_green>&nbsp;Status
-                    deleted successfully.</td></tr>\n";
-    echo "            </table>\n";
-    echo "            <br />\n";
-    echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
-    echo "            <form name='form' action='$self' method='post'>\n";
-    echo csrf_field() . "\n";
-    echo "              <tr>\n";
-    echo "                <th class=rightside_heading nowrap halign=left colspan=3>
-                    <img src='../images/icons/application_delete.png' />&nbsp;&nbsp;&nbsp;Delete Status</th>\n";
-    echo "              </tr>\n";
-    echo "              <tr><td height=15></td></tr>\n";
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Status Name:</td><td align=left width=80%
-                      style='padding-left:20px;' class=table_rows><input type='hidden' name='post_statusname'
-                      value=\"$post_statusname\">$post_statusname</td></tr>\n";
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Color:</td><td align=left class=table_rows
-                      width=80% style='padding-left:20px;'><input type='hidden' name='post_color' value=\"$post_color\">$post_color</td></tr>\n";
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Is Status considered '<b>In</b>' or
-                      '<b>Out</b>'?</td><td align=left class=table_rows width=80% style='padding-left:20px;'>
-                      <input type='hidden' name='post_in_out' value=\"$post_in_out\">$post_in_out</td></tr>\n";
-    echo "              <tr><td height=15></td></tr>\n";
-    echo "            </table>\n";
-    echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
-    echo "              <tr><td height=20 align=left>&nbsp;</td></tr>\n";
-    echo "              <tr><td><a href='statusadmin.php'><img src='../images/buttons/done_button.png' border='0'></td></tr></table>
-                  </td></tr>\n";
-    include '../footer.php';
+    echo "<div class=\"container-fluid mt-3\">\n";
+    echo "  <div class=\"row\">\n";
+    $admin_leftnav_current = 'statusadmin.php';
+    include_once 'leftnav_bootstrap.php';
+    echo "    <div class=\"col-md-9\">\n";
+    echo "      <div class=\"alert alert-success\">Status deleted successfully.</div>\n";
+    echo "      <h5><img src='../images/icons/application_delete.png'> Delete Status</h5>\n";
+    echo "      <table class=\"table table-sm table-bordered w-auto\">\n";
+    echo "        <tr><th>Status Name:</th><td>$h_post_statusname</td></tr>\n";
+    echo "        <tr><th>Color:</th><td>$h_post_color</td></tr>\n";
+    echo "        <tr><th>Is Status considered <b>In</b> or <b>Out</b>?</th><td>$post_in_out</td></tr>\n";
+    echo "      </table>\n";
+    echo "      <a href='statusadmin.php' class=\"btn btn-primary\">Done</a>\n";
+    echo "    </div>\n";
+    echo "  </div>\n";
+    echo "</div>\n";
+    include_once FOOTER_PHP;
     exit;
 }
