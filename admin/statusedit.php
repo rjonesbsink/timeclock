@@ -13,7 +13,7 @@ $request = $_SERVER['REQUEST_METHOD'];
 
 const WHERE_PUNCHITEMS = "punchitems = ?";
 const FOOTER_PHP = 'footer_bootstrap.php';
-const STATUSNAME_PATTERN = "^([[:alnum:]]| |-|_|.)+$";
+const STATUSNAME_PATTERN = "^([[:alnum:]]| |-|_|\.)+$";
 
 require_once '../lib/auth.php';
 require_valid_user();
