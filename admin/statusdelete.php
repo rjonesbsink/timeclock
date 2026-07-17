@@ -113,9 +113,9 @@ if ($request == 'GET') {
     $h_post_color = htmlentities($post_color);
 
     if ($post_in_out == '1') {
-        $post_in_out = 'In';
+        $confirm_in_out = 'In';
     } elseif ($post_in_out == '0') {
-        $post_in_out = 'Out';
+        $confirm_in_out = 'Out';
     } else {
         exit;
     }
@@ -130,7 +130,7 @@ if ($request == 'GET') {
     echo "      <table class=\"table table-sm table-bordered w-auto\">\n";
     echo "        <tr><th>Status Name:</th><td>$h_post_statusname</td></tr>\n";
     echo "        <tr><th>Color:</th><td>$h_post_color</td></tr>\n";
-    echo "        <tr><th>Is Status considered <b>In</b> or <b>Out</b>?</th><td>$post_in_out</td></tr>\n";
+    echo "        <tr><th>Is Status considered <b>In</b> or <b>Out</b>?</th><td>$confirm_in_out</td></tr>\n";
     echo "      </table>\n";
     echo "      <a href='statusadmin.php' class=\"btn btn-primary\">Done</a>\n";
     echo "    </div>\n";
