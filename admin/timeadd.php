@@ -15,6 +15,7 @@ const WHERE_EMPFULLNAME = "empfullname = ?";
 const FOOTER_PHP = 'footer_bootstrap.php';
 const MSG_SOMETHING_FISHY = "Something is fishy here.\n";
 const DATE_PATTERN = "/^([0-9]{1,2})[\-\/\.]([0-9]{1,2})[\-\/\.](([0-9]{2})|([0-9]{4}))$/i";
+const PUNCHLIST_ORDER_BY_PUNCHITEMS = "1=1 order by punchitems asc";
 
 function render_time_add_form(
     $self,
@@ -71,7 +72,7 @@ function render_time_add_form(
     echo "          <label class=\"form-label\" for='post_statusname'>Status <span class=\"text-danger\">*</span></label>\n";
     echo "          <select id='post_statusname' class=\"form-select\" name='post_statusname'>\n";
     echo "            <option value='1'>Choose One</option>\n";
-    echo html_options(tc_select("punchitems", "punchlist", "1=1 order by punchitems asc"), $post_statusname);
+    echo html_options(tc_select("punchitems", "punchlist", PUNCHLIST_ORDER_BY_PUNCHITEMS), $post_statusname);
     echo "          </select>\n";
     echo "        </div>\n";
     echo "        <div class=\"mb-3\">\n";
@@ -172,7 +173,7 @@ if ($request == 'GET') {
     echo "          <label class=\"form-label\" for='post_statusname'>Status <span class=\"text-danger\">*</span></label>\n";
     echo "          <select id='post_statusname' class=\"form-select\" name='post_statusname'>\n";
     echo "            <option value='1'>Choose One</option>\n";
-    echo html_options(tc_select("punchitems", "punchlist", "1=1 order by punchitems asc"));
+    echo html_options(tc_select("punchitems", "punchlist", PUNCHLIST_ORDER_BY_PUNCHITEMS));
     echo "          </select>\n";
     echo "        </div>\n";
     echo "        <div class=\"mb-3\">\n";
