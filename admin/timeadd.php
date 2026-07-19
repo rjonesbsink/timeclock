@@ -4,19 +4,88 @@ require_once '../lib/session.php';
 start_secure_session();
 
 include_once '../config.inc.php';
-include_once 'header_date.php';
-include_once 'topmain.php';
+include_once 'header_date_bootstrap.php';
+include_once 'topmain_bootstrap.php';
 echo "<title>$title - Add Time</title>\n";
 
 $self = htmlentities($_SERVER['PHP_SELF']);
 $request = $_SERVER['REQUEST_METHOD'];
 
 const WHERE_EMPFULLNAME = "empfullname = ?";
-const SELECT_ALL_FROM = "select * from ";
-const PUNCHLIST_ORDER_BY_PUNCHITEMS = "punchlist order by punchitems asc";
-const FOOTER_PHP = '../footer.php';
+const FOOTER_PHP = 'footer_bootstrap.php';
 const MSG_SOMETHING_FISHY = "Something is fishy here.\n";
 const DATE_PATTERN = "/^([0-9]{1,2})[\-\/\.]([0-9]{1,2})[\-\/\.](([0-9]{2})|([0-9]{4}))$/i";
+const PUNCHLIST_ORDER_BY_PUNCHITEMS = "1=1 order by punchitems asc";
+
+function render_time_add_form(
+    $self,
+    $js_datefmt,
+    $post_username,
+    $post_displayname,
+    $post_date,
+    $post_time,
+    $timefmt_size,
+    $timefmt_24hr_text,
+    $get_user,
+    $timefmt_24hr,
+    $post_statusname,
+    $post_notes
+) {
+    $h_timefmt_size = htmlentities($timefmt_size);
+    $h_timefmt_24hr_text = htmlentities($timefmt_24hr_text);
+    $h_js_datefmt = htmlentities($js_datefmt);
+
+    echo "      <form name='form' action='$self' method='post' onsubmit=\"return isDate()\">\n";
+    echo csrf_field() . "\n";
+    echo "        <input type='hidden' name='date_format' value=\"$h_js_datefmt\">\n";
+    echo "        <div class=\"mb-3\">\n";
+    echo "          <label class=\"form-label\">Username</label>\n";
+    echo "          <input type='hidden' name='post_username' value=\"" . htmlentities($post_username) . "\">\n";
+    echo "          <div class=\"form-control-plaintext\">" . htmlentities($post_username) . "</div>\n";
+    echo "        </div>\n";
+    echo "        <div class=\"mb-3\">\n";
+    echo "          <label class=\"form-label\">Display Name</label>\n";
+    echo "          <input type='hidden' name='post_displayname' value=\"" . htmlentities($post_displayname) . "\">\n";
+    echo "          <div class=\"form-control-plaintext\">" . htmlentities($post_displayname) . "</div>\n";
+    echo "        </div>\n";
+    echo "        <div class=\"mb-3\">\n";
+    echo "          <label class=\"form-label\" for='post_date'>Date <span class=\"text-danger\">*</span></label>\n";
+    echo "          <div class=\"input-group\" style=\"max-width:300px;\">\n";
+    echo "            <input type='text' id='post_date' class=\"form-control\" size='10' maxlength='10' name='post_date' value=\""
+        . htmlentities($post_date) . "\">\n";
+    echo "            <a href=\"#\" class=\"btn btn-outline-secondary\"
+                onclick=\"cal.select(document.forms['form'].post_date,'post_date_anchor','$h_js_datefmt');
+                return false;\" name=\"post_date_anchor\" id=\"post_date_anchor\">Pick Date</a>\n";
+    echo "          </div>\n";
+    echo "        </div>\n";
+    echo "        <div class=\"mb-3\">\n";
+    echo "          <label class=\"form-label\" for='post_time'>Time <span class=\"text-danger\">*</span></label>\n";
+    echo "          <input type='text' id='post_time' class=\"form-control\" style=\"max-width:200px;\" size='10' maxlength=\"$h_timefmt_size\"
+                name='post_time' value=\"" . htmlentities($post_time) . "\">\n";
+    echo "          <div class=\"form-text\">$h_timefmt_24hr_text</div>\n";
+    echo "        </div>\n";
+    echo "        <input type='hidden' name='get_user' value=\"" . htmlentities($get_user) . "\">\n";
+    echo "        <input type='hidden' name='timefmt_24hr' value=\"" . htmlentities($timefmt_24hr) . "\">\n";
+    echo "        <input type='hidden' name='timefmt_24hr_text' value=\"$h_timefmt_24hr_text\">\n";
+    echo "        <input type='hidden' name='timefmt_size' value=\"$h_timefmt_size\">\n";
+    echo "        <div class=\"mb-3\">\n";
+    echo "          <label class=\"form-label\" for='post_statusname'>Status <span class=\"text-danger\">*</span></label>\n";
+    echo "          <select id='post_statusname' class=\"form-select\" name='post_statusname'>\n";
+    echo "            <option value='1'>Choose One</option>\n";
+    echo html_options(tc_select("punchitems", "punchlist", PUNCHLIST_ORDER_BY_PUNCHITEMS), $post_statusname);
+    echo "          </select>\n";
+    echo "        </div>\n";
+    echo "        <div class=\"mb-3\">\n";
+    echo "          <label class=\"form-label\" for='post_notes'>Notes</label>\n";
+    echo "          <input type='text' id='post_notes' class=\"form-control\" size='17' maxlength='250' name='post_notes' value=\""
+        . htmlspecialchars($post_notes, ENT_QUOTES) . "\">\n";
+    echo "        </div>\n";
+    echo "        <p class=\"small text-muted\">* required</p>\n";
+    echo "        <div style=\"position:absolute;visibility:hidden;background-color:#ffffff;\" id=\"mydiv\">&nbsp;</div>\n";
+    echo "        <button type='submit' class=\"btn btn-primary\" name='submit' value='Add Time'>Add Time</button>\n";
+    echo "        <a href='timeadmin.php' class=\"btn btn-outline-secondary\">Cancel</a>\n";
+    echo "      </form>\n";
+}
 
 if (($timefmt == "G:i") || ($timefmt == "H:i")) {
     $timefmt_24hr = '1';
@@ -34,15 +103,14 @@ require_once '../lib/csrf.php';
 
 if ($request == 'GET') {
     if (!isset($_GET['username'])) {
-        echo "<table width=100% border=0 cellpadding=7 cellspacing=1>\n";
-        echo "  <tr class=right_main_text><td height=10 align=center valign=top scope=row class=title_underline>PHP Timeclock Error!</td></tr>\n";
-        echo "  <tr class=right_main_text>\n";
-        echo "    <td align=center valign=top scope=row>\n";
-        echo "      <table width=300 border=0 cellpadding=5 cellspacing=0>\n";
-        echo "        <tr class=right_main_text><td align=center>How did you get here?</td></tr>\n";
-        echo "        <tr class=right_main_text><td align=center>Go back to the <a class=admin_headings href='timeadmin.php'>Add/Edit/Delete Time</a> page to
-                add a time.</td></tr>\n";
-        echo "      </table><br /></td></tr></table>\n";
+        echo "<div class=\"container-fluid mt-3\">\n";
+        echo "  <div class=\"alert alert-danger\">\n";
+        echo "    <h5>PHP Timeclock Error!</h5>\n";
+        echo "    <p>How did you get here?</p>\n";
+        echo "    <p>Go back to the <a href='timeadmin.php'>Add/Edit/Delete Time</a> page to add a time.</p>\n";
+        echo "  </div>\n";
+        echo "</div>\n";
+        include_once FOOTER_PHP;
         exit;
     }
 
@@ -50,7 +118,13 @@ if ($request == 'GET') {
 
     disabled_acct($get_user);
 
-    echo admin_time_left_nav($get_user, 'add');
+    echo "<div class=\"container-fluid mt-3\">\n";
+    echo "  <div class=\"row\">\n";
+    // admin_leftnav_time_context needs raw (unescaped) values -- see the
+    // doc-comment in leftnav_bootstrap.php.
+    $admin_leftnav_time_context = array('username' => $get_user, 'current' => 'timeadd.php');
+    include_once 'leftnav_bootstrap.php';
+    echo "    <div class=\"col-md-9\">\n";
 
     $get_user = addslashes($get_user);
 
@@ -63,67 +137,57 @@ if ($request == 'GET') {
 
     $get_user = stripslashes(get_string('username'));
 
-    echo "    <td align=left class=right_main scope=col>\n";
-    echo "      <table width=100% height=100% border=0 cellpadding=10 cellspacing=1>\n";
-    echo "        <tr class=right_main_text>\n";
-    echo "          <td valign=top>\n";
-    echo "            <br />\n";
-    echo "            <form name='form' action='$self' method='post' onsubmit=\"return isDate()\">\n";
+    echo "      <h5><img src='../images/icons/clock_add.png'> Add Time</h5>\n";
+    echo "      <form name='form' action='$self' method='post' onsubmit=\"return isDate()\">\n";
     echo csrf_field() . "\n";
-    echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
-    echo "              <tr>\n";
-    echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/clock_add.png' />&nbsp;&nbsp;&nbsp;Add Time
-                    </th>\n";
-    echo "              </tr>\n";
-    echo "              <tr><td height=15></td></tr>\n";
-    echo "                <input type='hidden' name='date_format' value='$js_datefmt'>\n";
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Username:</td><td align=left class=table_rows
-                      colspan=2 width=80% style='padding-left:20px;'>
-                      <input type='hidden' name='post_username' value=\"$username\">$username</td></tr>\n";
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Display Name:</td><td align=left class=table_rows
-                      colspan=2 width=80% style='padding-left:20px;'>
-                      <input type='hidden' name='post_displayname' value=\"$displayname\">$displayname</td></tr>\n";
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Date: ($tmp_datefmt)</td><td colspan=2 width=80%
-                      style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'><input type='text'
-                      size='10' maxlength='10' name='post_date'>&nbsp;*&nbsp;&nbsp;&nbsp;<a href=\"#\" 
-                      onclick=\"form.post_date.value='';cal.select(document.forms['form'].post_date,'post_date_anchor','$js_datefmt'); 
-                      return false;\" name=\"post_date_anchor\" id=\"post_date_anchor\" style='font-size:11px;color:#27408b;'>Pick Date</a></td><tr>\n";
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Time:</td><td colspan=2 width=80%
-                      style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
-                      <input type='text' size='10' maxlength='$timefmt_size' name='post_time'>&nbsp;*&nbsp;&nbsp;
-                      <a style='text-decoration:none;font-size:11px;color:#27408b;'>($timefmt_24hr_text)</a></td></tr>\n";
-    echo "                <input type='hidden' name='get_user' value=\"$get_user\">\n";
-    echo "                <input type='hidden' name='timefmt_24hr' value=\"$timefmt_24hr\">\n";
-    echo "                <input type='hidden' name='timefmt_24hr_text' value=\"$timefmt_24hr_text\">\n";
-    echo "                <input type='hidden' name='timefmt_size' value=\"$timefmt_size\">\n";
-
-    // query to populate dropdown with statuses //
-
-    $query2 = SELECT_ALL_FROM . $db_prefix . PUNCHLIST_ORDER_BY_PUNCHITEMS;
-    $result2 = mysqli_query($GLOBALS["___mysqli_ston"], $query2);
-
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Status:</td><td colspan=2 width=80%
-                      style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
-                      <select name='post_statusname'>\n";
-    echo "                        <option value ='1'>Choose One</option>\n";
-
-    while ($row2 = mysqli_fetch_array($result2)) {
-        echo "                        <option>" . $row2['punchitems'] . "</option>\n";
-    }
-    echo "                      </select>&nbsp;*</td></tr>\n";
-    ((mysqli_free_result($result2) || (is_object($result2) && (get_class($result2) == "mysqli_result"))) ? true : false);
-
-    echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Notes:</td><td align=left colspan=2 width=80%
-                      style='padding-left:20px;'><input type='text' size='17' maxlength='250' name='post_notes'></td></tr>\n";
-    echo "              <tr><td class=table_rows align=right colspan=3 style='color:red;font-family:Tahoma;font-size:10px;'>*&nbsp;required&nbsp;</td></tr>\n";
-    echo "            </table>\n";
-    echo "            <div style=\"position:absolute;visibility:hidden;background-color:#ffffff;layer-background-color:#ffffff;\" id=\"mydiv\"
-                 height=200>&nbsp;</div>\n";
-    echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
-    echo "              <tr><td height=40>&nbsp;</td></tr>\n";
-    echo "              <tr><td width=30><input type='image' name='submit' value='Add Time' align='middle'
-                      src='../images/buttons/next_button.png'></td><td><a href='timeadmin.php'><img src='../images/buttons/cancel_button.png'
-                      border='0'></td></tr></table></form></td></tr>\n";
+    echo "        <input type='hidden' name='date_format' value='$js_datefmt'>\n";
+    echo "        <div class=\"mb-3\">\n";
+    echo "          <label class=\"form-label\">Username</label>\n";
+    echo "          <input type='hidden' name='post_username' value=\"" . htmlentities($username) . "\">\n";
+    echo "          <div class=\"form-control-plaintext\">" . htmlentities($username) . "</div>\n";
+    echo "        </div>\n";
+    echo "        <div class=\"mb-3\">\n";
+    echo "          <label class=\"form-label\">Display Name</label>\n";
+    echo "          <input type='hidden' name='post_displayname' value=\"" . htmlentities($displayname) . "\">\n";
+    echo "          <div class=\"form-control-plaintext\">" . htmlentities($displayname) . "</div>\n";
+    echo "        </div>\n";
+    echo "        <div class=\"mb-3\">\n";
+    echo "          <label class=\"form-label\" for='post_date'>Date ($tmp_datefmt) <span class=\"text-danger\">*</span></label>\n";
+    echo "          <div class=\"input-group\" style=\"max-width:300px;\">\n";
+    echo "            <input type='text' id='post_date' class=\"form-control\" size='10' maxlength='10' name='post_date'>\n";
+    echo "            <a href=\"#\" class=\"btn btn-outline-secondary\"
+                onclick=\"form.post_date.value='';cal.select(document.forms['form'].post_date,'post_date_anchor','$js_datefmt');
+                return false;\" name=\"post_date_anchor\" id=\"post_date_anchor\">Pick Date</a>\n";
+    echo "          </div>\n";
+    echo "        </div>\n";
+    echo "        <div class=\"mb-3\">\n";
+    echo "          <label class=\"form-label\" for='post_time'>Time <span class=\"text-danger\">*</span></label>\n";
+    echo "          <input type='text' id='post_time' class=\"form-control\" style=\"max-width:200px;\" size='10' maxlength='$timefmt_size' name='post_time'>\n";
+    echo "          <div class=\"form-text\">$timefmt_24hr_text</div>\n";
+    echo "        </div>\n";
+    echo "        <input type='hidden' name='get_user' value=\"" . htmlentities($get_user) . "\">\n";
+    echo "        <input type='hidden' name='timefmt_24hr' value=\"$timefmt_24hr\">\n";
+    echo "        <input type='hidden' name='timefmt_24hr_text' value=\"$timefmt_24hr_text\">\n";
+    echo "        <input type='hidden' name='timefmt_size' value=\"$timefmt_size\">\n";
+    echo "        <div class=\"mb-3\">\n";
+    echo "          <label class=\"form-label\" for='post_statusname'>Status <span class=\"text-danger\">*</span></label>\n";
+    echo "          <select id='post_statusname' class=\"form-select\" name='post_statusname'>\n";
+    echo "            <option value='1'>Choose One</option>\n";
+    echo html_options(tc_select("punchitems", "punchlist", PUNCHLIST_ORDER_BY_PUNCHITEMS));
+    echo "          </select>\n";
+    echo "        </div>\n";
+    echo "        <div class=\"mb-3\">\n";
+    echo "          <label class=\"form-label\" for='post_notes'>Notes</label>\n";
+    echo "          <input type='text' id='post_notes' class=\"form-control\" size='17' maxlength='250' name='post_notes'>\n";
+    echo "        </div>\n";
+    echo "        <p class=\"small text-muted\">* required</p>\n";
+    echo "        <div style=\"position:absolute;visibility:hidden;background-color:#ffffff;\" id=\"mydiv\">&nbsp;</div>\n";
+    echo "        <button type='submit' class=\"btn btn-primary\" name='submit' value='Add Time'>Add Time</button>\n";
+    echo "        <a href='timeadmin.php' class=\"btn btn-outline-secondary\">Cancel</a>\n";
+    echo "      </form>\n";
+    echo "    </div>\n";
+    echo "  </div>\n";
+    echo "</div>\n";
     include_once FOOTER_PHP;
     exit;
 } elseif ($request == 'POST') {
@@ -222,50 +286,32 @@ if ($request == 'GET') {
 
     // end post validation //
 
-    //if ($get_user != $post_username) {exit;}
-    //if (($timefmt_24hr !== '0') && ($timefmt_24hr !== '1')) {exit;}
-    //if (($timefmt_24hr_text !== '24 hr format') && ($timefmt_24hr_text !== '12 hr format')) {exit;}
-    //if (($timefmt_size != '5') && ($timefmt_size != '7')) {exit;}
-
     $get_user = stripslashes($get_user);
     $post_username = stripslashes($post_username);
     $post_displayname = stripslashes($post_displayname);
 
-    echo admin_time_left_nav($get_user, 'add');
-    echo "    <td align=left class=right_main scope=col>\n";
-    echo "      <table width=100% height=100% border=0 cellpadding=10 cellspacing=1>\n";
-    echo "        <tr class=right_main_text>\n";
-    echo "          <td valign=top>\n";
-    echo "            <br />\n";
+    echo "<div class=\"container-fluid mt-3\">\n";
+    echo "  <div class=\"row\">\n";
+    $admin_leftnav_time_context = array('username' => $get_user, 'current' => 'timeadd.php');
+    include_once 'leftnav_bootstrap.php';
+    echo "    <div class=\"col-md-9\">\n";
+
+    echo "      <h5><img src='../images/icons/clock_add.png'> Add Time</h5>\n";
+
     if (
         (empty($post_date)) || (empty($post_time)) || ($post_statusname == '1') || (!preg_match('/' . "^([[:alnum:]]| |-|_|\.)+$" . '/i', $post_statusname)) ||
         (!preg_match(DATE_PATTERN, $post_date))
     ) {
         $evil_post = '1';
         if (empty($post_date) || !preg_match(DATE_PATTERN, $post_date)) {
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr>\n";
-            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    A valid Date is required.</td></tr>\n";
-            echo "            </table>\n";
+            echo "      <div class=\"alert alert-danger\">A valid Date is required.</div>\n";
         } elseif (empty($post_time)) {
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr>\n";
-            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    A valid Time is required.</td></tr>\n";
-            echo "            </table>\n";
+            echo "      <div class=\"alert alert-danger\">A valid Time is required.</div>\n";
         } elseif ($post_statusname == "1") {
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr>\n";
-            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    A Status must be chosen.</td></tr>\n";
-            echo "            </table>\n";
+            echo "      <div class=\"alert alert-danger\">A Status must be chosen.</div>\n";
         } elseif (!preg_match('/' . "^([[:alnum:]]| |-|_|\.)+$" . '/i', $post_statusname)) {
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr>\n";
-            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    Alphanumeric characters, hyphens, underscores, spaces, and periods are allowed in a Status Name.</td></tr>\n";
-            echo "            </table>\n";
+            echo "      <div class=\"alert alert-danger\">Alphanumeric characters, hyphens, underscores, spaces, and periods are allowed
+                    in a Status Name.</div>\n";
         }
     } elseif ($timefmt_24hr == '0') {
         if (
@@ -276,11 +322,7 @@ if ($request == 'GET') {
             ))
         ) {
             $evil_time = '1';
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr>\n";
-            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    A valid Time is required.</td></tr>\n";
-            echo "            </table>\n";
+            echo "      <div class=\"alert alert-danger\">A valid Time is required.</div>\n";
         } else {
             if (isset($time_regs)) {
                 $h = $time_regs[1];
@@ -290,21 +332,13 @@ if ($request == 'GET') {
             $m = $time_regs[2];
             if (($h > 12) || ($m > 59)) {
                 $evil_time = '1';
-                echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-                echo "              <tr>\n";
-                echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    A valid Time is required.</td></tr>\n";
-                echo "            </table>\n";
+                echo "      <div class=\"alert alert-danger\">A valid Time is required.</div>\n";
             }
         }
     } elseif ($timefmt_24hr == '1') {
         if (!preg_match('/' . "^([0-9]?[0-9])+:+([0-9]+[0-9])$" . '/i', $post_time, $time_regs)) {
             $evil_time = '1';
-            echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-            echo "              <tr>\n";
-            echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    A valid Time is required.</td></tr>\n";
-            echo "            </table>\n";
+            echo "      <div class=\"alert alert-danger\">A valid Time is required.</div>\n";
         } else {
             if (isset($time_regs)) {
                 $h = $time_regs[1];
@@ -314,11 +348,7 @@ if ($request == 'GET') {
             $m = $time_regs[2];
             if (($h > 24) || ($m > 59)) {
                 $evil_time = '1';
-                echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-                echo "              <tr>\n";
-                echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    A valid Time is required.</td></tr>\n";
-                echo "            </table>\n";
+                echo "      <div class=\"alert alert-danger\">A valid Time is required.</div>\n";
             }
         }
     }
@@ -333,11 +363,7 @@ if ($request == 'GET') {
             if ($month > 12 || $day > 31) {
                 $evil_date = '1';
                 if (!isset($evil_post)) {
-                    echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-                    echo "              <tr>\n";
-                    echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    A valid Date is required.</td></tr>\n";
-                    echo "            </table>\n";
+                    echo "      <div class=\"alert alert-danger\">A valid Date is required.</div>\n";
                 }
             }
         } elseif ($calendar_style == "euro") {
@@ -349,78 +375,30 @@ if ($request == 'GET') {
             if ($month > 12 || $day > 31) {
                 $evil_date = '1';
                 if (!isset($evil_post)) {
-                    echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-                    echo "              <tr>\n";
-                    echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    A valid Date is required.</td></tr>\n";
-                    echo "            </table>\n";
+                    echo "      <div class=\"alert alert-danger\">A valid Date is required.</div>\n";
                 }
             }
         }
     }
 
     if ((isset($evil_post)) || (isset($evil_date)) || (isset($evil_time))) {
-        echo "            <br />\n";
-        echo "            <form name='form' action='$self' method='post' onsubmit=\"return isDate()\">\n";
-        echo csrf_field() . "\n";
-        echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
-        echo "              <tr>\n";
-        echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/clock_add.png' />&nbsp;&nbsp;&nbsp;Add Time
-                    </th>\n";
-        echo "              </tr>\n";
-        echo "              <tr><td height=15></td></tr>\n";
-        echo "                <input type='hidden' name='date_format' value='$js_datefmt'>\n";
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Username:</td><td align=left class=table_rows
-                      colspan=2 width=80% style='padding-left:20px;'>
-                      <input type='hidden' name='post_username' value=\"$post_username\">$post_username</td></tr>\n";
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Display Name:</td><td align=left class=table_rows
-                      colspan=2 width=80% style='padding-left:20px;'>
-                      <input type='hidden' name='post_displayname' value=\"$post_displayname\">$post_displayname</td></tr>\n";
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Date:</td><td colspan=2 width=80%
-                      style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'><input type='text'
-                      size='10' maxlength='10' name='post_date' value='$post_date'>&nbsp;*&nbsp;&nbsp;&nbsp;<a href=\"#\"
-                      onclick=\"cal.select(document.forms['form'].post_date,'post_date_anchor','$js_datefmt');
-                      return false;\" name=\"post_date_anchor\" id=\"post_date_anchor\" style='font-size:11px;color:#27408b;'>Pick Date</a></td><tr>\n";
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Time:</td><td colspan=2 width=80%
-                      style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
-                      <input type='text' size='10' maxlength='$timefmt_size' name='post_time' value='$post_time'>&nbsp;*&nbsp;&nbsp;
-                      <a style='text-decoration:none;font-size:11px;color:#27408b;'>($timefmt_24hr_text)</a></td></tr>\n";
-        echo "                <input type='hidden' name='get_user' value=\"$get_user\">\n";
-        echo "                <input type='hidden' name='timefmt_24hr' value=\"$timefmt_24hr\">\n";
-        echo "                <input type='hidden' name='timefmt_24hr_text' value=\"$timefmt_24hr_text\">\n";
-        echo "                <input type='hidden' name='timefmt_size' value=\"$timefmt_size\">\n";
-
-        // query to populate dropdown with statuses //
-
-        $query2 = SELECT_ALL_FROM . $db_prefix . PUNCHLIST_ORDER_BY_PUNCHITEMS;
-        $result2 = mysqli_query($GLOBALS["___mysqli_ston"], $query2);
-
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Status:</td><td colspan=2 width=80%
-                      style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
-                      <select name='post_statusname'>\n";
-        echo "                        <option value ='1'>Choose One</option>\n";
-
-        while ($row2 = mysqli_fetch_array($result2)) {
-            if ($post_statusname == "" . $row2['punchitems'] . "") {
-                echo "                        <option selected>" . $row2['punchitems'] . "</option>\n";
-            } else {
-                echo "                        <option>" . $row2['punchitems'] . "</option>\n";
-            }
-        }
-        echo "                      </select>&nbsp;*</td></tr>\n";
-        ((mysqli_free_result($result2) || (is_object($result2) && (get_class($result2) == "mysqli_result"))) ? true : false);
-
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Notes:</td><td align=left colspan=2 width=80%
-                      style='padding-left:20px;'><input type='text' size='17' maxlength='250' name='post_notes' value='" . htmlspecialchars($post_notes, ENT_QUOTES) . "'></td></tr>\n";
-        echo "              <tr><td class=table_rows align=right colspan=3 style='color:red;font-family:Tahoma;font-size:10px;'>*&nbsp;required&nbsp;</td></tr>\n";
-        echo "            </table>\n";
-        echo "            <div style=\"position:absolute;visibility:hidden;background-color:#ffffff;layer-background-color:#ffffff;\" id=\"mydiv\"
-                 height=200>&nbsp;</div>\n";
-        echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
-        echo "              <tr><td height=40>&nbsp;</td></tr>\n";
-        echo "              <tr><td width=30><input type='image' name='submit' value='Add Time' align='middle'
-                      src='../images/buttons/next_button.png'></td><td><a href='timeadmin.php'><img src='../images/buttons/cancel_button.png'
-                      border='0'></td></tr></table></form></td></tr>\n";
+        render_time_add_form(
+            $self,
+            $js_datefmt,
+            $post_username,
+            $post_displayname,
+            $post_date,
+            $post_time,
+            $timefmt_size,
+            $timefmt_24hr_text,
+            $get_user,
+            $timefmt_24hr,
+            $post_statusname,
+            $post_notes
+        );
+        echo "    </div>\n";
+        echo "  </div>\n";
+        echo "</div>\n";
         include_once FOOTER_PHP;
         exit;
     } else {
@@ -430,7 +408,6 @@ if ($request == 'GET') {
         // configure timestamp to insert/update
 
         if ($calendar_style == "euro") {
-            //  $post_date = "$day/$month/$year";
             $post_date = "$month/$day/$year";
         } elseif ($calendar_style == "amer") {
             $post_date = "$month/$day/$year";
@@ -448,72 +425,24 @@ if ($request == 'GET') {
         while ($row = mysqli_fetch_array($result)) {
             $info_table_timestamp = "" . $row['timestamp'] . "";
             if ($timestamp == $info_table_timestamp) {
-                echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-                echo "              <tr>\n";
-                echo "                <td class=table_rows width=20 align=center><img src='../images/icons/cancel.png' /></td><td class=table_rows_red>
-                    Duplicate time exists for this user on this date. Time not added..</td></tr>\n";
-                echo "            </table>\n";
-                echo "            <br />\n";
-                echo "            <form name='form' action='$self' method='post' onsubmit=\"return isDate()\">\n";
-                echo csrf_field() . "\n";
-                echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
-                echo "              <tr>\n";
-                echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/clock_add.png' />&nbsp;&nbsp;&nbsp;Add Time
-                    </th>\n";
-                echo "              </tr>\n";
-                echo "              <tr><td height=15></td></tr>\n";
-                echo "                <input type='hidden' name='date_format' value='$js_datefmt'>\n";
-                echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Username:</td><td align=left class=table_rows
-                      colspan=2 width=80% style='padding-left:20px;'>
-                      <input type='hidden' name='post_username' value=\"$post_username\">$post_username</td></tr>\n";
-                echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Display Name:</td><td align=left class=table_rows
-                      colspan=2 width=80% style='padding-left:20px;'>
-                      <input type='hidden' name='post_displayname' value=\"$post_displayname\">$post_displayname</td></tr>\n";
-                echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Date:</td><td colspan=2 width=80%
-                      style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'><input type='text'
-                      size='10' maxlength='10' name='post_date' value='$post_date'>&nbsp;*&nbsp;&nbsp;&nbsp;<a href=\"#\"
-                      onclick=\"cal.select(document.forms['form'].post_date,'post_date_anchor','$js_datefmt');
-                      return false;\" name=\"post_date_anchor\" id=\"post_date_anchor\" style='font-size:11px;color:#27408b;'>Pick Date</a></td><tr>\n";
-                echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Time:</td><td colspan=2 width=80%
-                      style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
-                      <input type='text' size='10' maxlength='$timefmt_size' name='post_time' value='$post_time'>&nbsp;*&nbsp;&nbsp;
-                      <a style='text-decoration:none;font-size:11px;color:#27408b;'>($timefmt_24hr_text)</a></td></tr>\n";
-                echo "                <input type='hidden' name='get_user' value=\"$get_user\">\n";
-                echo "                <input type='hidden' name='timefmt_24hr' value=\"$timefmt_24hr\">\n";
-                echo "                <input type='hidden' name='timefmt_24hr_text' value=\"$timefmt_24hr_text\">\n";
-                echo "                <input type='hidden' name='timefmt_size' value=\"$timefmt_size\">\n";
-
-                // query to populate dropdown with statuses //
-
-                $query2 = SELECT_ALL_FROM . $db_prefix . PUNCHLIST_ORDER_BY_PUNCHITEMS;
-                $result2 = mysqli_query($GLOBALS["___mysqli_ston"], $query2);
-
-                echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Status:</td><td colspan=2 width=80%
-                      style='color:red;font-family:Tahoma;font-size:10px;padding-left:20px;'>
-                      <select name='post_statusname'>\n";
-                echo "                        <option value ='1'>Choose One</option>\n";
-
-                while ($row2 = mysqli_fetch_array($result2)) {
-                    if ($post_statusname == "" . $row2['punchitems'] . "") {
-                        echo "                        <option selected>" . $row2['punchitems'] . "</option>\n";
-                    } else {
-                        echo "                        <option>" . $row2['punchitems'] . "</option>\n";
-                    }
-                }
-                echo "                      </select>&nbsp;*</td></tr>\n";
-                ((mysqli_free_result($result2) || (is_object($result2) && (get_class($result2) == "mysqli_result"))) ? true : false);
-
-                echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Notes:</td><td align=left colspan=2 width=80%
-                      style='padding-left:20px;'><input type='text' size='17' maxlength='250' name='post_notes' value='" . htmlspecialchars($post_notes, ENT_QUOTES) . "'></td></tr>\n";
-                echo "              <tr><td class=table_rows align=right colspan=3 style='color:red;font-family:Tahoma;font-size:10px;'>*&nbsp;required&nbsp;</td></tr>\n";
-                echo "            </table>\n";
-                echo "            <div style=\"position:absolute;visibility:hidden;background-color:#ffffff;layer-background-color:#ffffff;\" id=\"mydiv\"
-                 height=200>&nbsp;</div>\n";
-                echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
-                echo "              <tr><td height=40>&nbsp;</td></tr>\n";
-                echo "              <tr><td width=30><input type='image' name='submit' value='Add Time' align='middle'
-                      src='../images/buttons/next_button.png'></td><td><a href='timeadmin.php'><img src='../images/buttons/cancel_button.png'
-                      border='0'></td></tr></table></form></td></tr>\n";
+                echo "      <div class=\"alert alert-danger\">Duplicate time exists for this user on this date. Time not added.</div>\n";
+                render_time_add_form(
+                    $self,
+                    $js_datefmt,
+                    $post_username,
+                    $post_displayname,
+                    $post_date,
+                    $post_time,
+                    $timefmt_size,
+                    $timefmt_24hr_text,
+                    $get_user,
+                    $timefmt_24hr,
+                    $post_statusname,
+                    $post_notes
+                );
+                echo "    </div>\n";
+                echo "  </div>\n";
+                echo "</div>\n";
                 include_once FOOTER_PHP;
                 exit;
             }
@@ -588,37 +517,19 @@ if ($request == 'GET') {
         $post_displayname = stripslashes($post_displayname);
         $post_date = date($datefmt, $timestamp + $tzo);
 
-        echo "            <table align=center class=table_border width=60% border=0 cellpadding=0 cellspacing=3>\n";
-        echo "              <tr>\n";
-        echo "              <td class=table_rows width=20 align=center><img src='../images/icons/accept.png' /></td><td class=table_rows_green>
-                  &nbsp;Time added successfully.</td></tr>\n";
-        echo "            </table>\n";
-        echo "            <br />\n";
-        echo "            <form name='form' action='$self' method='post' onsubmit=\"return isDate();\">\n";
-        echo csrf_field() . "\n";
-        echo "            <table align=center class=table_border width=60% border=0 cellpadding=3 cellspacing=0>\n";
-        echo "              <tr>\n";
-        echo "                <th class=rightside_heading nowrap halign=left colspan=3><img src='../images/icons/clock_add.png' />&nbsp;&nbsp;&nbsp;Add Time
-                    </th>\n";
-        echo "              </tr>\n";
-        echo "              <tr><td height=15></td></tr>\n";
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Username:</td><td align=left class=table_rows
-colspan=2 width=80% style='padding-left:20px;'>$post_username</td></tr>\n";
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Display Name:</td><td align=left class=table_rows
-colspan=2 width=80% style='padding-left:20px;'>$post_displayname</td></tr>\n";
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Date:</td><td align=left class=table_rows
-colspan=2 width=80% style='padding-left:20px;'>$post_date</td></tr>\n";
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Time:</td><td align=left class=table_rows
-colspan=2 width=80% style='padding-left:20px;'>$post_time</td></tr>\n";
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Status:</td><td align=left class=table_rows colspan=2
-width=80% style='color:$color;padding-left:20px;'>$post_statusname</td></tr>\n";
-        echo "              <tr><td class=table_rows height=25 width=20% style='padding-left:32px;' nowrap>Notes:</td><td align=left class=table_rows
-colspan=2 width=80% style='padding-left:20px;'>" . htmlspecialchars($post_notes) . "</td></tr>\n";
-        echo "              <tr><td height=15></td></tr>\n";
-        echo "            </table>\n";
-        echo "            <table align=center width=60% border=0 cellpadding=0 cellspacing=3>\n";
-        echo "              <tr><td height=20 align=left>&nbsp;</td></tr>\n";
-        echo "              <tr><td><a href='timeadmin.php'><img src='../images/buttons/done_button.png' border='0'></td></tr></table></td></tr>\n";
+        echo "      <div class=\"alert alert-success\">Time added successfully.</div>\n";
+        echo "      <table class=\"table table-sm table-bordered w-auto\">\n";
+        echo "        <tr><th>Username:</th><td>" . htmlentities($post_username) . "</td></tr>\n";
+        echo "        <tr><th>Display Name:</th><td>" . htmlentities($post_displayname) . "</td></tr>\n";
+        echo "        <tr><th>Date:</th><td>" . htmlentities($post_date) . "</td></tr>\n";
+        echo "        <tr><th>Time:</th><td>" . htmlentities($post_time) . "</td></tr>\n";
+        echo "        <tr><th>Status:</th><td style=\"color:" . htmlentities($color) . ";\">" . htmlentities($post_statusname) . "</td></tr>\n";
+        echo "        <tr><th>Notes:</th><td>" . htmlspecialchars($post_notes) . "</td></tr>\n";
+        echo "      </table>\n";
+        echo "      <a href='timeadmin.php' class=\"btn btn-primary\">Done</a>\n";
+        echo "    </div>\n";
+        echo "  </div>\n";
+        echo "</div>\n";
         include_once FOOTER_PHP;
         exit;
     }

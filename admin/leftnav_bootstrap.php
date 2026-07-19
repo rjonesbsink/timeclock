@@ -32,6 +32,15 @@
  * (one of 'statusedit.php'/'statusdelete.php') before including this file to
  * show them.
  *
+ * Pages that operate on one specific user's time entries (timeadd.php,
+ * timeedit.php, timedelete.php) similarly show 3 indented sub-links -- Add
+ * Time/Edit Time/Delete Time -- under "Add/Edit/Delete Time". Set
+ * $admin_leftnav_time_context to an array with 'username' and 'current' (one
+ * of 'timeadd.php'/'timeedit.php'/'timedelete.php') before including this
+ * file to show them. This is the Bootstrap-layout counterpart to the
+ * still-in-use admin_time_left_nav()/admin_time_sidebar_links() helpers in
+ * functions.php, which continue to serve the not-yet-migrated siblings.
+ *
  * 'username'/'groupname'/'statusname' and 'officename' must be raw
  * (unescaped) values, exactly as read from $_GET/$_POST/the database -- this
  * file urlencode()s them itself to build each sub-link's href. Passing an
@@ -43,6 +52,7 @@ $admin_leftnav_current = $admin_leftnav_current ?? '';
 $admin_leftnav_user_context = $admin_leftnav_user_context ?? null;
 $admin_leftnav_group_context = $admin_leftnav_group_context ?? null;
 $admin_leftnav_status_context = $admin_leftnav_status_context ?? null;
+$admin_leftnav_time_context = $admin_leftnav_time_context ?? null;
 
 echo "<div class=\"col-md-3 mb-4\">\n";
 echo "  <div class=\"list-group list-group-flush small\">\n";
@@ -93,6 +103,14 @@ echo admin_leftnav_link('statuscreate.php', 'Create Status', $admin_leftnav_curr
 
 echo "    <div class=\"list-group-item bg-transparent fw-bold border-0 pb-0 mt-3\">Miscellaneous</div>\n";
 echo admin_leftnav_link('timeadmin.php', 'Add/Edit/Delete Time', $admin_leftnav_current);
+
+if ($admin_leftnav_time_context) {
+    $tu = urlencode($admin_leftnav_time_context['username']);
+    $current_time_sub = $admin_leftnav_time_context['current'];
+    echo admin_leftnav_link("timeadd.php?username=$tu", '→ Add Time', $current_time_sub === 'timeadd.php' ? "timeadd.php?username=$tu" : '');
+    echo admin_leftnav_link("timeedit.php?username=$tu", '→ Edit Time', $current_time_sub === 'timeedit.php' ? "timeedit.php?username=$tu" : '');
+    echo admin_leftnav_link("timedelete.php?username=$tu", '→ Delete Time', $current_time_sub === 'timedelete.php' ? "timedelete.php?username=$tu" : '');
+}
 echo admin_leftnav_link('sysedit.php', 'Edit System Settings', $admin_leftnav_current);
 echo admin_leftnav_link('dbupgrade.php', 'Upgrade Database', $admin_leftnav_current);
 
