@@ -26,6 +26,75 @@ function form_open($self, $with_onsubmit = false)
     return "      <form name='form' action='" . htmlspecialchars($self) . "' method='post'$onsubmit>\n";
 }
 
+function render_date_search_form($self, $js_datefmt, $tmp_datefmt, $post_username, $post_displayname, $post_date, $get_user, $clear_date_first)
+{
+    $onclick_clear = $clear_date_first ? "form.post_date.value='';" : '';
+
+    echo form_open($self, true);
+    echo csrf_field() . "\n";
+    echo "        <input type='hidden' name='date_format' value='" . htmlentities($js_datefmt) . "'>\n";
+    echo "        <div class=\"mb-3\">\n";
+    echo "          <label class=\"form-label\">Username</label>\n";
+    echo "          <input type='hidden' name='post_username' value=\"" . htmlspecialchars($post_username) . "\">\n";
+    echo "          <div class=\"form-control-plaintext\">" . htmlspecialchars($post_username) . "</div>\n";
+    echo "        </div>\n";
+    echo "        <div class=\"mb-3\">\n";
+    echo "          <label class=\"form-label\">Display Name</label>\n";
+    echo "          <input type='hidden' name='post_displayname' value=\"" . htmlspecialchars($post_displayname) . "\">\n";
+    echo "          <div class=\"form-control-plaintext\">" . htmlspecialchars($post_displayname) . "</div>\n";
+    echo "        </div>\n";
+    echo "        <div class=\"mb-3\">\n";
+    echo "          <label class=\"form-label\" for='post_date'>Date ($tmp_datefmt) <span class=\"text-danger\">*</span></label>\n";
+    echo "          <div class=\"input-group\" style=\"max-width:300px;\">\n";
+    echo "            <input type='text' id='post_date' class=\"form-control\" size='10' maxlength='10' name='post_date' value=\""
+        . htmlspecialchars($post_date) . "\">\n";
+    echo "            <a href=\"#\" class=\"btn btn-outline-secondary\"
+                onclick=\"{$onclick_clear}cal.select(document.forms['form'].post_date,'post_date_anchor','$js_datefmt');
+                return false;\" name=\"post_date_anchor\" id=\"post_date_anchor\">Pick Date</a>\n";
+    echo "          </div>\n";
+    echo "        </div>\n";
+    echo hidden_field('get_user', $get_user);
+    echo "        <p class=\"small text-muted\">* required</p>\n";
+    echo "        <div style=\"position:absolute;visibility:hidden;background-color:#ffffff;\" id=\"mydiv\">&nbsp;</div>\n";
+    echo "        <button type='submit' class=\"btn btn-primary\" name='submit' value='Edit Time'>Edit Time</button>\n";
+    echo "        <a href='timeadmin.php' class=\"btn btn-outline-secondary\">Cancel</a>\n";
+    echo "      </form>\n";
+}
+
+function render_punch_edit_rows(
+    $final_num_rows,
+    $final_username,
+    $final_inout,
+    $final_notes,
+    $final_mysql_timestamp,
+    $final_time,
+    $edit_time_textbox,
+    $timefmt_size,
+    $color1,
+    $color2
+) {
+    $row_count = 0;
+    for ($x = 0; $x < $final_num_rows; $x++) {
+        $row_color = ($row_count % 2) ? $color1 : $color2;
+        $statuscolor = tc_select_value("color", "punchlist", "punchitems = ?", $final_inout[$x]);
+        $textbox_value = isset($edit_time_textbox[$x]) ? $edit_time_textbox[$x] : '';
+
+        echo "        <tr style=\"background-color:$row_color;\">\n";
+        echo "          <td><input type='text' class=\"form-control form-control-sm\" size='7' maxlength='$timefmt_size'
+                name='edit_time_textbox[$x]' value=\"" . htmlspecialchars($textbox_value) . "\"></td>\n";
+        echo "          <td style=\"color:" . htmlspecialchars($statuscolor) . ";\">" . htmlspecialchars($final_inout[$x]) . "</td>\n";
+        echo "          <td>" . htmlspecialchars($final_time[$x]) . "</td>\n";
+        echo "          <td>" . htmlspecialchars($final_notes[$x]) . "</td>\n";
+        echo "        </tr>\n";
+        echo "        <input type='hidden' name='final_username[$x]' value=\"" . htmlspecialchars($final_username[$x]) . "\">\n";
+        echo "        <input type='hidden' name='final_inout[$x]' value=\"" . htmlspecialchars($final_inout[$x]) . "\">\n";
+        echo "        <input type='hidden' name='final_notes[$x]' value=\"" . htmlspecialchars($final_notes[$x]) . "\">\n";
+        echo "        <input type='hidden' name='final_time[$x]' value=\"" . htmlspecialchars($final_time[$x]) . "\">\n";
+        echo "        <input type='hidden' name='final_mysql_timestamp[$x]' value=\"" . htmlspecialchars($final_mysql_timestamp[$x]) . "\">\n";
+        $row_count++;
+    }
+}
+
 if (($timefmt == "G:i") || ($timefmt == "H:i")) {
     $timefmt_24hr = '1';
     $timefmt_24hr_text = '24 hr format';
@@ -76,37 +145,7 @@ if ($request == 'GET') {
     $get_user = stripslashes($get_user);
 
     echo "      <h5><img src='../images/icons/clock_edit.png'> Edit Time</h5>\n";
-    echo form_open($self, true);
-    echo csrf_field() . "\n";
-    echo "        <input type='hidden' name='date_format' value='" . htmlentities($js_datefmt) . "'>\n";
-    echo "        <div class=\"mb-3\">\n";
-    echo "          <label class=\"form-label\">Username</label>\n";
-    echo "          <input type='hidden' name='post_username' value=\"" . htmlentities($username) . "\">\n";
-    echo "          <div class=\"form-control-plaintext\">" . htmlentities($username) . "</div>\n";
-    echo "        </div>\n";
-    echo "        <div class=\"mb-3\">\n";
-    echo "          <label class=\"form-label\">Display Name</label>\n";
-    echo "          <input type='hidden' name='post_displayname' value=\"" . htmlentities($displayname) . "\">\n";
-    echo "          <div class=\"form-control-plaintext\">" . htmlentities($displayname) . "</div>\n";
-    echo "        </div>\n";
-    echo "        <div class=\"mb-3\">\n";
-    echo "          <label class=\"form-label\" for='post_date'>Date ($tmp_datefmt) <span class=\"text-danger\">*</span></label>\n";
-    echo "          <div class=\"input-group\" style=\"max-width:300px;\">\n";
-    echo "            <input type='text' id='post_date' class=\"form-control\" size='10' maxlength='10' name='post_date'>\n";
-    echo "            <a href=\"#\" class=\"btn btn-outline-secondary\"
-                onclick=\"form.post_date.value='';cal.select(document.forms['form'].post_date,'post_date_anchor','$js_datefmt');
-                return false;\" name=\"post_date_anchor\" id=\"post_date_anchor\">Pick Date</a>\n";
-    echo "          </div>\n";
-    echo "        </div>\n";
-    echo hidden_field('get_user', $get_user);
-    echo "        <input type='hidden' name='timefmt_24hr' value=\"$timefmt_24hr\">\n";
-    echo "        <input type='hidden' name='timefmt_24hr_text' value=\"$timefmt_24hr_text\">\n";
-    echo "        <input type='hidden' name='timefmt_size' value=\"$timefmt_size\">\n";
-    echo "        <p class=\"small text-muted\">* required</p>\n";
-    echo "        <div style=\"position:absolute;visibility:hidden;background-color:#ffffff;\" id=\"mydiv\">&nbsp;</div>\n";
-    echo "        <button type='submit' class=\"btn btn-primary\" name='submit' value='Edit Time'>Edit Time</button>\n";
-    echo "        <a href='timeadmin.php' class=\"btn btn-outline-secondary\">Cancel</a>\n";
-    echo "      </form>\n";
+    render_date_search_form($self, $js_datefmt, $tmp_datefmt, $username, $displayname, '', $get_user, true);
     echo "    </div>\n";
     echo "  </div>\n";
     echo "</div>\n";
@@ -226,35 +265,7 @@ if ($request == 'GET') {
     }
 
     if (isset($evil_post)) {
-        echo form_open($self, true);
-        echo csrf_field() . "\n";
-        echo "        <input type='hidden' name='date_format' value='" . htmlentities($js_datefmt) . "'>\n";
-        echo "        <div class=\"mb-3\">\n";
-        echo "          <label class=\"form-label\">Username</label>\n";
-        echo "          <input type='hidden' name='post_username' value=\"" . htmlspecialchars($post_username) . "\">\n";
-        echo "          <div class=\"form-control-plaintext\">" . htmlspecialchars($post_username) . "</div>\n";
-        echo "        </div>\n";
-        echo "        <div class=\"mb-3\">\n";
-        echo "          <label class=\"form-label\">Display Name</label>\n";
-        echo "          <input type='hidden' name='post_displayname' value=\"" . htmlspecialchars($post_displayname) . "\">\n";
-        echo "          <div class=\"form-control-plaintext\">" . htmlspecialchars($post_displayname) . "</div>\n";
-        echo "        </div>\n";
-        echo "        <div class=\"mb-3\">\n";
-        echo "          <label class=\"form-label\" for='post_date'>Date ($tmp_datefmt) <span class=\"text-danger\">*</span></label>\n";
-        echo "          <div class=\"input-group\" style=\"max-width:300px;\">\n";
-        echo "            <input type='text' id='post_date' class=\"form-control\" size='10' maxlength='10' name='post_date' value=\""
-            . htmlspecialchars($post_date) . "\">\n";
-        echo "            <a href=\"#\" class=\"btn btn-outline-secondary\"
-                    onclick=\"cal.select(document.forms['form'].post_date,'post_date_anchor','$js_datefmt');
-                    return false;\" name=\"post_date_anchor\" id=\"post_date_anchor\">Pick Date</a>\n";
-        echo "          </div>\n";
-        echo "        </div>\n";
-        echo hidden_field('get_user', $get_user);
-        echo "        <p class=\"small text-muted\">* required</p>\n";
-        echo "        <div style=\"position:absolute;visibility:hidden;background-color:#ffffff;\" id=\"mydiv\">&nbsp;</div>\n";
-        echo "        <button type='submit' class=\"btn btn-primary\" name='submit' value='Edit Time'>Edit Time</button>\n";
-        echo "        <a href='timeadmin.php' class=\"btn btn-outline-secondary\">Cancel</a>\n";
-        echo "      </form>\n";
+        render_date_search_form($self, $js_datefmt, $tmp_datefmt, $post_username, $post_displayname, $post_date, $get_user, false);
         echo "    </div>\n";
         echo "  </div>\n";
         echo "</div>\n";
@@ -411,24 +422,20 @@ if ($request == 'GET') {
                 echo "        </tr>\n";
 
                 for ($x = 0; $x < $final_num_rows; $x++) {
-                    $row_color = ($row_count % 2) ? $color1 : $color2;
                     $final_username[$x] = stripslashes($final_username[$x]);
-                    $statuscolor = tc_select_value("color", "punchlist", "punchitems = ?", $final_inout[$x]);
-
-                    echo "        <tr style=\"background-color:$row_color;\">\n";
-                    echo "          <td><input type='text' class=\"form-control form-control-sm\" size='7' maxlength='$timefmt_size'
-                        name='edit_time_textbox[$x]' value=\"" . htmlspecialchars($edit_time_textbox[$x]) . "\"></td>\n";
-                    echo "          <td style=\"color:" . htmlspecialchars($statuscolor) . ";\">" . htmlspecialchars($final_inout[$x]) . "</td>\n";
-                    echo "          <td>" . htmlspecialchars($final_time[$x]) . "</td>\n";
-                    echo "          <td>" . htmlspecialchars($final_notes[$x]) . "</td>\n";
-                    echo "        </tr>\n";
-                    echo "        <input type='hidden' name='final_username[$x]' value=\"" . htmlspecialchars($final_username[$x]) . "\">\n";
-                    echo "        <input type='hidden' name='final_inout[$x]' value=\"" . htmlspecialchars($final_inout[$x]) . "\">\n";
-                    echo "        <input type='hidden' name='final_notes[$x]' value=\"" . htmlspecialchars($final_notes[$x]) . "\">\n";
-                    echo "        <input type='hidden' name='final_time[$x]' value=\"" . htmlspecialchars($final_time[$x]) . "\">\n";
-                    echo "        <input type='hidden' name='final_mysql_timestamp[$x]' value=\"" . htmlspecialchars($final_mysql_timestamp[$x]) . "\">\n";
-                    $row_count++;
                 }
+                render_punch_edit_rows(
+                    $final_num_rows,
+                    $final_username,
+                    $final_inout,
+                    $final_notes,
+                    $final_mysql_timestamp,
+                    $final_time,
+                    $edit_time_textbox,
+                    $timefmt_size,
+                    $color1,
+                    $color2
+                );
                 echo "      </table>\n";
                 echo "      </div>\n";
                 $tmp_var = '1';
@@ -591,7 +598,6 @@ if ($request == 'GET') {
                 $post_date = "$month/$day/$year";
             }
 
-            $row_count = '0';
             $timestamp = strtotime($post_date) - @$tzo;
             $calc = $timestamp + 86400 - @$tzo;
             $post_username = stripslashes($post_username);
@@ -633,35 +639,7 @@ if ($request == 'GET') {
 
             echo "      <div class=\"alert alert-danger\">No time was found in the system for " . htmlspecialchars($post_username) . " on "
                 . htmlspecialchars($post_date) . ".</div>\n";
-            echo form_open($self, true);
-            echo csrf_field() . "\n";
-            echo "        <input type='hidden' name='date_format' value='" . htmlentities($js_datefmt) . "'>\n";
-            echo "        <div class=\"mb-3\">\n";
-            echo "          <label class=\"form-label\">Username</label>\n";
-            echo "          <input type='hidden' name='post_username' value=\"" . htmlspecialchars($post_username) . "\">\n";
-            echo "          <div class=\"form-control-plaintext\">" . htmlspecialchars($post_username) . "</div>\n";
-            echo "        </div>\n";
-            echo "        <div class=\"mb-3\">\n";
-            echo "          <label class=\"form-label\">Display Name</label>\n";
-            echo "          <input type='hidden' name='post_displayname' value=\"" . htmlspecialchars($post_displayname) . "\">\n";
-            echo "          <div class=\"form-control-plaintext\">" . htmlspecialchars($post_displayname) . "</div>\n";
-            echo "        </div>\n";
-            echo "        <div class=\"mb-3\">\n";
-            echo "          <label class=\"form-label\" for='post_date'>Date ($tmp_datefmt) <span class=\"text-danger\">*</span></label>\n";
-            echo "          <div class=\"input-group\" style=\"max-width:300px;\">\n";
-            echo "            <input type='text' id='post_date' class=\"form-control\" size='10' maxlength='10' name='post_date' value=\""
-                . htmlspecialchars($post_date) . "\">\n";
-            echo "            <a href=\"#\" class=\"btn btn-outline-secondary\"
-                    onclick=\"cal.select(document.forms['form'].post_date,'post_date_anchor','$js_datefmt');
-                    return false;\" name=\"post_date_anchor\" id=\"post_date_anchor\">Pick Date</a>\n";
-            echo "          </div>\n";
-            echo "        </div>\n";
-            echo hidden_field('get_user', $get_user);
-            echo "        <p class=\"small text-muted\">* required</p>\n";
-            echo "        <div style=\"position:absolute;visibility:hidden;background-color:#ffffff;\" id=\"mydiv\">&nbsp;</div>\n";
-            echo "        <button type='submit' class=\"btn btn-primary\" name='submit' value='Edit Time'>Edit Time</button>\n";
-            echo "        <a href='timeadmin.php' class=\"btn btn-outline-secondary\">Cancel</a>\n";
-            echo "      </form>\n";
+            render_date_search_form($self, $js_datefmt, $tmp_datefmt, $post_username, $post_displayname, $post_date, $get_user, false);
             echo "    </div>\n";
             echo "  </div>\n";
             echo "</div>\n";
@@ -693,25 +671,10 @@ if ($request == 'GET') {
             echo "        </tr>\n";
 
             for ($x = 0; $x < $num_rows; $x++) {
-                $row_color = ($row_count % 2) ? $color1 : $color2;
                 $time[$x] = date("$timefmt", $mysql_timestamp[$x] + $tzo);
                 $username[$x] = stripslashes($username[$x]);
-                $statuscolor = tc_select_value("color", "punchlist", "punchitems = ?", $inout[$x]);
-
-                echo "        <tr style=\"background-color:$row_color;\">\n";
-                echo "          <td><input type='text' class=\"form-control form-control-sm\" size='7' maxlength='$timefmt_size'
-                    name='edit_time_textbox[$x]'></td>\n";
-                echo "          <td style=\"color:" . htmlspecialchars($statuscolor) . ";\">" . htmlspecialchars($inout[$x]) . "</td>\n";
-                echo "          <td>" . htmlspecialchars($time[$x]) . "</td>\n";
-                echo "          <td>" . htmlspecialchars($notes[$x]) . "</td>\n";
-                echo "        </tr>\n";
-                echo "        <input type='hidden' name='final_username[$x]' value=\"" . htmlspecialchars($username[$x]) . "\">\n";
-                echo "        <input type='hidden' name='final_inout[$x]' value=\"" . htmlspecialchars($inout[$x]) . "\">\n";
-                echo "        <input type='hidden' name='final_notes[$x]' value=\"" . htmlspecialchars($notes[$x]) . "\">\n";
-                echo "        <input type='hidden' name='final_mysql_timestamp[$x]' value=\"$mysql_timestamp[$x]\">\n";
-                echo "        <input type='hidden' name='final_time[$x]' value=\"" . htmlspecialchars($time[$x]) . "\">\n";
-                $row_count++;
             }
+            render_punch_edit_rows($num_rows, $username, $inout, $notes, $mysql_timestamp, $time, array(), $timefmt_size, $color1, $color2);
             echo "      </table>\n";
             echo "      </div>\n";
             $tmp_var = '1';
