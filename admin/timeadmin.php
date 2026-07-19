@@ -3,9 +3,9 @@
 require_once '../lib/session.php';
 start_secure_session();
 
-include '../config.inc.php';
-include 'header_bootstrap.php';
-include 'topmain_bootstrap.php';
+include_once '../config.inc.php';
+include_once 'header_bootstrap.php';
+include_once 'topmain_bootstrap.php';
 echo "<title>$title - Add/Edit/Delete Time</title>\n";
 
 $self = htmlentities($_SERVER['PHP_SELF']);
