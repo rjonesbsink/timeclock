@@ -16,6 +16,76 @@ const FOOTER_PHP = 'footer_bootstrap.php';
 const MSG_SOMETHING_FISHY = "Something is fishy here.\n";
 const DATE_PATTERN = "/^([0-9]{1,2})[\-\/\.]([0-9]{1,2})[\-\/\.](([0-9]{2})|([0-9]{4}))$/i";
 
+function render_time_add_form(
+    $self,
+    $js_datefmt,
+    $post_username,
+    $post_displayname,
+    $post_date,
+    $post_time,
+    $timefmt_size,
+    $timefmt_24hr_text,
+    $get_user,
+    $timefmt_24hr,
+    $post_statusname,
+    $post_notes
+) {
+    $h_timefmt_size = htmlentities($timefmt_size);
+    $h_timefmt_24hr_text = htmlentities($timefmt_24hr_text);
+    $h_js_datefmt = htmlentities($js_datefmt);
+
+    echo "      <form name='form' action='$self' method='post' onsubmit=\"return isDate()\">\n";
+    echo csrf_field() . "\n";
+    echo "        <input type='hidden' name='date_format' value=\"$h_js_datefmt\">\n";
+    echo "        <div class=\"mb-3\">\n";
+    echo "          <label class=\"form-label\">Username</label>\n";
+    echo "          <input type='hidden' name='post_username' value=\"" . htmlentities($post_username) . "\">\n";
+    echo "          <div class=\"form-control-plaintext\">" . htmlentities($post_username) . "</div>\n";
+    echo "        </div>\n";
+    echo "        <div class=\"mb-3\">\n";
+    echo "          <label class=\"form-label\">Display Name</label>\n";
+    echo "          <input type='hidden' name='post_displayname' value=\"" . htmlentities($post_displayname) . "\">\n";
+    echo "          <div class=\"form-control-plaintext\">" . htmlentities($post_displayname) . "</div>\n";
+    echo "        </div>\n";
+    echo "        <div class=\"mb-3\">\n";
+    echo "          <label class=\"form-label\" for='post_date'>Date <span class=\"text-danger\">*</span></label>\n";
+    echo "          <div class=\"input-group\" style=\"max-width:300px;\">\n";
+    echo "            <input type='text' id='post_date' class=\"form-control\" size='10' maxlength='10' name='post_date' value=\""
+        . htmlentities($post_date) . "\">\n";
+    echo "            <a href=\"#\" class=\"btn btn-outline-secondary\"
+                onclick=\"cal.select(document.forms['form'].post_date,'post_date_anchor','$h_js_datefmt');
+                return false;\" name=\"post_date_anchor\" id=\"post_date_anchor\">Pick Date</a>\n";
+    echo "          </div>\n";
+    echo "        </div>\n";
+    echo "        <div class=\"mb-3\">\n";
+    echo "          <label class=\"form-label\" for='post_time'>Time <span class=\"text-danger\">*</span></label>\n";
+    echo "          <input type='text' id='post_time' class=\"form-control\" style=\"max-width:200px;\" size='10' maxlength=\"$h_timefmt_size\"
+                name='post_time' value=\"" . htmlentities($post_time) . "\">\n";
+    echo "          <div class=\"form-text\">$h_timefmt_24hr_text</div>\n";
+    echo "        </div>\n";
+    echo "        <input type='hidden' name='get_user' value=\"" . htmlentities($get_user) . "\">\n";
+    echo "        <input type='hidden' name='timefmt_24hr' value=\"" . htmlentities($timefmt_24hr) . "\">\n";
+    echo "        <input type='hidden' name='timefmt_24hr_text' value=\"$h_timefmt_24hr_text\">\n";
+    echo "        <input type='hidden' name='timefmt_size' value=\"$h_timefmt_size\">\n";
+    echo "        <div class=\"mb-3\">\n";
+    echo "          <label class=\"form-label\" for='post_statusname'>Status <span class=\"text-danger\">*</span></label>\n";
+    echo "          <select id='post_statusname' class=\"form-select\" name='post_statusname'>\n";
+    echo "            <option value='1'>Choose One</option>\n";
+    echo html_options(tc_select("punchitems", "punchlist", "1=1 order by punchitems asc"), $post_statusname);
+    echo "          </select>\n";
+    echo "        </div>\n";
+    echo "        <div class=\"mb-3\">\n";
+    echo "          <label class=\"form-label\" for='post_notes'>Notes</label>\n";
+    echo "          <input type='text' id='post_notes' class=\"form-control\" size='17' maxlength='250' name='post_notes' value=\""
+        . htmlspecialchars($post_notes, ENT_QUOTES) . "\">\n";
+    echo "        </div>\n";
+    echo "        <p class=\"small text-muted\">* required</p>\n";
+    echo "        <div style=\"position:absolute;visibility:hidden;background-color:#ffffff;\" id=\"mydiv\">&nbsp;</div>\n";
+    echo "        <button type='submit' class=\"btn btn-primary\" name='submit' value='Add Time'>Add Time</button>\n";
+    echo "        <a href='timeadmin.php' class=\"btn btn-outline-secondary\">Cancel</a>\n";
+    echo "      </form>\n";
+}
+
 if (($timefmt == "G:i") || ($timefmt == "H:i")) {
     $timefmt_24hr = '1';
     $timefmt_24hr_text = '24 hr format';
@@ -311,56 +381,20 @@ if ($request == 'GET') {
     }
 
     if ((isset($evil_post)) || (isset($evil_date)) || (isset($evil_time))) {
-        echo "      <form name='form' action='$self' method='post' onsubmit=\"return isDate()\">\n";
-        echo csrf_field() . "\n";
-        echo "        <input type='hidden' name='date_format' value='$js_datefmt'>\n";
-        echo "        <div class=\"mb-3\">\n";
-        echo "          <label class=\"form-label\">Username</label>\n";
-        echo "          <input type='hidden' name='post_username' value=\"" . htmlentities($post_username) . "\">\n";
-        echo "          <div class=\"form-control-plaintext\">" . htmlentities($post_username) . "</div>\n";
-        echo "        </div>\n";
-        echo "        <div class=\"mb-3\">\n";
-        echo "          <label class=\"form-label\">Display Name</label>\n";
-        echo "          <input type='hidden' name='post_displayname' value=\"" . htmlentities($post_displayname) . "\">\n";
-        echo "          <div class=\"form-control-plaintext\">" . htmlentities($post_displayname) . "</div>\n";
-        echo "        </div>\n";
-        echo "        <div class=\"mb-3\">\n";
-        echo "          <label class=\"form-label\" for='post_date'>Date <span class=\"text-danger\">*</span></label>\n";
-        echo "          <div class=\"input-group\" style=\"max-width:300px;\">\n";
-        echo "            <input type='text' id='post_date' class=\"form-control\" size='10' maxlength='10' name='post_date' value=\""
-            . htmlentities($post_date) . "\">\n";
-        echo "            <a href=\"#\" class=\"btn btn-outline-secondary\"
-                    onclick=\"cal.select(document.forms['form'].post_date,'post_date_anchor','$js_datefmt');
-                    return false;\" name=\"post_date_anchor\" id=\"post_date_anchor\">Pick Date</a>\n";
-        echo "          </div>\n";
-        echo "        </div>\n";
-        echo "        <div class=\"mb-3\">\n";
-        echo "          <label class=\"form-label\" for='post_time'>Time <span class=\"text-danger\">*</span></label>\n";
-        echo "          <input type='text' id='post_time' class=\"form-control\" style=\"max-width:200px;\" size='10' maxlength='$timefmt_size'
-                    name='post_time' value=\"" . htmlentities($post_time) . "\">\n";
-        echo "          <div class=\"form-text\">$timefmt_24hr_text</div>\n";
-        echo "        </div>\n";
-        echo "        <input type='hidden' name='get_user' value=\"" . htmlentities($get_user) . "\">\n";
-        echo "        <input type='hidden' name='timefmt_24hr' value=\"$timefmt_24hr\">\n";
-        echo "        <input type='hidden' name='timefmt_24hr_text' value=\"$timefmt_24hr_text\">\n";
-        echo "        <input type='hidden' name='timefmt_size' value=\"$timefmt_size\">\n";
-        echo "        <div class=\"mb-3\">\n";
-        echo "          <label class=\"form-label\" for='post_statusname'>Status <span class=\"text-danger\">*</span></label>\n";
-        echo "          <select id='post_statusname' class=\"form-select\" name='post_statusname'>\n";
-        echo "            <option value='1'>Choose One</option>\n";
-        echo html_options(tc_select("punchitems", "punchlist", "1=1 order by punchitems asc"), $post_statusname);
-        echo "          </select>\n";
-        echo "        </div>\n";
-        echo "        <div class=\"mb-3\">\n";
-        echo "          <label class=\"form-label\" for='post_notes'>Notes</label>\n";
-        echo "          <input type='text' id='post_notes' class=\"form-control\" size='17' maxlength='250' name='post_notes' value=\""
-            . htmlspecialchars($post_notes, ENT_QUOTES) . "\">\n";
-        echo "        </div>\n";
-        echo "        <p class=\"small text-muted\">* required</p>\n";
-        echo "        <div style=\"position:absolute;visibility:hidden;background-color:#ffffff;\" id=\"mydiv\">&nbsp;</div>\n";
-        echo "        <button type='submit' class=\"btn btn-primary\" name='submit' value='Add Time'>Add Time</button>\n";
-        echo "        <a href='timeadmin.php' class=\"btn btn-outline-secondary\">Cancel</a>\n";
-        echo "      </form>\n";
+        render_time_add_form(
+            $self,
+            $js_datefmt,
+            $post_username,
+            $post_displayname,
+            $post_date,
+            $post_time,
+            $timefmt_size,
+            $timefmt_24hr_text,
+            $get_user,
+            $timefmt_24hr,
+            $post_statusname,
+            $post_notes
+        );
         echo "    </div>\n";
         echo "  </div>\n";
         echo "</div>\n";
@@ -391,56 +425,20 @@ if ($request == 'GET') {
             $info_table_timestamp = "" . $row['timestamp'] . "";
             if ($timestamp == $info_table_timestamp) {
                 echo "      <div class=\"alert alert-danger\">Duplicate time exists for this user on this date. Time not added.</div>\n";
-                echo "      <form name='form' action='$self' method='post' onsubmit=\"return isDate()\">\n";
-                echo csrf_field() . "\n";
-                echo "        <input type='hidden' name='date_format' value='$js_datefmt'>\n";
-                echo "        <div class=\"mb-3\">\n";
-                echo "          <label class=\"form-label\">Username</label>\n";
-                echo "          <input type='hidden' name='post_username' value=\"" . htmlentities($post_username) . "\">\n";
-                echo "          <div class=\"form-control-plaintext\">" . htmlentities($post_username) . "</div>\n";
-                echo "        </div>\n";
-                echo "        <div class=\"mb-3\">\n";
-                echo "          <label class=\"form-label\">Display Name</label>\n";
-                echo "          <input type='hidden' name='post_displayname' value=\"" . htmlentities($post_displayname) . "\">\n";
-                echo "          <div class=\"form-control-plaintext\">" . htmlentities($post_displayname) . "</div>\n";
-                echo "        </div>\n";
-                echo "        <div class=\"mb-3\">\n";
-                echo "          <label class=\"form-label\" for='post_date'>Date <span class=\"text-danger\">*</span></label>\n";
-                echo "          <div class=\"input-group\" style=\"max-width:300px;\">\n";
-                echo "            <input type='text' id='post_date' class=\"form-control\" size='10' maxlength='10' name='post_date' value=\""
-                    . htmlentities($post_date) . "\">\n";
-                echo "            <a href=\"#\" class=\"btn btn-outline-secondary\"
-                        onclick=\"cal.select(document.forms['form'].post_date,'post_date_anchor','$js_datefmt');
-                        return false;\" name=\"post_date_anchor\" id=\"post_date_anchor\">Pick Date</a>\n";
-                echo "          </div>\n";
-                echo "        </div>\n";
-                echo "        <div class=\"mb-3\">\n";
-                echo "          <label class=\"form-label\" for='post_time'>Time <span class=\"text-danger\">*</span></label>\n";
-                echo "          <input type='text' id='post_time' class=\"form-control\" style=\"max-width:200px;\" size='10' maxlength='$timefmt_size'
-                        name='post_time' value=\"" . htmlentities($post_time) . "\">\n";
-                echo "          <div class=\"form-text\">$timefmt_24hr_text</div>\n";
-                echo "        </div>\n";
-                echo "        <input type='hidden' name='get_user' value=\"" . htmlentities($get_user) . "\">\n";
-                echo "        <input type='hidden' name='timefmt_24hr' value=\"$timefmt_24hr\">\n";
-                echo "        <input type='hidden' name='timefmt_24hr_text' value=\"$timefmt_24hr_text\">\n";
-                echo "        <input type='hidden' name='timefmt_size' value=\"$timefmt_size\">\n";
-                echo "        <div class=\"mb-3\">\n";
-                echo "          <label class=\"form-label\" for='post_statusname'>Status <span class=\"text-danger\">*</span></label>\n";
-                echo "          <select id='post_statusname' class=\"form-select\" name='post_statusname'>\n";
-                echo "            <option value='1'>Choose One</option>\n";
-                echo html_options(tc_select("punchitems", "punchlist", "1=1 order by punchitems asc"), $post_statusname);
-                echo "          </select>\n";
-                echo "        </div>\n";
-                echo "        <div class=\"mb-3\">\n";
-                echo "          <label class=\"form-label\" for='post_notes'>Notes</label>\n";
-                echo "          <input type='text' id='post_notes' class=\"form-control\" size='17' maxlength='250' name='post_notes' value=\""
-                    . htmlspecialchars($post_notes, ENT_QUOTES) . "\">\n";
-                echo "        </div>\n";
-                echo "        <p class=\"small text-muted\">* required</p>\n";
-                echo "        <div style=\"position:absolute;visibility:hidden;background-color:#ffffff;\" id=\"mydiv\">&nbsp;</div>\n";
-                echo "        <button type='submit' class=\"btn btn-primary\" name='submit' value='Add Time'>Add Time</button>\n";
-                echo "        <a href='timeadmin.php' class=\"btn btn-outline-secondary\">Cancel</a>\n";
-                echo "      </form>\n";
+                render_time_add_form(
+                    $self,
+                    $js_datefmt,
+                    $post_username,
+                    $post_displayname,
+                    $post_date,
+                    $post_time,
+                    $timefmt_size,
+                    $timefmt_24hr_text,
+                    $get_user,
+                    $timefmt_24hr,
+                    $post_statusname,
+                    $post_notes
+                );
                 echo "    </div>\n";
                 echo "  </div>\n";
                 echo "</div>\n";
