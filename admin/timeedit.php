@@ -8,7 +8,7 @@ include_once 'header_date_bootstrap.php';
 include_once 'topmain_bootstrap.php';
 echo "<title>$title - Edit Time</title>\n";
 
-$self = htmlentities($_SERVER['PHP_SELF']);
+$self = $_SERVER['PHP_SELF'];
 $request = $_SERVER['REQUEST_METHOD'];
 
 const WHERE_EMPFULLNAME = "empfullname = ?";
@@ -660,41 +660,39 @@ if ($request == 'GET') {
         echo "      <h6><img src='../images/icons/clock_edit.png'> Edit Time for " . htmlspecialchars($post_username) . " on "
             . htmlspecialchars($post_date) . "</h6>\n";
 
-        if (isset($time_set)) {
-            echo "      <div class=\"table-responsive\">\n";
-            echo "      <table class=\"table table-sm table-bordered align-middle\">\n";
-            echo "        <tr>\n";
-            echo "          <th>New Time</th>\n";
-            echo "          <th>In/Out</th>\n";
-            echo "          <th>Current Time</th>\n";
-            echo "          <th>Notes</th>\n";
-            echo "        </tr>\n";
+        echo "      <div class=\"table-responsive\">\n";
+        echo "      <table class=\"table table-sm table-bordered align-middle\">\n";
+        echo "        <tr>\n";
+        echo "          <th>New Time</th>\n";
+        echo "          <th>In/Out</th>\n";
+        echo "          <th>Current Time</th>\n";
+        echo "          <th>Notes</th>\n";
+        echo "        </tr>\n";
 
-            for ($x = 0; $x < $num_rows; $x++) {
-                $time[$x] = date("$timefmt", $mysql_timestamp[$x] + $tzo);
-                $username[$x] = stripslashes($username[$x]);
-            }
-            render_punch_edit_rows($num_rows, $username, $inout, $notes, $mysql_timestamp, $time, array(), $timefmt_size, $color1, $color2);
-            echo "      </table>\n";
-            echo "      </div>\n";
-            $tmp_var = '1';
-            echo "        <input type='hidden' name='tmp_var' value=\"$tmp_var\">\n";
-            echo hidden_field('post_username', $post_username);
-            echo hidden_field('post_displayname', $post_displayname);
-            echo hidden_field('post_date', $post_date);
-            echo "        <input type='hidden' name='num_rows' value=\"$num_rows\">\n";
-            echo hidden_field('calc', $calc);
-            echo hidden_field('timestamp', $timestamp);
-            echo hidden_field('get_user', $get_user);
-            echo "        <input type='hidden' name='final_num_rows' value=\"$num_rows\">\n";
-            echo "        <button type='submit' class=\"btn btn-primary\" name='submit' value='Edit Time'>Edit Time</button>\n";
-            echo "        <a href='timeadmin.php' class=\"btn btn-outline-secondary\">Cancel</a>\n";
-            echo "      </form>\n";
-            echo "    </div>\n";
-            echo "  </div>\n";
-            echo "</div>\n";
-            include_once FOOTER_PHP;
-            exit;
+        for ($x = 0; $x < $num_rows; $x++) {
+            $time[$x] = date("$timefmt", $mysql_timestamp[$x] + $tzo);
+            $username[$x] = stripslashes($username[$x]);
         }
+        render_punch_edit_rows($num_rows, $username, $inout, $notes, $mysql_timestamp, $time, array(), $timefmt_size, $color1, $color2);
+        echo "      </table>\n";
+        echo "      </div>\n";
+        $tmp_var = '1';
+        echo "        <input type='hidden' name='tmp_var' value=\"$tmp_var\">\n";
+        echo hidden_field('post_username', $post_username);
+        echo hidden_field('post_displayname', $post_displayname);
+        echo hidden_field('post_date', $post_date);
+        echo "        <input type='hidden' name='num_rows' value=\"$num_rows\">\n";
+        echo hidden_field('calc', $calc);
+        echo hidden_field('timestamp', $timestamp);
+        echo hidden_field('get_user', $get_user);
+        echo "        <input type='hidden' name='final_num_rows' value=\"$num_rows\">\n";
+        echo "        <button type='submit' class=\"btn btn-primary\" name='submit' value='Edit Time'>Edit Time</button>\n";
+        echo "        <a href='timeadmin.php' class=\"btn btn-outline-secondary\">Cancel</a>\n";
+        echo "      </form>\n";
+        echo "    </div>\n";
+        echo "  </div>\n";
+        echo "</div>\n";
+        include_once FOOTER_PHP;
+        exit;
     }
 }
